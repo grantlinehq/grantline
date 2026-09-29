@@ -1,0 +1,86 @@
+name: grantline
+x-app: &app
+  image: ${GRANTLINE_IMAGE:-ghcr.io/grantlinehq/grantline:0.1.0}
+  user: "65532:65532"
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  tmpfs: ["/tmp:rw,noexec,nosuid,size=64m,mode=1777"]
+
+services:
+  init:
+    <<: *app
+    command: [init, --secrets-dir, /var/lib/grantline/secrets, --database-secrets-dir, /var/lib/grantline/database-secrets]
+    restart: "no"
+    volumes:
+      - app-secrets:/var/lib/grantline/secrets
+      - database-secrets:/var/lib/grantline/database-secrets
+  postgres:
+    image: postgres:17-alpine
+    user: "70:70"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: grantline
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres-password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - database-secrets:/run/secrets:ro
+      - ./deploy/postgres-init.sql:/docker-entrypoint-initdb.d/10-grantline.sql:ro
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=64m,mode=1777", "/var/run/postgresql:rw,nosuid,size=16m,uid=70,gid=70"]
+    depends_on:
+      init: {condition: service_completed_successfully}
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -h 127.0.0.1 -U grantline -d grantline"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  migrate:
+    <<: *app
+    command: [migrate]
+    restart: "no"
+    environment:
+      GRANTLINE_DATABASE_URL_FILE: /var/lib/grantline/secrets/database-url
+    volumes: [app-secrets:/var/lib/grantline/secrets:ro]
+    depends_on:
+      postgres: {condition: service_healthy}
+  app:
+    <<: *app
+    restart: unless-stopped
+    stop_grace_period: 40s
+    environment:
+      GRANTLINE_PUBLIC_URL: ${GRANTLINE_PUBLIC_URL:-http://127.0.0.1:8080}
+      GRANTLINE_DATABASE_URL_FILE: /var/lib/grantline/secrets/database-url
+      GRANTLINE_ENCRYPTION_KEY_FILE: /var/lib/grantline/secrets/encryption-key
+      GRANTLINE_SETUP_TOKEN_FILE: /var/lib/grantline/secrets/setup-token
+    ports: ["127.0.0.1:${GRANTLINE_PORT:-8080}:8080"]
+    volumes: [app-secrets:/var/lib/grantline/secrets:ro]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    healthcheck:
+      test: [CMD, wget, -q, --spider, http://127.0.0.1:8080/readyz]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+      start_period: 20s
+  caddy:
+    image: caddy:2-alpine
+    profiles: [https]
+    restart: unless-stopped
+    environment:
+      GRANTLINE_DOMAIN: ${GRANTLINE_DOMAIN:-localhost}
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on: [app]
+volumes:
+  app-secrets:
+  database-secrets:
+  postgres-data:
+  caddy-data:
+  caddy-config:

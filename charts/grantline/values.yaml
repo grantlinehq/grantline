@@ -1,0 +1,60 @@
+# One active application instance; upgrades have a short interruption.
+replicaCount: 1
+image:
+  repository: ghcr.io/grantlinehq/grantline
+  tag: '' # Defaults to Chart.appVersion; explicit versions override it.
+  digest: '' # Prefer sha256:... in controlled production environments.
+  pullPolicy: IfNotPresent
+imagePullSecrets: []
+publicURL: https://grantline.example.com
+# Created independently of Helm; never generated or rotated during an upgrade.
+existingSecret: ''
+secretKeys:
+  databaseURL: database-url
+  encryptionKey: encryption-key
+  setupToken: setup-token
+trustedProxies: '' # Comma-separated exact reverse-proxy IP CIDRs. Empty trusts none.
+customCA:
+  existingConfigMap: ''
+  key: ca.crt
+observerSecrets:
+  existingSecret: '' # Optional named JSON credential files.
+oidc:
+  issuer: ''
+  clientID: ''
+  existingSecret: ''
+  clientSecretKey: client-secret
+smtp:
+  address: '' # Verified implicit TLS, normally port 465.
+  from: ''
+  username: ''
+  existingSecret: ''
+  passwordKey: smtp-password
+resources:
+  requests: {cpu: 250m, memory: 512Mi}
+  limits: {cpu: '2', memory: 2Gi}
+service:
+  port: 8080
+ingress:
+  enabled: false
+  className: ''
+  host: grantline.example.com
+  annotations: {}
+  tls: []
+nodeSelector: {}
+tolerations: []
+affinity: {}
+# Production uses an existing PostgreSQL database through existingSecret.
+postgresql:
+  enabled: false
+  image: postgres:17-alpine
+  existingSecret: ''
+  passwordKey: postgres-password
+  storage: 10Gi
+  storageClassName: ''
+  resources:
+    requests: {cpu: 100m, memory: 256Mi}
+    limits: {cpu: '1', memory: 1Gi}
+# Separate observer identity. Never grants permissions to the application SA.
+observerRBAC:
+  enabled: false

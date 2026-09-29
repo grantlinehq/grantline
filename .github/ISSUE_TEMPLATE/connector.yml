@@ -1,0 +1,19 @@
+name: New connector request
+description: Propose a scoped metadata integration.
+title: '[Connector] '
+body:
+  - type: input
+    id: provider
+    attributes: {label: Provider and version}
+    validations: {required: true}
+  - type: textarea
+    id: api
+    attributes: {label: Official API and permission references, description: Include public documentation links and the least-privileged read scope.}
+    validations: {required: true}
+  - type: textarea
+    id: entities
+    attributes: {label: Identity relationships and evidence, description: What stable identifiers and metadata would this integration contribute?}
+    validations: {required: true}
+  - type: textarea
+    id: fixtures
+    attributes: {label: Synthetic validation and blind spots, description: Never attach credentials or production snapshots.}

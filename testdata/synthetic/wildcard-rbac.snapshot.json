@@ -1,0 +1,134 @@
+{
+  "schema_version": "1.0",
+  "collected_at": "2026-09-20T00:00:00Z",
+  "entities": [
+    {
+      "id": "entity_b0c7ec5cd9b05faade56a6f80ea2606bce5bc11f2e96cbb31162ef0e4fa0fded",
+      "kind": "role",
+      "source_id": "k8s-lab",
+      "native_id": "cluster-role-read-config",
+      "scope": "cluster/kind-grantline",
+      "name": "read-config",
+      "attributes": {
+        "role_kind": "ClusterRole",
+        "rbac_rules": [
+          {
+            "api_groups": [
+              "*"
+            ],
+            "resources": [
+              "*"
+            ],
+            "verbs": [
+              "*"
+            ]
+          }
+        ]
+      },
+      "field_status": {
+        "role_kind": "known",
+        "rbac_rules": "known"
+      },
+      "observed_at": "2026-09-20T00:00:00Z",
+      "provenance": "synthetic_fixture"
+    },
+    {
+      "id": "entity_999503749bd26f9044d9e822976b54539b755ac6e6235265b73f774fb2e3d2b8",
+      "kind": "service_account",
+      "source_id": "k8s-lab",
+      "native_id": "sa-uid-payments-runner",
+      "scope": "cluster/kind-grantline/namespaces/payments",
+      "name": "payments-runner",
+      "attributes": {},
+      "field_status": {},
+      "observed_at": "2026-09-20T00:00:00Z",
+      "provenance": "synthetic_fixture"
+    },
+    {
+      "id": "entity_925c557864aed25ead0e8d310aa1df2d9846a4cf4fc290163def00529f3daf84",
+      "kind": "role_binding",
+      "source_id": "k8s-lab",
+      "native_id": "rbac-binding-payments-runner",
+      "scope": "cluster/kind-grantline/namespaces/payments",
+      "name": "payments-runner-read-config",
+      "attributes": {
+        "binding_kind": "RoleBinding"
+      },
+      "field_status": {
+        "binding_kind": "known"
+      },
+      "observed_at": "2026-09-20T00:00:00Z",
+      "provenance": "synthetic_fixture"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "relationship_1c4b1eb12b0273dc8a7282d58bf3a5d8aad545890439ec01b81a805b9e11b80a",
+      "from": "entity_925c557864aed25ead0e8d310aa1df2d9846a4cf4fc290163def00529f3daf84",
+      "to": "entity_b0c7ec5cd9b05faade56a6f80ea2606bce5bc11f2e96cbb31162ef0e4fa0fded",
+      "type": "grants_role",
+      "assertion_kind": "observed",
+      "evidence_ids": [
+        "evidence:k8s:cluster-role-read-config",
+        "evidence:k8s:binding-payments-runner"
+      ],
+      "scope": "cluster/kind-grantline/namespaces/payments",
+      "observed_at": "2026-09-20T00:00:00Z"
+    },
+    {
+      "id": "relationship_fbf52312770432895008c4298eba6c3d7a846497d3617b7e41e1120e97b34313",
+      "from": "entity_925c557864aed25ead0e8d310aa1df2d9846a4cf4fc290163def00529f3daf84",
+      "to": "entity_999503749bd26f9044d9e822976b54539b755ac6e6235265b73f774fb2e3d2b8",
+      "type": "bound_to",
+      "assertion_kind": "observed",
+      "evidence_ids": [
+        "evidence:k8s:binding-payments-runner"
+      ],
+      "scope": "cluster/kind-grantline/namespaces/payments",
+      "observed_at": "2026-09-20T00:00:00Z"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "evidence:k8s:cluster-role-read-config",
+      "source_id": "k8s-lab",
+      "native_id": "cluster-role-read-config",
+      "locator": "synthetic://k8s-lab/rbac/clusterroles/cluster-role-read-config",
+      "fields": [
+        "rules"
+      ],
+      "observed_at": "2026-09-20T00:00:00Z",
+      "assertion_kind": "observed"
+    },
+    {
+      "id": "evidence:k8s:binding-payments-runner",
+      "source_id": "k8s-lab",
+      "native_id": "rbac-binding-payments-runner",
+      "locator": "synthetic://k8s-lab/rbac/rolebindings/payments/payments-runner-read-config",
+      "fields": [
+        "roleRef",
+        "subjects",
+        "metadata.namespace"
+      ],
+      "observed_at": "2026-09-20T00:00:00Z",
+      "assertion_kind": "observed"
+    }
+  ],
+  "sources": [
+    {
+      "id": "k8s-lab",
+      "kind": "kubernetes",
+      "scope": "cluster/kind-grantline",
+      "status": "ok",
+      "complete": true,
+      "permissions_observed": [
+        "core/v1/serviceaccounts:list",
+        "rbac.authorization.k8s.io/clusterroles:list",
+        "rbac.authorization.k8s.io/rolebindings:list"
+      ],
+      "warnings": [],
+      "pagination_complete": true,
+      "provenance": "synthetic_fixture"
+    }
+  ]
+}

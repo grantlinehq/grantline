@@ -1,0 +1,73 @@
+name: Checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: grantline
+          POSTGRES_DB: grantline
+          POSTGRES_PASSWORD: ci-disposable-database
+        ports: ['5432:5432']
+        options: --health-cmd "pg_isready -U grantline" --health-interval 5s --health-retries 20
+    env:
+      GRANTLINE_TEST_DATABASE_URL: postgres://grantline:ci-disposable-database@127.0.0.1:5432/grantline?sslmode=disable
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: {fetch-depth: 0}
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with: {go-version-file: go.mod}
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with: {node-version: '24'}
+      - name: Build application and embedded docs
+        run: |
+          corepack enable
+          cd web
+          corepack prepare pnpm@11.19.0 --activate
+          pnpm install --frozen-lockfile
+          pnpm audit --audit-level moderate
+          pnpm build:all
+          pnpm check-render
+      - name: Regression, database and race tests
+        run: |
+          go test -race ./...
+          go vet ./...
+          GRANTLINE_TEST_CAPACITY=1 go test ./internal/platform -run TestDatabaseCapacity -count=1 -v
+          go run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...
+      - name: Secret scan
+        run: |
+          go install github.com/zricethezav/gitleaks/v8@v8.30.1
+          gitleaks git --log-opts="--all" --redact --no-banner
+      - uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+        with: {version: v4.3.0}
+      - name: Chart validation
+        run: |
+          helm lint charts/grantline -f charts/grantline/examples/production.yaml
+          helm lint charts/grantline -f charts/grantline/examples/evaluation.yaml
+          helm template grantline charts/grantline -f charts/grantline/examples/production.yaml > /tmp/production.yaml
+          helm template grantline charts/grantline -f charts/grantline/examples/evaluation.yaml > /tmp/evaluation.yaml
+          if helm template invalid charts/grantline --set existingSecret=test --set replicaCount=2 >/dev/null 2>&1; then exit 1; fi
+      - name: Check generated API contract
+        run: |
+          python3 scripts/generate-openapi.py
+          git diff --exit-code -- internal/platform/openapi.json docs/guide/public/reference
+          python3 scripts/check-doc-links.py
+      - name: Build hardened image
+        run: docker build -t grantline:check .
+      - name: Clean Linux installation and persistent accounts
+        run: python3 scripts/acceptance-compose.py --image grantline:check
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: grantline:check
+          severity: CRITICAL,HIGH
+          exit-code: '1'
+          scanners: vuln

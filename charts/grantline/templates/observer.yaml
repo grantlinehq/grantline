@@ -1,0 +1,35 @@
+{{- if .Values.observerRBAC.enabled }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "grantline.name" . }}-observer
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "grantline.name" . }}-{{ .Release.Namespace }}-observer
+rules:
+  - apiGroups: ['']
+    resources: [namespaces, serviceaccounts, pods]
+    verbs: [get, list]
+  - apiGroups: [apps]
+    resources: [deployments]
+    verbs: [get, list]
+  - apiGroups: [rbac.authorization.k8s.io]
+    resources: [roles, rolebindings, clusterroles, clusterrolebindings]
+    verbs: [get, list]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "grantline.name" . }}-{{ .Release.Namespace }}-observer
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "grantline.name" . }}-{{ .Release.Namespace }}-observer
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "grantline.name" . }}-observer
+    namespace: {{ .Release.Namespace }}
+{{- end }}

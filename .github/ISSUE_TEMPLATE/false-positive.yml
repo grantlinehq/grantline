@@ -1,0 +1,31 @@
+name: False positive report
+description: Explain a policy finding that does not match the expected interpretation.
+title: '[Rule] '
+body:
+  - type: markdown
+    attributes:
+      value: 'Only submit sanitized evidence. Do not share secret values, private identifiers or production reports. Use SECURITY.md for vulnerabilities.'
+  - type: input
+    id: version
+    attributes: {label: Grantline version}
+    validations: {required: true}
+  - type: input
+    id: rule
+    attributes: {label: Rule ID and version, placeholder: IL001 / 1}
+    validations: {required: true}
+  - type: input
+    id: source
+    attributes: {label: Source connector and provider version}
+    validations: {required: true}
+  - type: textarea
+    id: evidence
+    attributes: {label: Sanitized evidence and policy, description: Include completeness/UNKNOWN state and a synthetic reproduction if possible.}
+    validations: {required: true}
+  - type: textarea
+    id: expected
+    attributes: {label: Expected behavior and reasoning}
+    validations: {required: true}
+  - type: textarea
+    id: actual
+    attributes: {label: Actual behavior}
+    validations: {required: true}

@@ -1,0 +1,10 @@
+Grantline is installed for one organization with one active application instance.
+
+Open {{ .Values.publicURL }} and use the setup-token from your independently managed Secret.
+Keep the encryption key outside database backups, and restore the matching key with a backup.
+Application upgrades use Recreate and briefly interrupt service.
+Helm rollback does not reverse database migrations.
+{{ if .Values.postgresql.enabled }}
+The bundled PostgreSQL profile is for evaluation. It does not provide database HA.
+PVCs and independently managed Secrets are retained on uninstall.
+{{ end }}

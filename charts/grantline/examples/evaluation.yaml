@@ -1,0 +1,6 @@
+existingSecret: grantline-secrets
+publicURL: http://127.0.0.1:8082
+postgresql:
+  enabled: true
+  existingSecret: grantline-database
+# Access through: kubectl port-forward svc/<release>-grantline 8082:8080

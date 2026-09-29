@@ -1,0 +1,7 @@
+schema_version: 1
+required_sources:
+  - k8s-lab
+rules:
+  IL001:
+    severity: medium
+    allowed_grants:

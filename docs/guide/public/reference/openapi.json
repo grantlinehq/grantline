@@ -1,0 +1,2022 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Grantline API",
+    "version": "0.1.0-dev",
+    "license": {
+      "name": "Apache-2.0",
+      "identifier": "Apache-2.0"
+    },
+    "description": "Single-organization, cookie-authenticated API. HTTPS sessions use Secure, HttpOnly, SameSite=Lax cookies. No personal API tokens in v0.1."
+  },
+  "servers": [
+    {
+      "url": "/api/v1"
+    }
+  ],
+  "security": [
+    {
+      "session": []
+    }
+  ],
+  "paths": {
+    "/status": {
+      "get": {
+        "summary": "Setup state and sign-in capabilities",
+        "operationId": "get_status",
+        "tags": [
+          "status"
+        ],
+        "description": "Available before sign-in.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/auth/setup": {
+      "post": {
+        "summary": "Create organization and first Owner once",
+        "operationId": "post_auth_setup",
+        "tags": [
+          "auth"
+        ],
+        "description": "Available before sign-in. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Setup"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Start password session; privileged accounts require TOTP",
+        "operationId": "post_auth_login",
+        "tags": [
+          "auth"
+        ],
+        "description": "Available before sign-in. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/accept": {
+      "post": {
+        "summary": "Consume single-use invitation/recovery link",
+        "operationId": "post_auth_accept",
+        "tags": [
+          "auth"
+        ],
+        "description": "Available before sign-in. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcceptTicket"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/forgot": {
+      "post": {
+        "summary": "Queue recovery mail without exposing account membership",
+        "operationId": "post_auth_forgot",
+        "tags": [
+          "auth"
+        ],
+        "description": "Available before sign-in. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "202": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Email": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "Email"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/session": {
+      "get": {
+        "summary": "Current account and CSRF token",
+        "operationId": "get_auth_session",
+        "tags": [
+          "auth"
+        ],
+        "description": "Minimum role: viewer.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/mfa": {
+      "get": {
+        "summary": "TOTP enrollment state and initial setup key",
+        "operationId": "get_auth_mfa",
+        "tags": [
+          "auth"
+        ],
+        "description": "Minimum role: viewer.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Verify TOTP and rotate pending session",
+        "operationId": "post_auth_mfa",
+        "tags": [
+          "auth"
+        ],
+        "description": "Minimum role: viewer. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Grantline-CSRF",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Code": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "Code"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/sessions": {
+      "get": {
+        "summary": "Your active sessions",
+        "operationId": "get_auth_sessions",
+        "tags": [
+          "auth"
+        ],
+        "description": "Minimum role: viewer.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "summary": "Revoke current session",
+        "operationId": "post_auth_logout",
+        "tags": [
+          "auth"
+        ],
+        "description": "Minimum role: viewer. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Grantline-CSRF",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/auth/password": {
+      "post": {
+        "summary": "Change password and revoke all sessions",
+        "operationId": "post_auth_password",
+        "tags": [
+          "auth"
+        ],
+        "description": "Minimum role: viewer. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Grantline-CSRF",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Current": {
+                    "type": "string"
+                  },
+                  "Password": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "Current",
+                  "Password"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/sessions/revoke": {
+      "post": {
+        "summary": "Revoke your other sessions",
+        "operationId": "post_auth_sessions_revoke",
+        "tags": [
+          "auth"
+        ],
+        "description": "Minimum role: viewer. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Grantline-CSRF",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/auth/oidc/start": {
+      "post": {
+        "summary": "Start OIDC with PKCE, nonce and optional invitation",
+        "operationId": "post_auth_oidc_start",
+        "tags": [
+          "auth"
+        ],
+        "description": "Available before sign-in. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Invitation": {
+                    "type": "string"
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/oidc/link": {
+      "post": {
+        "summary": "Explicitly link IdP identity to current account",
+        "operationId": "post_auth_oidc_link",
+        "tags": [
+          "auth"
+        ],
+        "description": "Minimum role: viewer. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Grantline-CSRF",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Invitation": {
+                    "type": "string"
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/oidc/callback": {
+      "get": {
+        "summary": "Verify IdP response and single-use state",
+        "operationId": "get_auth_oidc_callback",
+        "tags": [
+          "auth"
+        ],
+        "description": "Available before sign-in.",
+        "responses": {
+          "303": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/users": {
+      "get": {
+        "summary": "List members",
+        "operationId": "get_users",
+        "tags": [
+          "users"
+        ],
+        "description": "Minimum role: viewer.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "patch": {
+        "summary": "Change role or disable; revokes sessions",
+        "operationId": "patch_users_id",
+        "tags": [
+          "users"
+        ],
+        "description": "Minimum role: admin. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Grantline-CSRF",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Role": {
+                    "type": "string"
+                  },
+                  "Disabled": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "Role",
+                  "Disabled"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}/sessions/revoke": {
+      "post": {
+        "summary": "Revoke member sessions",
+        "operationId": "post_users_id_sessions_revoke",
+        "tags": [
+          "users"
+        ],
+        "description": "Minimum role: admin. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Grantline-CSRF",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/invitations": {
+      "post": {
+        "summary": "Create single-use account link, optionally email",
+        "operationId": "post_invitations",
+        "tags": [
+          "invitations"
+        ],
+        "description": "Minimum role: admin. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Grantline-CSRF",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ticket"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recovery": {
+      "post": {
+        "summary": "Create single-use account link, optionally email",
+        "operationId": "post_recovery",
+        "tags": [
+          "recovery"
+        ],
+        "description": "Minimum role: admin. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Grantline-CSRF",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ticket"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/overview": {
+      "get": {
+        "summary": "Selected report coverage and counts",
+        "operationId": "get_overview",
+        "tags": [
+          "overview"
+        ],
+        "description": "Minimum role: viewer.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "run",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/objects/{category}": {
+      "get": {
+        "summary": "Search and page immutable report objects",
+        "operationId": "get_objects_category",
+        "tags": [
+          "objects"
+        ],
+        "description": "Minimum role: viewer.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "identities",
+                "findings",
+                "relationships",
+                "evidence"
+              ]
+            }
+          },
+          {
+            "name": "run",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "native",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      }
+    },
+    "/objects/{category}/{id}": {
+      "get": {
+        "summary": "Object, bounded evidence, triage and comments",
+        "operationId": "get_objects_category_id",
+        "tags": [
+          "objects"
+        ],
+        "description": "Minimum role: viewer.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "identities",
+                "findings",
+                "relationships",
+                "evidence"
+              ]
+            }
+          },
+          {
+            "name": "run",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/report": {
+      "get": {
+        "summary": "Export immutable report",
+        "operationId": "get_report",
+        "tags": [
+          "report"
+        ],
+        "description": "Minimum role: viewer.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "/docs/reference/report.schema.json"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "run",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/reports/import": {
+      "post": {
+        "summary": "Import historical report without creating connections",
+        "operationId": "post_reports_import",
+        "tags": [
+          "reports"
+        ],
+        "description": "Minimum role: admin. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Grantline-CSRF",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "/docs/reference/report.schema.json"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/graph": {
+      "get": {
+        "summary": "Bounded relationship neighborhood",
+        "operationId": "get_graph",
+        "tags": [
+          "graph"
+        ],
+        "description": "Minimum role: viewer.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "run",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "entity",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depth",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "assertion",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/integrations": {
+      "get": {
+        "summary": "List connections without credentials",
+        "operationId": "get_integrations",
+        "tags": [
+          "integrations"
+        ],
+        "description": "Minimum role: viewer.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create encrypted connection",
+        "operationId": "post_integrations",
+        "tags": [
+          "integrations"
+        ],
+        "description": "Minimum role: admin. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Grantline-CSRF",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Integration"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/integrations/{id}": {
+      "put": {
+        "summary": "Update by revision; omitted credentials retained",
+        "operationId": "put_integrations_id",
+        "tags": [
+          "integrations"
+        ],
+        "description": "Minimum role: admin. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Grantline-CSRF",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Integration"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove credentials; retain historical reports",
+        "operationId": "delete_integrations_id",
+        "tags": [
+          "integrations"
+        ],
+        "description": "Minimum role: admin. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Grantline-CSRF",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/integrations/{id}/test": {
+      "post": {
+        "summary": "Test metadata access and save coverage",
+        "operationId": "post_integrations_id_test",
+        "tags": [
+          "integrations"
+        ],
+        "description": "Minimum role: admin. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Grantline-CSRF",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/runs": {
+      "get": {
+        "summary": "Recent 100 attempts",
+        "operationId": "get_runs",
+        "tags": [
+          "runs"
+        ],
+        "description": "Minimum role: viewer.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Queue collection; coalesce overlapping jobs",
+        "operationId": "post_runs",
+        "tags": [
+          "runs"
+        ],
+        "description": "Minimum role: analyst. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "202": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Grantline-CSRF",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/runs/{id}/cancel": {
+      "post": {
+        "summary": "Request cancellation",
+        "operationId": "post_runs_id_cancel",
+        "tags": [
+          "runs"
+        ],
+        "description": "Minimum role: analyst. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "202": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Grantline-CSRF",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/triage/{id}": {
+      "put": {
+        "summary": "Record review independently of policy outcome",
+        "operationId": "put_triage_id",
+        "tags": [
+          "triage"
+        ],
+        "description": "Minimum role: analyst. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Grantline-CSRF",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Triage"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/comments/{id}": {
+      "post": {
+        "summary": "Add finding comment",
+        "operationId": "post_comments_id",
+        "tags": [
+          "comments"
+        ],
+        "description": "Minimum role: analyst. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Grantline-CSRF",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Body": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "Body"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/activity": {
+      "get": {
+        "summary": "Recent 200 audit events",
+        "operationId": "get_activity",
+        "tags": [
+          "activity"
+        ],
+        "description": "Minimum role: viewer.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/settings": {
+      "get": {
+        "summary": "Read workspace settings",
+        "operationId": "get_settings",
+        "tags": [
+          "settings"
+        ],
+        "description": "Minimum role: admin.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Version settings; organization rename requires Owner",
+        "operationId": "put_settings",
+        "tags": [
+          "settings"
+        ],
+        "description": "Minimum role: admin. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Grantline-CSRF",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Workspace"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/settings/versions": {
+      "get": {
+        "summary": "Recent 100 configuration versions",
+        "operationId": "get_settings_versions",
+        "tags": [
+          "settings"
+        ],
+        "description": "Minimum role: admin.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/settings/sso": {
+      "get": {
+        "summary": "Read SSO configuration without secret",
+        "operationId": "get_settings_sso",
+        "tags": [
+          "settings"
+        ],
+        "description": "Minimum role: owner.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Version encrypted SSO configuration",
+        "operationId": "put_settings_sso",
+        "tags": [
+          "settings"
+        ],
+        "description": "Minimum role: owner. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Grantline-CSRF",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SSO"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "session": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "grantline_session"
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "additionalProperties": false
+      },
+      "Setup": {
+        "type": "object",
+        "properties": {
+          "Token": {
+            "type": "string"
+          },
+          "Organization": {
+            "type": "string"
+          },
+          "Email": {
+            "type": "string"
+          },
+          "Name": {
+            "type": "string"
+          },
+          "Password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "Token",
+          "Organization",
+          "Email",
+          "Name",
+          "Password"
+        ],
+        "additionalProperties": false
+      },
+      "Login": {
+        "type": "object",
+        "properties": {
+          "Email": {
+            "type": "string"
+          },
+          "Password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "Email",
+          "Password"
+        ],
+        "additionalProperties": false
+      },
+      "AcceptTicket": {
+        "type": "object",
+        "properties": {
+          "Token": {
+            "type": "string"
+          },
+          "Name": {
+            "type": "string"
+          },
+          "Password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "Token",
+          "Name",
+          "Password"
+        ],
+        "additionalProperties": false
+      },
+      "Ticket": {
+        "type": "object",
+        "properties": {
+          "Email": {
+            "type": "string"
+          },
+          "Role": {
+            "enum": [
+              "owner",
+              "admin",
+              "analyst",
+              "viewer"
+            ]
+          },
+          "send_email": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "Email"
+        ],
+        "additionalProperties": false
+      },
+      "Workspace": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string"
+          },
+          "schedule_minutes": {
+            "type": "integer",
+            "minimum": 15,
+            "maximum": 10080
+          },
+          "retention_days": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 365
+          },
+          "Policy": {
+            "type": "string"
+          },
+          "Bindings": {
+            "type": "string"
+          },
+          "Revision": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "Name",
+          "schedule_minutes",
+          "retention_days",
+          "Revision"
+        ],
+        "additionalProperties": false
+      },
+      "SSO": {
+        "type": "object",
+        "properties": {
+          "issuer": {
+            "type": "string"
+          },
+          "client_id": {
+            "type": "string"
+          },
+          "client_secret": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "revision": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "enabled",
+          "revision"
+        ],
+        "additionalProperties": false
+      },
+      "Triage": {
+        "type": "object",
+        "properties": {
+          "State": {
+            "enum": [
+              "open",
+              "in_review",
+              "accepted_risk",
+              "resolved"
+            ]
+          },
+          "Assignee": {
+            "type": "string"
+          },
+          "Reason": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "Revision": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "State",
+          "Revision"
+        ],
+        "additionalProperties": false
+      },
+      "Integration": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "config": {
+            "type": "object",
+            "description": "Provider configuration described at /docs/integrations/. Source IDs are server assigned; credentials do not belong in config.",
+            "additionalProperties": true
+          },
+          "credentials": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "writeOnly": true
+          },
+          "secret_ref": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "revision": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name",
+          "config"
+        ],
+        "additionalProperties": false
+      },
+      "Page": {
+        "type": "object",
+        "properties": {
+          "run_id": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "total": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "page_size": {
+            "const": 50
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    }
+  }
+}

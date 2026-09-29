@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "grantline.name" . }}
+  labels: {{- include "grantline.labels" . | nindent 4 }}
+data:
+  GRANTLINE_PUBLIC_URL: {{ .Values.publicURL | quote }}
+  GRANTLINE_DATABASE_URL_FILE: /run/grantline/database-url
+  GRANTLINE_ENCRYPTION_KEY_FILE: /run/grantline/encryption-key
+  GRANTLINE_SETUP_TOKEN_FILE: /run/grantline/setup-token
+  GRANTLINE_TRUSTED_PROXIES: {{ .Values.trustedProxies | quote }}
+  {{- if .Values.smtp.address }}
+  GRANTLINE_SMTP_ADDRESS: {{ .Values.smtp.address | quote }}
+  GRANTLINE_SMTP_FROM: {{ required "smtp.from is required" .Values.smtp.from | quote }}
+  GRANTLINE_SMTP_USERNAME: {{ .Values.smtp.username | quote }}
+  {{- if .Values.smtp.existingSecret }}
+  GRANTLINE_SMTP_PASSWORD_FILE: /run/smtp/password
+  {{- end }}
+  {{- end }}
+  {{- if .Values.customCA.existingConfigMap }}
+  GRANTLINE_CA_FILE: /run/ca/ca.crt
+  {{- end }}
+  {{- if .Values.observerSecrets.existingSecret }}
+  GRANTLINE_SECRET_DIR: /run/observers
+  {{- end }}
+  {{- if .Values.oidc.issuer }}
+  GRANTLINE_OIDC_ISSUER: {{ .Values.oidc.issuer | quote }}
+  GRANTLINE_OIDC_CLIENT_ID: {{ .Values.oidc.clientID | quote }}
+  GRANTLINE_OIDC_CLIENT_SECRET_FILE: /run/oidc/client-secret
+  {{- end }}

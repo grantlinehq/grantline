@@ -1,0 +1,370 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/grantline/schema/report/1.0",
+  "title": "Grantline offline analysis report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "generated_at",
+    "snapshot_collected_at",
+    "input_provenances",
+    "completeness",
+    "rule_results",
+    "findings",
+    "evidence"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "snapshot_collected_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "input_provenances": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "live_api",
+          "provider_export",
+          "synthetic_fixture"
+        ]
+      }
+    },
+    "fixture_notice": {
+      "type": "string"
+    },
+    "completeness": {
+      "$ref": "#/$defs/completeness"
+    },
+    "rule_results": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/rule_result"
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/finding"
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidence"
+      }
+    },
+    "snapshot": {
+      "$ref": "https://example.com/grantline/schema/snapshot/1.0"
+    },
+    "contexts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "entity_id",
+          "application_id",
+          "application_name",
+          "environment",
+          "evidence_ids"
+        ],
+        "properties": {
+          "entity_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "application_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "application_name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "environment": {
+            "type": "string",
+            "minLength": 1
+          },
+          "owner_hint": {
+            "type": "string"
+          },
+          "evidence_ids": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "binding_issues": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "policy_exceptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rule_id",
+          "entity_id",
+          "environments",
+          "reason"
+        ],
+        "properties": {
+          "rule_id": {
+            "const": "IL008"
+          },
+          "entity_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "environments": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "completeness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "complete",
+        "required_sources"
+      ],
+      "properties": {
+        "complete": {
+          "type": "boolean"
+        },
+        "required_sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "source_id",
+              "present",
+              "complete",
+              "pagination_complete",
+              "satisfies_required_coverage"
+            ],
+            "properties": {
+              "source_id": {
+                "type": "string"
+              },
+              "present": {
+                "type": "boolean"
+              },
+              "status": {
+                "type": "string"
+              },
+              "complete": {
+                "type": "boolean"
+              },
+              "pagination_complete": {
+                "type": "boolean"
+              },
+              "satisfies_required_coverage": {
+                "type": "boolean"
+              },
+              "limitations": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "rule_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_id",
+        "rule_version",
+        "outcome",
+        "finding_ids"
+      ],
+      "properties": {
+        "rule_id": {
+          "type": "string"
+        },
+        "rule_version": {
+          "type": "string"
+        },
+        "outcome": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "UNKNOWN",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "finding_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "rule_id",
+        "rule_version",
+        "severity",
+        "affected_entity_ids",
+        "affected_relationship_ids",
+        "evidence_ids",
+        "condition",
+        "description",
+        "recommendation",
+        "limitations"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "rule_id": {
+          "enum": [
+            "IL001",
+            "IL002",
+            "IL003",
+            "IL004",
+            "IL005",
+            "IL006",
+            "IL007",
+            "IL008"
+          ]
+        },
+        "rule_version": {
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        },
+        "affected_entity_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "affected_relationship_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "condition": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "recommendation": {
+          "type": "string"
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "source_id",
+        "native_id",
+        "locator",
+        "fields",
+        "observed_at",
+        "assertion_kind"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "source_id": {
+          "type": "string"
+        },
+        "native_id": {
+          "type": "string"
+        },
+        "locator": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "assertion_kind": {
+          "enum": [
+            "observed",
+            "configured",
+            "declared",
+            "inferred"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+existingSecret: grantline-secrets
+publicURL: https://grantline.example.com
+ingress:
+  enabled: true
+  className: nginx
+  host: grantline.example.com
+  tls:
+    - hosts: [grantline.example.com]
+      secretName: grantline-tls
+# Provision PostgreSQL independently; database-url must require verified TLS.
+postgresql:
+  enabled: false

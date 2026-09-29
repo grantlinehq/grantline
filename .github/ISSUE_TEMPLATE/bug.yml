@@ -1,0 +1,26 @@
+name: Bug report
+description: Report incorrect behavior using sanitized, reproducible evidence.
+title: '[Bug] '
+body:
+  - type: markdown
+    attributes:
+      value: 'For security vulnerabilities follow SECURITY.md. Never include tokens, secret files, real tenant/customer identifiers or production snapshots.'
+  - type: input
+    id: version
+    attributes: {label: Grantline version, placeholder: 'v0.1.0-rc.1'}
+    validations: {required: true}
+  - type: textarea
+    id: environment
+    attributes: {label: Installation and environment, description: 'Compose/Helm, OS, architecture, database and relevant provider version.'}
+    validations: {required: true}
+  - type: textarea
+    id: reproduce
+    attributes: {label: Steps to reproduce, description: Use synthetic inputs and the smallest reproducible example.}
+    validations: {required: true}
+  - type: textarea
+    id: behavior
+    attributes: {label: Expected and actual behavior}
+    validations: {required: true}
+  - type: textarea
+    id: evidence
+    attributes: {label: Sanitized evidence, description: Include error codes and collection completeness; inspect attachments before sharing.}

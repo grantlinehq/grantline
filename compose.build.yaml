@@ -1,0 +1,8 @@
+services:
+  app:
+    build: .
+    image: grantline:development
+  init:
+    image: grantline:development
+  migrate:
+    image: grantline:development

@@ -1,0 +1,32 @@
+name: grantline
+x-app: &app
+  image: ${GRANTLINE_IMAGE:-ghcr.io/grantlinehq/grantline:0.1.0}
+  user: '65532:65532'
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  tmpfs: ["/tmp:rw,noexec,nosuid,size=64m,mode=1777"]
+services:
+  migrate:
+    <<: *app
+    command: [migrate]
+    environment:
+      GRANTLINE_DATABASE_URL_FILE: /run/secrets/database-url
+    secrets: [database-url]
+  app:
+    <<: *app
+    restart: unless-stopped
+    stop_grace_period: 40s
+    environment:
+      GRANTLINE_PUBLIC_URL: ${GRANTLINE_PUBLIC_URL:-http://127.0.0.1:8080}
+      GRANTLINE_DATABASE_URL_FILE: /run/secrets/database-url
+      GRANTLINE_ENCRYPTION_KEY_FILE: /run/secrets/encryption-key
+      GRANTLINE_SETUP_TOKEN_FILE: /run/secrets/setup-token
+    secrets: [database-url, encryption-key, setup-token]
+    ports: ['127.0.0.1:8080:8080']
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+secrets:
+  database-url: {file: '${GRANTLINE_SECRETS_DIR:?Set GRANTLINE_SECRETS_DIR}/database-url'}
+  encryption-key: {file: '${GRANTLINE_SECRETS_DIR:?Set GRANTLINE_SECRETS_DIR}/encryption-key'}
+  setup-token: {file: '${GRANTLINE_SECRETS_DIR:?Set GRANTLINE_SECRETS_DIR}/setup-token'}

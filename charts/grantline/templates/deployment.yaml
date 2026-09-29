@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "grantline.name" . }}
+  labels: {{- include "grantline.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  selector:
+    matchLabels: {app.kubernetes.io/name: grantline, app.kubernetes.io/instance: {{ .Release.Name }}}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels: {app.kubernetes.io/name: grantline, app.kubernetes.io/instance: {{ .Release.Name }}}
+    spec:
+      serviceAccountName: {{ include "grantline.name" . }}
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 45
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile: {type: RuntimeDefault}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        - name: migrate
+          image: {{ include "grantline.image" . | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: [migrate]
+          securityContext: {{- include "grantline.security" . | nindent 12 }}
+          env:
+            - {name: GRANTLINE_DATABASE_URL_FILE, value: /run/grantline/database-url}
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - {name: secrets, mountPath: /run/grantline, readOnly: true}
+            - {name: temporary, mountPath: /tmp}
+      containers:
+        - name: app
+          image: {{ include "grantline.image" . | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: [server, --listen, '0.0.0.0:8080']
+          securityContext: {{- include "grantline.security" . | nindent 12 }}
+          ports: [{name: http, containerPort: 8080}]
+          envFrom:
+            - configMapRef: {name: {{ include "grantline.name" . }}}
+          startupProbe: {httpGet: {path: /healthz, port: http}, periodSeconds: 2, failureThreshold: 60}
+          livenessProbe: {httpGet: {path: /healthz, port: http}, periodSeconds: 15, timeoutSeconds: 3}
+          readinessProbe: {httpGet: {path: /readyz, port: http}, periodSeconds: 5, timeoutSeconds: 3}
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - {name: secrets, mountPath: /run/grantline, readOnly: true}
+            - {name: temporary, mountPath: /tmp}
+            {{- if .Values.smtp.existingSecret }}
+            - {name: smtp, mountPath: /run/smtp, readOnly: true}
+            {{- end }}
+            {{- if .Values.customCA.existingConfigMap }}
+            - {name: ca, mountPath: /run/ca, readOnly: true}
+            {{- end }}
+            {{- if .Values.observerSecrets.existingSecret }}
+            - {name: observers, mountPath: /run/observers, readOnly: true}
+            {{- end }}
+            {{- if .Values.oidc.issuer }}
+            - {name: oidc, mountPath: /run/oidc, readOnly: true}
+            {{- end }}
+      volumes:
+        {{- if .Values.smtp.existingSecret }}
+        - name: smtp
+          secret:
+            secretName: {{ .Values.smtp.existingSecret }}
+            defaultMode: 0440
+            items: [{key: {{ .Values.smtp.passwordKey }}, path: password}]
+        {{- end }}
+        - name: secrets
+          secret:
+            secretName: {{ required "existingSecret is required" .Values.existingSecret }}
+            defaultMode: 0440
+            items:
+              - {key: {{ .Values.secretKeys.databaseURL }}, path: database-url}
+              - {key: {{ .Values.secretKeys.encryptionKey }}, path: encryption-key}
+              - {key: {{ .Values.secretKeys.setupToken }}, path: setup-token}
+        - name: temporary
+          emptyDir: {medium: Memory, sizeLimit: 64Mi}
+        {{- if .Values.customCA.existingConfigMap }}
+        - name: ca
+          configMap:
+            name: {{ .Values.customCA.existingConfigMap }}
+            items: [{key: {{ .Values.customCA.key }}, path: ca.crt}]
+        {{- end }}
+        {{- if .Values.observerSecrets.existingSecret }}
+        - name: observers
+          secret: {secretName: {{ .Values.observerSecrets.existingSecret }}, defaultMode: 0440}
+        {{- end }}
+        {{- if .Values.oidc.issuer }}
+        - name: oidc
+          secret:
+            secretName: {{ required "OIDC requires an existingSecret" .Values.oidc.existingSecret }}
+            defaultMode: 0440
+            items: [{key: {{ .Values.oidc.clientSecretKey }}, path: client-secret}]
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity: {{- toYaml . | nindent 8 }}
+      {{- end }}

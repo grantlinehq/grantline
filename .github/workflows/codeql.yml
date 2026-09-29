@@ -1,0 +1,46 @@
+name: CodeQL
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  analyze:
+    # Private Free-plan repositories have no Code Security entitlement.
+    # Enable on public launch; never treat a skipped job as completed analysis.
+    if: github.event.repository.private == false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {language: go, mode: manual}
+          - {language: javascript-typescript, mode: none}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: github/codeql-action/init@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.mode }}
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        if: matrix.language == 'go'
+        with: {go-version-file: go.mod}
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        if: matrix.language == 'go'
+        with: {node-version: '24'}
+      - name: Compile Go with embedded frontend
+        if: matrix.language == 'go'
+        run: |
+          corepack enable
+          cd web
+          corepack prepare pnpm@11.19.0 --activate
+          pnpm install --frozen-lockfile
+          pnpm build:all
+          cd ..
+          go build ./cmd/grantline
+      - uses: github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2

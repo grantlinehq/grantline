@@ -1,0 +1,3805 @@
+[
+  {
+    "name": "github.com/Microsoft/go-winio",
+    "version": "v0.6.2",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__Microsoft__go-winio@v0.6.2/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/cespare/xxhash/v2",
+    "version": "v2.3.0",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__cespare__xxhash__v2@v2.3.0/LICENSE.txt"
+    ]
+  },
+  {
+    "name": "github.com/coreos/go-oidc/v3",
+    "version": "v3.21.0",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__coreos__go-oidc__v3@v3.21.0/LICENSE",
+      "go/github.com__coreos__go-oidc__v3@v3.21.0/NOTICE"
+    ]
+  },
+  {
+    "name": "github.com/davecgh/go-spew",
+    "version": "v1.1.1",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__davecgh__go-spew@v1.1.1/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/emicklei/go-restful/v3",
+    "version": "v3.12.2",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__emicklei__go-restful__v3@v3.12.2/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/fxamacker/cbor/v2",
+    "version": "v2.9.0",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__fxamacker__cbor__v2@v2.9.0/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/go-jose/go-jose/v4",
+    "version": "v4.1.4",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__go-jose__go-jose__v4@v4.1.4/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/go-logr/logr",
+    "version": "v1.4.3",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__go-logr__logr@v1.4.3/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/go-logr/stdr",
+    "version": "v1.2.2",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__go-logr__stdr@v1.2.2/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/go-openapi/jsonpointer",
+    "version": "v0.21.0",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__go-openapi__jsonpointer@v0.21.0/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/go-openapi/jsonreference",
+    "version": "v0.20.2",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__go-openapi__jsonreference@v0.20.2/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/go-openapi/swag",
+    "version": "v0.23.0",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__go-openapi__swag@v0.23.0/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/go-task/slim-sprig/v3",
+    "version": "v3.0.0",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__go-task__slim-sprig__v3@v3.0.0/LICENSE.txt"
+    ]
+  },
+  {
+    "name": "github.com/gogo/protobuf",
+    "version": "v1.3.2",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__gogo__protobuf@v1.3.2/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/golang/protobuf",
+    "version": "v1.5.4",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__golang__protobuf@v1.5.4/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/google/gnostic-models",
+    "version": "v0.7.0",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__google__gnostic-models@v0.7.0/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/google/go-cmp",
+    "version": "v0.7.0",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__google__go-cmp@v0.7.0/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/google/pprof",
+    "version": "v0.0.0-20241029153458-d1b30febd7db",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__google__pprof@v0.0.0-20241029153458-d1b30febd7db/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/google/uuid",
+    "version": "v1.6.0",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__google__uuid@v1.6.0/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/jackc/pgpassfile",
+    "version": "v1.0.0",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__jackc__pgpassfile@v1.0.0/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/jackc/pgservicefile",
+    "version": "v0.0.0-20240606120523-5a60cdf6a761",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__jackc__pgservicefile@v0.0.0-20240606120523-5a60cdf6a761/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/jackc/pgx/v5",
+    "version": "v5.11.0",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__jackc__pgx__v5@v5.11.0/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/jackc/puddle/v2",
+    "version": "v2.2.2",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__jackc__puddle__v2@v2.2.2/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/josharian/intern",
+    "version": "v1.0.0",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__josharian__intern@v1.0.0/license.md"
+    ]
+  },
+  {
+    "name": "github.com/json-iterator/go",
+    "version": "v1.1.12",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__json-iterator__go@v1.1.12/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/kr/pretty",
+    "version": "v0.3.1",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__kr__pretty@v0.3.1/License"
+    ]
+  },
+  {
+    "name": "github.com/kr/text",
+    "version": "v0.2.0",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__kr__text@v0.2.0/License"
+    ]
+  },
+  {
+    "name": "github.com/mailru/easyjson",
+    "version": "v0.7.7",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__mailru__easyjson@v0.7.7/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/modern-go/concurrent",
+    "version": "v0.0.0-20180306012644-bacd9c7ef1dd",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__modern-go__concurrent@v0.0.0-20180306012644-bacd9c7ef1dd/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/modern-go/reflect2",
+    "version": "v1.0.3-0.20250322232337-35a7c28c31ee",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__modern-go__reflect2@v1.0.3-0.20250322232337-35a7c28c31ee/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/munnerz/goautoneg",
+    "version": "v0.0.0-20191010083416-a7dc8b61c822",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__munnerz__goautoneg@v0.0.0-20191010083416-a7dc8b61c822/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/onsi/ginkgo/v2",
+    "version": "v2.21.0",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__onsi__ginkgo__v2@v2.21.0/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/onsi/gomega",
+    "version": "v1.35.1",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__onsi__gomega@v1.35.1/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/pkg/errors",
+    "version": "v0.9.1",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__pkg__errors@v0.9.1/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/pmezard/go-difflib",
+    "version": "v1.0.0",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__pmezard__go-difflib@v1.0.0/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/rogpeppe/go-internal",
+    "version": "v1.13.1",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__rogpeppe__go-internal@v1.13.1/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/spf13/pflag",
+    "version": "v1.0.6",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__spf13__pflag@v1.0.6/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/spiffe/go-spiffe/v2",
+    "version": "v2.7.0",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__spiffe__go-spiffe__v2@v2.7.0/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/spiffe/spire-api-sdk",
+    "version": "v1.2.5-0.20240916165922-16526993814a",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__spiffe__spire-api-sdk@v1.2.5-0.20240916165922-16526993814a/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/stretchr/objx",
+    "version": "v0.5.2",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__stretchr__objx@v0.5.2/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/stretchr/testify",
+    "version": "v1.11.1",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__stretchr__testify@v1.11.1/LICENSE"
+    ]
+  },
+  {
+    "name": "github.com/x448/float16",
+    "version": "v0.8.4",
+    "ecosystem": "go",
+    "files": [
+      "go/github.com__x448__float16@v0.8.4/LICENSE"
+    ]
+  },
+  {
+    "name": "go.opentelemetry.io/auto/sdk",
+    "version": "v1.2.1",
+    "ecosystem": "go",
+    "files": [
+      "go/go.opentelemetry.io__auto__sdk@v1.2.1/LICENSE"
+    ]
+  },
+  {
+    "name": "go.opentelemetry.io/otel",
+    "version": "v1.44.0",
+    "ecosystem": "go",
+    "files": [
+      "go/go.opentelemetry.io__otel@v1.44.0/LICENSE"
+    ]
+  },
+  {
+    "name": "go.opentelemetry.io/otel/metric",
+    "version": "v1.44.0",
+    "ecosystem": "go",
+    "files": [
+      "go/go.opentelemetry.io__otel__metric@v1.44.0/LICENSE"
+    ]
+  },
+  {
+    "name": "go.opentelemetry.io/otel/sdk",
+    "version": "v1.44.0",
+    "ecosystem": "go",
+    "files": [
+      "go/go.opentelemetry.io__otel__sdk@v1.44.0/LICENSE"
+    ]
+  },
+  {
+    "name": "go.opentelemetry.io/otel/sdk/metric",
+    "version": "v1.44.0",
+    "ecosystem": "go",
+    "files": [
+      "go/go.opentelemetry.io__otel__sdk__metric@v1.44.0/LICENSE"
+    ]
+  },
+  {
+    "name": "go.opentelemetry.io/otel/trace",
+    "version": "v1.44.0",
+    "ecosystem": "go",
+    "files": [
+      "go/go.opentelemetry.io__otel__trace@v1.44.0/LICENSE"
+    ]
+  },
+  {
+    "name": "go.yaml.in/yaml/v2",
+    "version": "v2.4.2",
+    "ecosystem": "go",
+    "files": [
+      "go/go.yaml.in__yaml__v2@v2.4.2/LICENSE",
+      "go/go.yaml.in__yaml__v2@v2.4.2/NOTICE",
+      "go/go.yaml.in__yaml__v2@v2.4.2/LICENSE.libyaml"
+    ]
+  },
+  {
+    "name": "go.yaml.in/yaml/v3",
+    "version": "v3.0.4",
+    "ecosystem": "go",
+    "files": [
+      "go/go.yaml.in__yaml__v3@v3.0.4/LICENSE",
+      "go/go.yaml.in__yaml__v3@v3.0.4/NOTICE"
+    ]
+  },
+  {
+    "name": "golang.org/x/crypto",
+    "version": "v0.57.0",
+    "ecosystem": "go",
+    "files": [
+      "go/golang.org__x__crypto@v0.57.0/LICENSE"
+    ]
+  },
+  {
+    "name": "golang.org/x/net",
+    "version": "v0.59.0",
+    "ecosystem": "go",
+    "files": [
+      "go/golang.org__x__net@v0.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "golang.org/x/oauth2",
+    "version": "v0.36.0",
+    "ecosystem": "go",
+    "files": [
+      "go/golang.org__x__oauth2@v0.36.0/LICENSE"
+    ]
+  },
+  {
+    "name": "golang.org/x/sync",
+    "version": "v0.23.0",
+    "ecosystem": "go",
+    "files": [
+      "go/golang.org__x__sync@v0.23.0/LICENSE"
+    ]
+  },
+  {
+    "name": "golang.org/x/sys",
+    "version": "v0.48.0",
+    "ecosystem": "go",
+    "files": [
+      "go/golang.org__x__sys@v0.48.0/LICENSE"
+    ]
+  },
+  {
+    "name": "golang.org/x/term",
+    "version": "v0.46.0",
+    "ecosystem": "go",
+    "files": [
+      "go/golang.org__x__term@v0.46.0/LICENSE"
+    ]
+  },
+  {
+    "name": "golang.org/x/text",
+    "version": "v0.42.0",
+    "ecosystem": "go",
+    "files": [
+      "go/golang.org__x__text@v0.42.0/LICENSE"
+    ]
+  },
+  {
+    "name": "golang.org/x/time",
+    "version": "v0.9.0",
+    "ecosystem": "go",
+    "files": [
+      "go/golang.org__x__time@v0.9.0/LICENSE"
+    ]
+  },
+  {
+    "name": "golang.org/x/tools",
+    "version": "v0.49.0",
+    "ecosystem": "go",
+    "files": [
+      "go/golang.org__x__tools@v0.49.0/LICENSE"
+    ]
+  },
+  {
+    "name": "gonum.org/v1/gonum",
+    "version": "v0.17.0",
+    "ecosystem": "go",
+    "files": [
+      "go/gonum.org__v1__gonum@v0.17.0/LICENSE"
+    ]
+  },
+  {
+    "name": "google.golang.org/genproto/googleapis/rpc",
+    "version": "v0.0.0-20260526163538-3dc84a4a5aaa",
+    "ecosystem": "go",
+    "files": [
+      "go/google.golang.org__genproto__googleapis__rpc@v0.0.0-20260526163538-3dc84a4a5aaa/LICENSE"
+    ]
+  },
+  {
+    "name": "google.golang.org/grpc",
+    "version": "v1.83.2",
+    "ecosystem": "go",
+    "files": [
+      "go/google.golang.org__grpc@v1.83.2/LICENSE",
+      "go/google.golang.org__grpc@v1.83.2/NOTICE.txt"
+    ]
+  },
+  {
+    "name": "google.golang.org/protobuf",
+    "version": "v1.36.11",
+    "ecosystem": "go",
+    "files": [
+      "go/google.golang.org__protobuf@v1.36.11/LICENSE"
+    ]
+  },
+  {
+    "name": "gopkg.in/check.v1",
+    "version": "v1.0.0-20201130134442-10cb98267c6c",
+    "ecosystem": "go",
+    "files": [
+      "go/gopkg.in__check.v1@v1.0.0-20201130134442-10cb98267c6c/LICENSE"
+    ]
+  },
+  {
+    "name": "gopkg.in/evanphx/json-patch.v4",
+    "version": "v4.12.0",
+    "ecosystem": "go",
+    "files": [
+      "go/gopkg.in__evanphx__json-patch.v4@v4.12.0/LICENSE"
+    ]
+  },
+  {
+    "name": "gopkg.in/inf.v0",
+    "version": "v0.9.1",
+    "ecosystem": "go",
+    "files": [
+      "go/gopkg.in__inf.v0@v0.9.1/LICENSE"
+    ]
+  },
+  {
+    "name": "gopkg.in/yaml.v3",
+    "version": "v3.0.1",
+    "ecosystem": "go",
+    "files": [
+      "go/gopkg.in__yaml.v3@v3.0.1/LICENSE",
+      "go/gopkg.in__yaml.v3@v3.0.1/NOTICE"
+    ]
+  },
+  {
+    "name": "k8s.io/api",
+    "version": "v0.34.0",
+    "ecosystem": "go",
+    "files": [
+      "go/k8s.io__api@v0.34.0/LICENSE"
+    ]
+  },
+  {
+    "name": "k8s.io/apimachinery",
+    "version": "v0.34.0",
+    "ecosystem": "go",
+    "files": [
+      "go/k8s.io__apimachinery@v0.34.0/LICENSE"
+    ]
+  },
+  {
+    "name": "k8s.io/client-go",
+    "version": "v0.34.0",
+    "ecosystem": "go",
+    "files": [
+      "go/k8s.io__client-go@v0.34.0/LICENSE"
+    ]
+  },
+  {
+    "name": "k8s.io/klog/v2",
+    "version": "v2.130.1",
+    "ecosystem": "go",
+    "files": [
+      "go/k8s.io__klog__v2@v2.130.1/LICENSE"
+    ]
+  },
+  {
+    "name": "k8s.io/kube-openapi",
+    "version": "v0.0.0-20250710124328-f3f2b991d03b",
+    "ecosystem": "go",
+    "files": [
+      "go/k8s.io__kube-openapi@v0.0.0-20250710124328-f3f2b991d03b/LICENSE"
+    ]
+  },
+  {
+    "name": "k8s.io/utils",
+    "version": "v0.0.0-20250604170112-4c0f3b243397",
+    "ecosystem": "go",
+    "files": [
+      "go/k8s.io__utils@v0.0.0-20250604170112-4c0f3b243397/LICENSE"
+    ]
+  },
+  {
+    "name": "sigs.k8s.io/json",
+    "version": "v0.0.0-20241014173422-cfa47c3a1cc8",
+    "ecosystem": "go",
+    "files": [
+      "go/sigs.k8s.io__json@v0.0.0-20241014173422-cfa47c3a1cc8/LICENSE"
+    ]
+  },
+  {
+    "name": "sigs.k8s.io/randfill",
+    "version": "v1.0.0",
+    "ecosystem": "go",
+    "files": [
+      "go/sigs.k8s.io__randfill@v1.0.0/LICENSE",
+      "go/sigs.k8s.io__randfill@v1.0.0/NOTICE"
+    ]
+  },
+  {
+    "name": "sigs.k8s.io/structured-merge-diff/v6",
+    "version": "v6.3.0",
+    "ecosystem": "go",
+    "files": [
+      "go/sigs.k8s.io__structured-merge-diff__v6@v6.3.0/LICENSE"
+    ]
+  },
+  {
+    "name": "sigs.k8s.io/yaml",
+    "version": "v1.6.0",
+    "ecosystem": "go",
+    "files": [
+      "go/sigs.k8s.io__yaml@v1.6.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/abtesting",
+    "version": "1.25.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__abtesting@1.25.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-common",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-common@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-browser-xhr",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-browser-xhr@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-fetch",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-fetch@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-node-http",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-node-http@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "search-insights",
+    "version": "2.17.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/search-insights@2.17.3/LICENSE.md"
+    ]
+  },
+  {
+    "name": "@algolia/client-search",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-search@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "algoliasearch",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algoliasearch@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-search",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-search@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "algoliasearch",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algoliasearch@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-abtesting",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-abtesting@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-common",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-common@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-browser-xhr",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-browser-xhr@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-fetch",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-fetch@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-node-http",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-node-http@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-analytics",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-analytics@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-common",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-common@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-browser-xhr",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-browser-xhr@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-fetch",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-fetch@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-node-http",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-node-http@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-common",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-common@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-common",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-common@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-insights",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-insights@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-browser-xhr",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-browser-xhr@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-fetch",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-fetch@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-node-http",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-node-http@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-common",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-common@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-personalization",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-personalization@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-browser-xhr",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-browser-xhr@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-fetch",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-fetch@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-node-http",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-node-http@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-common",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-common@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-query-suggestions",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-query-suggestions@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-browser-xhr",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-browser-xhr@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-fetch",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-fetch@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-node-http",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-node-http@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-common",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-common@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-search",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-search@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-browser-xhr",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-browser-xhr@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-fetch",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-fetch@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-node-http",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-node-http@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-common",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-common@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/ingestion",
+    "version": "1.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__ingestion@1.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-browser-xhr",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-browser-xhr@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-fetch",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-fetch@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-node-http",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-node-http@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-common",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-common@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/monitoring",
+    "version": "1.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__monitoring@1.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-browser-xhr",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-browser-xhr@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-fetch",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-fetch@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-node-http",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-node-http@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-common",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-common@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/recommend",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__recommend@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-browser-xhr",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-browser-xhr@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-fetch",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-fetch@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-node-http",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-node-http@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-common",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-common@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-browser-xhr",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-browser-xhr@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-common",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-common@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-fetch",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-fetch@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-common",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-common@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-node-http",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-node-http@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@babel/helper-string-parser",
+    "version": "7.29.7",
+    "ecosystem": "npm",
+    "files": [
+      "npm/babel__helper-string-parser@7.29.7/LICENSE"
+    ]
+  },
+  {
+    "name": "@babel/helper-validator-identifier",
+    "version": "7.29.7",
+    "ecosystem": "npm",
+    "files": [
+      "npm/babel__helper-validator-identifier@7.29.7/LICENSE"
+    ]
+  },
+  {
+    "name": "@babel/parser",
+    "version": "7.29.9",
+    "ecosystem": "npm",
+    "files": [
+      "npm/babel__parser@7.29.9/LICENSE"
+    ]
+  },
+  {
+    "name": "@babel/types",
+    "version": "7.29.8",
+    "ecosystem": "npm",
+    "files": [
+      "npm/babel__types@7.29.8/LICENSE"
+    ]
+  },
+  {
+    "name": "@babel/helper-string-parser",
+    "version": "7.29.7",
+    "ecosystem": "npm",
+    "files": [
+      "npm/babel__helper-string-parser@7.29.7/LICENSE"
+    ]
+  },
+  {
+    "name": "@babel/helper-validator-identifier",
+    "version": "7.29.7",
+    "ecosystem": "npm",
+    "files": [
+      "npm/babel__helper-validator-identifier@7.29.7/LICENSE"
+    ]
+  },
+  {
+    "name": "@babel/types",
+    "version": "7.29.8",
+    "ecosystem": "npm",
+    "files": [
+      "npm/babel__types@7.29.8/LICENSE"
+    ]
+  },
+  {
+    "name": "preact",
+    "version": "10.29.8",
+    "ecosystem": "npm",
+    "files": [
+      "npm/preact@10.29.8/LICENSE"
+    ]
+  },
+  {
+    "name": "@types/react",
+    "version": "19.3.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__react@19.3.0/LICENSE"
+    ]
+  },
+  {
+    "name": "algoliasearch",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algoliasearch@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "react",
+    "version": "19.3.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/react@19.3.0/LICENSE"
+    ]
+  },
+  {
+    "name": "react-dom",
+    "version": "19.3.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/react-dom@19.3.0/LICENSE"
+    ]
+  },
+  {
+    "name": "search-insights",
+    "version": "2.17.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/search-insights@2.17.3/LICENSE.md"
+    ]
+  },
+  {
+    "name": "@fontsource/ibm-plex-mono",
+    "version": "5.3.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/fontsource__ibm-plex-mono@5.3.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@fontsource/ibm-plex-sans",
+    "version": "5.3.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/fontsource__ibm-plex-sans@5.3.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@iconify/types",
+    "version": "2.0.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/iconify__types@2.0.0/license.txt"
+    ]
+  },
+  {
+    "name": "@iconify/types",
+    "version": "2.0.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/iconify__types@2.0.0/license.txt"
+    ]
+  },
+  {
+    "name": "@jridgewell/sourcemap-codec",
+    "version": "1.6.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/jridgewell__sourcemap-codec@1.6.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@oxc-project/types",
+    "version": "0.151.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/oxc-project__types@0.151.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@rolldown/pluginutils",
+    "version": "1.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/rolldown__pluginutils@1.0.1/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/core",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__core@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/engine-javascript",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__engine-javascript@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/engine-oniguruma",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__engine-oniguruma@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/types",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__types@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/vscode-textmate",
+    "version": "10.0.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__vscode-textmate@10.0.2/LICENSE.md"
+    ]
+  },
+  {
+    "name": "@types/hast",
+    "version": "3.0.5",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__hast@3.0.5/LICENSE"
+    ]
+  },
+  {
+    "name": "hast-util-to-html",
+    "version": "9.0.5",
+    "ecosystem": "npm",
+    "files": [
+      "npm/hast-util-to-html@9.0.5/license"
+    ]
+  },
+  {
+    "name": "@shikijs/engine-javascript",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__engine-javascript@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/types",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__types@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/vscode-textmate",
+    "version": "10.0.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__vscode-textmate@10.0.2/LICENSE.md"
+    ]
+  },
+  {
+    "name": "oniguruma-to-es",
+    "version": "3.1.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/oniguruma-to-es@3.1.1/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/engine-oniguruma",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__engine-oniguruma@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/types",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__types@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/vscode-textmate",
+    "version": "10.0.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__vscode-textmate@10.0.2/LICENSE.md"
+    ]
+  },
+  {
+    "name": "@shikijs/langs",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__langs@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/types",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__types@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/themes",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__themes@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/types",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__types@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/core",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__core@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/transformers",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__transformers@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/types",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__types@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/types",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__types@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/vscode-textmate",
+    "version": "10.0.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__vscode-textmate@10.0.2/LICENSE.md"
+    ]
+  },
+  {
+    "name": "@types/hast",
+    "version": "3.0.5",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__hast@3.0.5/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/vscode-textmate",
+    "version": "10.0.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__vscode-textmate@10.0.2/LICENSE.md"
+    ]
+  },
+  {
+    "name": "@types/estree",
+    "version": "1.0.9",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__estree@1.0.9/LICENSE"
+    ]
+  },
+  {
+    "name": "@types/hast",
+    "version": "3.0.5",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__hast@3.0.5/LICENSE"
+    ]
+  },
+  {
+    "name": "@types/unist",
+    "version": "3.0.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__unist@3.0.3/LICENSE"
+    ]
+  },
+  {
+    "name": "@types/linkify-it",
+    "version": "5.0.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__linkify-it@5.0.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@types/linkify-it",
+    "version": "5.0.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__linkify-it@5.0.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@types/markdown-it",
+    "version": "14.2.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__markdown-it@14.2.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@types/mdurl",
+    "version": "2.0.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__mdurl@2.0.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@types/mdast",
+    "version": "4.0.4",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__mdast@4.0.4/LICENSE"
+    ]
+  },
+  {
+    "name": "@types/unist",
+    "version": "3.0.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__unist@3.0.3/LICENSE"
+    ]
+  },
+  {
+    "name": "@types/mdurl",
+    "version": "2.0.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__mdurl@2.0.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@types/react",
+    "version": "19.3.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__react@19.3.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@types/react-dom",
+    "version": "19.3.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__react-dom@19.3.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@types/react",
+    "version": "19.3.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__react@19.3.0/LICENSE"
+    ]
+  },
+  {
+    "name": "csstype",
+    "version": "3.2.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/csstype@3.2.3/LICENSE"
+    ]
+  },
+  {
+    "name": "@types/unist",
+    "version": "3.0.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__unist@3.0.3/LICENSE"
+    ]
+  },
+  {
+    "name": "@types/web-bluetooth",
+    "version": "0.0.21",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__web-bluetooth@0.0.21/LICENSE"
+    ]
+  },
+  {
+    "name": "@typescript/typescript-win32-x64",
+    "version": "7.0.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/typescript__typescript-win32-x64@7.0.2/LICENSE",
+      "npm/typescript__typescript-win32-x64@7.0.2/NOTICE.txt"
+    ]
+  },
+  {
+    "name": "@ungap/structured-clone",
+    "version": "1.4.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/ungap__structured-clone@1.4.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@rolldown/pluginutils",
+    "version": "1.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/rolldown__pluginutils@1.0.1/LICENSE"
+    ]
+  },
+  {
+    "name": "@vitejs/plugin-react",
+    "version": "6.1.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vitejs__plugin-react@6.1.1/LICENSE"
+    ]
+  },
+  {
+    "name": "vite",
+    "version": "8.3.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vite@8.3.1/LICENSE.md"
+    ]
+  },
+  {
+    "name": "@vitejs/plugin-vue",
+    "version": "5.2.4",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vitejs__plugin-vue@5.2.4/LICENSE"
+    ]
+  },
+  {
+    "name": "vite",
+    "version": "5.4.21",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vite@5.4.21/LICENSE.md"
+    ]
+  },
+  {
+    "name": "vue",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vitejs/plugin-vue",
+    "version": "5.2.4",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vitejs__plugin-vue@5.2.4/LICENSE"
+    ]
+  },
+  {
+    "name": "vite",
+    "version": "6.4.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vite@6.4.3/LICENSE.md"
+    ]
+  },
+  {
+    "name": "vue",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@babel/parser",
+    "version": "7.29.9",
+    "ecosystem": "npm",
+    "files": [
+      "npm/babel__parser@7.29.9/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/compiler-core",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__compiler-core@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/shared",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__shared@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "entities",
+    "version": "7.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/entities@7.0.1/LICENSE"
+    ]
+  },
+  {
+    "name": "estree-walker",
+    "version": "2.0.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/estree-walker@2.0.2/LICENSE"
+    ]
+  },
+  {
+    "name": "source-map-js",
+    "version": "1.2.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/source-map-js@1.2.1/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/compiler-core",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__compiler-core@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/compiler-dom",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__compiler-dom@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/shared",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__shared@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@babel/parser",
+    "version": "7.29.9",
+    "ecosystem": "npm",
+    "files": [
+      "npm/babel__parser@7.29.9/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/compiler-core",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__compiler-core@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/compiler-dom",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__compiler-dom@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/compiler-sfc",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__compiler-sfc@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/compiler-ssr",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__compiler-ssr@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/shared",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__shared@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "estree-walker",
+    "version": "2.0.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/estree-walker@2.0.2/LICENSE"
+    ]
+  },
+  {
+    "name": "magic-string",
+    "version": "0.30.21",
+    "ecosystem": "npm",
+    "files": [
+      "npm/magic-string@0.30.21/LICENSE"
+    ]
+  },
+  {
+    "name": "postcss",
+    "version": "8.5.28",
+    "ecosystem": "npm",
+    "files": [
+      "npm/postcss@8.5.28/LICENSE"
+    ]
+  },
+  {
+    "name": "source-map-js",
+    "version": "1.2.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/source-map-js@1.2.1/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/compiler-dom",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__compiler-dom@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/compiler-ssr",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__compiler-ssr@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/shared",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__shared@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/devtools-api",
+    "version": "7.7.10",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__devtools-api@7.7.10/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/devtools-kit",
+    "version": "7.7.10",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__devtools-kit@7.7.10/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/devtools-kit",
+    "version": "7.7.10",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__devtools-kit@7.7.10/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/devtools-shared",
+    "version": "7.7.10",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__devtools-shared@7.7.10/LICENSE"
+    ]
+  },
+  {
+    "name": "birpc",
+    "version": "2.9.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/birpc@2.9.0/LICENSE"
+    ]
+  },
+  {
+    "name": "hookable",
+    "version": "5.5.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/hookable@5.5.3/LICENSE.md"
+    ]
+  },
+  {
+    "name": "mitt",
+    "version": "3.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/mitt@3.0.1/LICENSE"
+    ]
+  },
+  {
+    "name": "perfect-debounce",
+    "version": "1.0.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/perfect-debounce@1.0.0/LICENSE"
+    ]
+  },
+  {
+    "name": "speakingurl",
+    "version": "14.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/speakingurl@14.0.1/LICENSE"
+    ]
+  },
+  {
+    "name": "superjson",
+    "version": "2.2.6",
+    "ecosystem": "npm",
+    "files": [
+      "npm/superjson@2.2.6/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/devtools-shared",
+    "version": "7.7.10",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__devtools-shared@7.7.10/LICENSE"
+    ]
+  },
+  {
+    "name": "rfdc",
+    "version": "1.4.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/rfdc@1.4.1/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/reactivity",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__reactivity@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/shared",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__shared@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/reactivity",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__reactivity@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/runtime-core",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__runtime-core@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/shared",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__shared@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/reactivity",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__reactivity@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/runtime-core",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__runtime-core@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/runtime-dom",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__runtime-dom@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/shared",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__shared@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "csstype",
+    "version": "3.2.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/csstype@3.2.3/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/compiler-ssr",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__compiler-ssr@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/runtime-dom",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__runtime-dom@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/server-renderer",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__server-renderer@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/shared",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__shared@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/shared",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__shared@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@types/web-bluetooth",
+    "version": "0.0.21",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__web-bluetooth@0.0.21/LICENSE"
+    ]
+  },
+  {
+    "name": "@vueuse/core",
+    "version": "12.8.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vueuse__core@12.8.2/LICENSE"
+    ]
+  },
+  {
+    "name": "@vueuse/metadata",
+    "version": "12.8.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vueuse__metadata@12.8.2/LICENSE"
+    ]
+  },
+  {
+    "name": "@vueuse/shared",
+    "version": "12.8.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vueuse__shared@12.8.2/LICENSE"
+    ]
+  },
+  {
+    "name": "vue",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vueuse/core",
+    "version": "12.8.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vueuse__core@12.8.2/LICENSE"
+    ]
+  },
+  {
+    "name": "@vueuse/integrations",
+    "version": "12.8.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vueuse__integrations@12.8.2/LICENSE"
+    ]
+  },
+  {
+    "name": "@vueuse/shared",
+    "version": "12.8.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vueuse__shared@12.8.2/LICENSE"
+    ]
+  },
+  {
+    "name": "focus-trap",
+    "version": "7.8.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/focus-trap@7.8.0/LICENSE"
+    ]
+  },
+  {
+    "name": "vue",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vueuse/metadata",
+    "version": "12.8.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vueuse__metadata@12.8.2/LICENSE"
+    ]
+  },
+  {
+    "name": "@vueuse/shared",
+    "version": "12.8.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vueuse__shared@12.8.2/LICENSE"
+    ]
+  },
+  {
+    "name": "vue",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/abtesting",
+    "version": "1.25.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__abtesting@1.25.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-abtesting",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-abtesting@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-analytics",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-analytics@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-common",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-common@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-insights",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-insights@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-personalization",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-personalization@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-query-suggestions",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-query-suggestions@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/client-search",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__client-search@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/ingestion",
+    "version": "1.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__ingestion@1.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/monitoring",
+    "version": "1.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__monitoring@1.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/recommend",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__recommend@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-browser-xhr",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-browser-xhr@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-fetch",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-fetch@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@algolia/requester-node-http",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algolia__requester-node-http@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "algoliasearch",
+    "version": "5.59.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/algoliasearch@5.59.0/LICENSE"
+    ]
+  },
+  {
+    "name": "birpc",
+    "version": "2.9.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/birpc@2.9.0/LICENSE"
+    ]
+  },
+  {
+    "name": "ccount",
+    "version": "2.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/ccount@2.0.1/license"
+    ]
+  },
+  {
+    "name": "character-entities-html4",
+    "version": "2.1.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/character-entities-html4@2.1.0/license"
+    ]
+  },
+  {
+    "name": "character-entities-legacy",
+    "version": "3.0.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/character-entities-legacy@3.0.0/license"
+    ]
+  },
+  {
+    "name": "comma-separated-tokens",
+    "version": "2.0.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/comma-separated-tokens@2.0.3/license"
+    ]
+  },
+  {
+    "name": "copy-anything",
+    "version": "4.1.4",
+    "ecosystem": "npm",
+    "files": [
+      "npm/copy-anything@4.1.4/LICENSE"
+    ]
+  },
+  {
+    "name": "csstype",
+    "version": "3.2.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/csstype@3.2.3/LICENSE"
+    ]
+  },
+  {
+    "name": "dequal",
+    "version": "2.0.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/dequal@2.0.3/license"
+    ]
+  },
+  {
+    "name": "detect-libc",
+    "version": "2.1.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/detect-libc@2.1.2/LICENSE"
+    ]
+  },
+  {
+    "name": "dequal",
+    "version": "2.0.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/dequal@2.0.3/license"
+    ]
+  },
+  {
+    "name": "devlop",
+    "version": "1.1.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/devlop@1.1.0/license"
+    ]
+  },
+  {
+    "name": "emoji-regex-xs",
+    "version": "1.0.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/emoji-regex-xs@1.0.0/LICENSE"
+    ]
+  },
+  {
+    "name": "entities",
+    "version": "7.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/entities@7.0.1/LICENSE"
+    ]
+  },
+  {
+    "name": "esbuild",
+    "version": "0.21.5",
+    "ecosystem": "npm",
+    "files": [
+      "npm/esbuild@0.21.5/LICENSE.md"
+    ]
+  },
+  {
+    "name": "esbuild",
+    "version": "0.25.12",
+    "ecosystem": "npm",
+    "files": [
+      "npm/esbuild@0.25.12/LICENSE.md"
+    ]
+  },
+  {
+    "name": "estree-walker",
+    "version": "2.0.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/estree-walker@2.0.2/LICENSE"
+    ]
+  },
+  {
+    "name": "fdir",
+    "version": "6.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/fdir@6.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "picomatch",
+    "version": "4.0.7",
+    "ecosystem": "npm",
+    "files": [
+      "npm/picomatch@4.0.7/LICENSE"
+    ]
+  },
+  {
+    "name": "focus-trap",
+    "version": "7.8.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/focus-trap@7.8.0/LICENSE"
+    ]
+  },
+  {
+    "name": "tabbable",
+    "version": "6.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/tabbable@6.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@types/hast",
+    "version": "3.0.5",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__hast@3.0.5/LICENSE"
+    ]
+  },
+  {
+    "name": "@types/unist",
+    "version": "3.0.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__unist@3.0.3/LICENSE"
+    ]
+  },
+  {
+    "name": "ccount",
+    "version": "2.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/ccount@2.0.1/license"
+    ]
+  },
+  {
+    "name": "comma-separated-tokens",
+    "version": "2.0.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/comma-separated-tokens@2.0.3/license"
+    ]
+  },
+  {
+    "name": "hast-util-to-html",
+    "version": "9.0.5",
+    "ecosystem": "npm",
+    "files": [
+      "npm/hast-util-to-html@9.0.5/license"
+    ]
+  },
+  {
+    "name": "hast-util-whitespace",
+    "version": "3.0.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/hast-util-whitespace@3.0.0/license"
+    ]
+  },
+  {
+    "name": "html-void-elements",
+    "version": "3.0.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/html-void-elements@3.0.0/license"
+    ]
+  },
+  {
+    "name": "mdast-util-to-hast",
+    "version": "13.2.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/mdast-util-to-hast@13.2.1/license"
+    ]
+  },
+  {
+    "name": "property-information",
+    "version": "7.2.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/property-information@7.2.0/license"
+    ]
+  },
+  {
+    "name": "space-separated-tokens",
+    "version": "2.0.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/space-separated-tokens@2.0.2/license"
+    ]
+  },
+  {
+    "name": "stringify-entities",
+    "version": "4.0.4",
+    "ecosystem": "npm",
+    "files": [
+      "npm/stringify-entities@4.0.4/license"
+    ]
+  },
+  {
+    "name": "zwitch",
+    "version": "2.0.4",
+    "ecosystem": "npm",
+    "files": [
+      "npm/zwitch@2.0.4/license"
+    ]
+  },
+  {
+    "name": "@types/hast",
+    "version": "3.0.5",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__hast@3.0.5/LICENSE"
+    ]
+  },
+  {
+    "name": "hast-util-whitespace",
+    "version": "3.0.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/hast-util-whitespace@3.0.0/license"
+    ]
+  },
+  {
+    "name": "hookable",
+    "version": "5.5.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/hookable@5.5.3/LICENSE.md"
+    ]
+  },
+  {
+    "name": "html-void-elements",
+    "version": "3.0.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/html-void-elements@3.0.0/license"
+    ]
+  },
+  {
+    "name": "lightningcss-win32-x64-msvc",
+    "version": "1.33.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/lightningcss-win32-x64-msvc@1.33.0/LICENSE"
+    ]
+  },
+  {
+    "name": "detect-libc",
+    "version": "2.1.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/detect-libc@2.1.2/LICENSE"
+    ]
+  },
+  {
+    "name": "lightningcss",
+    "version": "1.33.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/lightningcss@1.33.0/LICENSE"
+    ]
+  },
+  {
+    "name": "lightningcss-win32-x64-msvc",
+    "version": "1.33.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/lightningcss-win32-x64-msvc@1.33.0/LICENSE"
+    ]
+  },
+  {
+    "name": "lucide-react",
+    "version": "1.48.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/lucide-react@1.48.0/LICENSE"
+    ]
+  },
+  {
+    "name": "react",
+    "version": "19.3.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/react@19.3.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@jridgewell/sourcemap-codec",
+    "version": "1.6.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/jridgewell__sourcemap-codec@1.6.0/LICENSE"
+    ]
+  },
+  {
+    "name": "magic-string",
+    "version": "0.30.21",
+    "ecosystem": "npm",
+    "files": [
+      "npm/magic-string@0.30.21/LICENSE"
+    ]
+  },
+  {
+    "name": "mark.js",
+    "version": "8.11.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/mark.js@8.11.1/LICENSE"
+    ]
+  },
+  {
+    "name": "@types/hast",
+    "version": "3.0.5",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__hast@3.0.5/LICENSE"
+    ]
+  },
+  {
+    "name": "@types/mdast",
+    "version": "4.0.4",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__mdast@4.0.4/LICENSE"
+    ]
+  },
+  {
+    "name": "@ungap/structured-clone",
+    "version": "1.4.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/ungap__structured-clone@1.4.0/LICENSE"
+    ]
+  },
+  {
+    "name": "devlop",
+    "version": "1.1.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/devlop@1.1.0/license"
+    ]
+  },
+  {
+    "name": "mdast-util-to-hast",
+    "version": "13.2.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/mdast-util-to-hast@13.2.1/license"
+    ]
+  },
+  {
+    "name": "micromark-util-sanitize-uri",
+    "version": "2.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/micromark-util-sanitize-uri@2.0.1/license"
+    ]
+  },
+  {
+    "name": "trim-lines",
+    "version": "3.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/trim-lines@3.0.1/license"
+    ]
+  },
+  {
+    "name": "unist-util-position",
+    "version": "5.0.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/unist-util-position@5.0.0/license"
+    ]
+  },
+  {
+    "name": "unist-util-visit",
+    "version": "5.1.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/unist-util-visit@5.1.0/license"
+    ]
+  },
+  {
+    "name": "vfile",
+    "version": "6.0.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vfile@6.0.3/license"
+    ]
+  },
+  {
+    "name": "micromark-util-character",
+    "version": "2.1.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/micromark-util-character@2.1.1/license"
+    ]
+  },
+  {
+    "name": "micromark-util-symbol",
+    "version": "2.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/micromark-util-symbol@2.0.1/license"
+    ]
+  },
+  {
+    "name": "micromark-util-types",
+    "version": "2.0.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/micromark-util-types@2.0.3/license"
+    ]
+  },
+  {
+    "name": "micromark-util-encode",
+    "version": "2.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/micromark-util-encode@2.0.1/license"
+    ]
+  },
+  {
+    "name": "micromark-util-character",
+    "version": "2.1.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/micromark-util-character@2.1.1/license"
+    ]
+  },
+  {
+    "name": "micromark-util-encode",
+    "version": "2.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/micromark-util-encode@2.0.1/license"
+    ]
+  },
+  {
+    "name": "micromark-util-sanitize-uri",
+    "version": "2.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/micromark-util-sanitize-uri@2.0.1/license"
+    ]
+  },
+  {
+    "name": "micromark-util-symbol",
+    "version": "2.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/micromark-util-symbol@2.0.1/license"
+    ]
+  },
+  {
+    "name": "micromark-util-symbol",
+    "version": "2.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/micromark-util-symbol@2.0.1/license"
+    ]
+  },
+  {
+    "name": "micromark-util-types",
+    "version": "2.0.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/micromark-util-types@2.0.3/license"
+    ]
+  },
+  {
+    "name": "minisearch",
+    "version": "7.2.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/minisearch@7.2.0/LICENSE.txt"
+    ]
+  },
+  {
+    "name": "mitt",
+    "version": "3.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/mitt@3.0.1/LICENSE"
+    ]
+  },
+  {
+    "name": "nanoid",
+    "version": "3.3.19",
+    "ecosystem": "npm",
+    "files": [
+      "npm/nanoid@3.3.19/LICENSE"
+    ]
+  },
+  {
+    "name": "emoji-regex-xs",
+    "version": "1.0.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/emoji-regex-xs@1.0.0/LICENSE"
+    ]
+  },
+  {
+    "name": "oniguruma-to-es",
+    "version": "3.1.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/oniguruma-to-es@3.1.1/LICENSE"
+    ]
+  },
+  {
+    "name": "regex",
+    "version": "6.1.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/regex@6.1.0/LICENSE"
+    ]
+  },
+  {
+    "name": "regex-recursion",
+    "version": "6.0.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/regex-recursion@6.0.2/LICENSE"
+    ]
+  },
+  {
+    "name": "perfect-debounce",
+    "version": "1.0.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/perfect-debounce@1.0.0/LICENSE"
+    ]
+  },
+  {
+    "name": "picocolors",
+    "version": "1.1.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/picocolors@1.1.1/LICENSE"
+    ]
+  },
+  {
+    "name": "picomatch",
+    "version": "4.0.7",
+    "ecosystem": "npm",
+    "files": [
+      "npm/picomatch@4.0.7/LICENSE"
+    ]
+  },
+  {
+    "name": "nanoid",
+    "version": "3.3.19",
+    "ecosystem": "npm",
+    "files": [
+      "npm/nanoid@3.3.19/LICENSE"
+    ]
+  },
+  {
+    "name": "picocolors",
+    "version": "1.1.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/picocolors@1.1.1/LICENSE"
+    ]
+  },
+  {
+    "name": "postcss",
+    "version": "8.5.28",
+    "ecosystem": "npm",
+    "files": [
+      "npm/postcss@8.5.28/LICENSE"
+    ]
+  },
+  {
+    "name": "source-map-js",
+    "version": "1.2.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/source-map-js@1.2.1/LICENSE"
+    ]
+  },
+  {
+    "name": "preact",
+    "version": "10.29.8",
+    "ecosystem": "npm",
+    "files": [
+      "npm/preact@10.29.8/LICENSE"
+    ]
+  },
+  {
+    "name": "prettier",
+    "version": "3.6.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/prettier@3.6.2/LICENSE"
+    ]
+  },
+  {
+    "name": "property-information",
+    "version": "7.2.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/property-information@7.2.0/license"
+    ]
+  },
+  {
+    "name": "react",
+    "version": "19.3.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/react@19.3.0/LICENSE"
+    ]
+  },
+  {
+    "name": "react-dom",
+    "version": "19.3.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/react-dom@19.3.0/LICENSE"
+    ]
+  },
+  {
+    "name": "scheduler",
+    "version": "0.28.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/scheduler@0.28.0/LICENSE"
+    ]
+  },
+  {
+    "name": "react",
+    "version": "19.3.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/react@19.3.0/LICENSE"
+    ]
+  },
+  {
+    "name": "regex-recursion",
+    "version": "6.0.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/regex-recursion@6.0.2/LICENSE"
+    ]
+  },
+  {
+    "name": "regex-utilities",
+    "version": "2.3.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/regex-utilities@2.3.0/LICENSE"
+    ]
+  },
+  {
+    "name": "regex-utilities",
+    "version": "2.3.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/regex-utilities@2.3.0/LICENSE"
+    ]
+  },
+  {
+    "name": "regex",
+    "version": "6.1.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/regex@6.1.0/LICENSE"
+    ]
+  },
+  {
+    "name": "regex-utilities",
+    "version": "2.3.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/regex-utilities@2.3.0/LICENSE"
+    ]
+  },
+  {
+    "name": "rfdc",
+    "version": "1.4.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/rfdc@1.4.1/LICENSE"
+    ]
+  },
+  {
+    "name": "@oxc-project/types",
+    "version": "0.151.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/oxc-project__types@0.151.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@rolldown/pluginutils",
+    "version": "1.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/rolldown__pluginutils@1.0.1/LICENSE"
+    ]
+  },
+  {
+    "name": "rolldown",
+    "version": "1.2.11",
+    "ecosystem": "npm",
+    "files": [
+      "npm/rolldown@1.2.11/LICENSE"
+    ]
+  },
+  {
+    "name": "@types/estree",
+    "version": "1.0.9",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__estree@1.0.9/LICENSE"
+    ]
+  },
+  {
+    "name": "rollup",
+    "version": "4.63.5",
+    "ecosystem": "npm",
+    "files": [
+      "npm/rollup@4.63.5/LICENSE.md"
+    ]
+  },
+  {
+    "name": "scheduler",
+    "version": "0.28.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/scheduler@0.28.0/LICENSE"
+    ]
+  },
+  {
+    "name": "search-insights",
+    "version": "2.17.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/search-insights@2.17.3/LICENSE.md"
+    ]
+  },
+  {
+    "name": "@shikijs/core",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__core@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/engine-javascript",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__engine-javascript@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/engine-oniguruma",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__engine-oniguruma@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/langs",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__langs@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/themes",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__themes@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/types",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__types@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/vscode-textmate",
+    "version": "10.0.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__vscode-textmate@10.0.2/LICENSE.md"
+    ]
+  },
+  {
+    "name": "@types/hast",
+    "version": "3.0.5",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__hast@3.0.5/LICENSE"
+    ]
+  },
+  {
+    "name": "shiki",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shiki@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "source-map-js",
+    "version": "1.2.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/source-map-js@1.2.1/LICENSE"
+    ]
+  },
+  {
+    "name": "space-separated-tokens",
+    "version": "2.0.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/space-separated-tokens@2.0.2/license"
+    ]
+  },
+  {
+    "name": "speakingurl",
+    "version": "14.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/speakingurl@14.0.1/LICENSE"
+    ]
+  },
+  {
+    "name": "character-entities-html4",
+    "version": "2.1.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/character-entities-html4@2.1.0/license"
+    ]
+  },
+  {
+    "name": "character-entities-legacy",
+    "version": "3.0.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/character-entities-legacy@3.0.0/license"
+    ]
+  },
+  {
+    "name": "stringify-entities",
+    "version": "4.0.4",
+    "ecosystem": "npm",
+    "files": [
+      "npm/stringify-entities@4.0.4/license"
+    ]
+  },
+  {
+    "name": "copy-anything",
+    "version": "4.1.4",
+    "ecosystem": "npm",
+    "files": [
+      "npm/copy-anything@4.1.4/LICENSE"
+    ]
+  },
+  {
+    "name": "superjson",
+    "version": "2.2.6",
+    "ecosystem": "npm",
+    "files": [
+      "npm/superjson@2.2.6/LICENSE"
+    ]
+  },
+  {
+    "name": "tabbable",
+    "version": "6.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/tabbable@6.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "fdir",
+    "version": "6.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/fdir@6.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "picomatch",
+    "version": "4.0.7",
+    "ecosystem": "npm",
+    "files": [
+      "npm/picomatch@4.0.7/LICENSE"
+    ]
+  },
+  {
+    "name": "tinyglobby",
+    "version": "0.2.17",
+    "ecosystem": "npm",
+    "files": [
+      "npm/tinyglobby@0.2.17/LICENSE"
+    ]
+  },
+  {
+    "name": "trim-lines",
+    "version": "3.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/trim-lines@3.0.1/license"
+    ]
+  },
+  {
+    "name": "@typescript/typescript-win32-x64",
+    "version": "7.0.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/typescript__typescript-win32-x64@7.0.2/LICENSE",
+      "npm/typescript__typescript-win32-x64@7.0.2/NOTICE.txt"
+    ]
+  },
+  {
+    "name": "typescript",
+    "version": "7.0.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/typescript@7.0.2/LICENSE",
+      "npm/typescript@7.0.2/NOTICE.txt"
+    ]
+  },
+  {
+    "name": "@types/unist",
+    "version": "3.0.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__unist@3.0.3/LICENSE"
+    ]
+  },
+  {
+    "name": "unist-util-is",
+    "version": "6.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/unist-util-is@6.0.1/license"
+    ]
+  },
+  {
+    "name": "@types/unist",
+    "version": "3.0.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__unist@3.0.3/LICENSE"
+    ]
+  },
+  {
+    "name": "unist-util-position",
+    "version": "5.0.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/unist-util-position@5.0.0/license"
+    ]
+  },
+  {
+    "name": "@types/unist",
+    "version": "3.0.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__unist@3.0.3/LICENSE"
+    ]
+  },
+  {
+    "name": "unist-util-stringify-position",
+    "version": "4.0.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/unist-util-stringify-position@4.0.0/license"
+    ]
+  },
+  {
+    "name": "@types/unist",
+    "version": "3.0.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__unist@3.0.3/LICENSE"
+    ]
+  },
+  {
+    "name": "unist-util-is",
+    "version": "6.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/unist-util-is@6.0.1/license"
+    ]
+  },
+  {
+    "name": "unist-util-visit-parents",
+    "version": "6.0.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/unist-util-visit-parents@6.0.2/license"
+    ]
+  },
+  {
+    "name": "@types/unist",
+    "version": "3.0.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__unist@3.0.3/LICENSE"
+    ]
+  },
+  {
+    "name": "unist-util-is",
+    "version": "6.0.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/unist-util-is@6.0.1/license"
+    ]
+  },
+  {
+    "name": "unist-util-visit",
+    "version": "5.1.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/unist-util-visit@5.1.0/license"
+    ]
+  },
+  {
+    "name": "unist-util-visit-parents",
+    "version": "6.0.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/unist-util-visit-parents@6.0.2/license"
+    ]
+  },
+  {
+    "name": "@types/unist",
+    "version": "3.0.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__unist@3.0.3/LICENSE"
+    ]
+  },
+  {
+    "name": "unist-util-stringify-position",
+    "version": "4.0.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/unist-util-stringify-position@4.0.0/license"
+    ]
+  },
+  {
+    "name": "vfile-message",
+    "version": "4.0.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vfile-message@4.0.3/license"
+    ]
+  },
+  {
+    "name": "@types/unist",
+    "version": "3.0.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__unist@3.0.3/LICENSE"
+    ]
+  },
+  {
+    "name": "vfile",
+    "version": "6.0.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vfile@6.0.3/license"
+    ]
+  },
+  {
+    "name": "vfile-message",
+    "version": "4.0.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vfile-message@4.0.3/license"
+    ]
+  },
+  {
+    "name": "esbuild",
+    "version": "0.21.5",
+    "ecosystem": "npm",
+    "files": [
+      "npm/esbuild@0.21.5/LICENSE.md"
+    ]
+  },
+  {
+    "name": "lightningcss",
+    "version": "1.33.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/lightningcss@1.33.0/LICENSE"
+    ]
+  },
+  {
+    "name": "postcss",
+    "version": "8.5.28",
+    "ecosystem": "npm",
+    "files": [
+      "npm/postcss@8.5.28/LICENSE"
+    ]
+  },
+  {
+    "name": "rollup",
+    "version": "4.63.5",
+    "ecosystem": "npm",
+    "files": [
+      "npm/rollup@4.63.5/LICENSE.md"
+    ]
+  },
+  {
+    "name": "vite",
+    "version": "5.4.21",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vite@5.4.21/LICENSE.md"
+    ]
+  },
+  {
+    "name": "esbuild",
+    "version": "0.25.12",
+    "ecosystem": "npm",
+    "files": [
+      "npm/esbuild@0.25.12/LICENSE.md"
+    ]
+  },
+  {
+    "name": "fdir",
+    "version": "6.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/fdir@6.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "lightningcss",
+    "version": "1.33.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/lightningcss@1.33.0/LICENSE"
+    ]
+  },
+  {
+    "name": "picomatch",
+    "version": "4.0.7",
+    "ecosystem": "npm",
+    "files": [
+      "npm/picomatch@4.0.7/LICENSE"
+    ]
+  },
+  {
+    "name": "postcss",
+    "version": "8.5.28",
+    "ecosystem": "npm",
+    "files": [
+      "npm/postcss@8.5.28/LICENSE"
+    ]
+  },
+  {
+    "name": "rollup",
+    "version": "4.63.5",
+    "ecosystem": "npm",
+    "files": [
+      "npm/rollup@4.63.5/LICENSE.md"
+    ]
+  },
+  {
+    "name": "tinyglobby",
+    "version": "0.2.17",
+    "ecosystem": "npm",
+    "files": [
+      "npm/tinyglobby@0.2.17/LICENSE"
+    ]
+  },
+  {
+    "name": "vite",
+    "version": "6.4.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vite@6.4.3/LICENSE.md"
+    ]
+  },
+  {
+    "name": "lightningcss",
+    "version": "1.33.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/lightningcss@1.33.0/LICENSE"
+    ]
+  },
+  {
+    "name": "picomatch",
+    "version": "4.0.7",
+    "ecosystem": "npm",
+    "files": [
+      "npm/picomatch@4.0.7/LICENSE"
+    ]
+  },
+  {
+    "name": "postcss",
+    "version": "8.5.28",
+    "ecosystem": "npm",
+    "files": [
+      "npm/postcss@8.5.28/LICENSE"
+    ]
+  },
+  {
+    "name": "rolldown",
+    "version": "1.2.11",
+    "ecosystem": "npm",
+    "files": [
+      "npm/rolldown@1.2.11/LICENSE"
+    ]
+  },
+  {
+    "name": "tinyglobby",
+    "version": "0.2.17",
+    "ecosystem": "npm",
+    "files": [
+      "npm/tinyglobby@0.2.17/LICENSE"
+    ]
+  },
+  {
+    "name": "vite",
+    "version": "8.3.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vite@8.3.1/LICENSE.md"
+    ]
+  },
+  {
+    "name": "@shikijs/core",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__core@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/transformers",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__transformers@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@shikijs/types",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shikijs__types@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@types/markdown-it",
+    "version": "14.2.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/types__markdown-it@14.2.0/LICENSE"
+    ]
+  },
+  {
+    "name": "@vitejs/plugin-vue",
+    "version": "5.2.4",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vitejs__plugin-vue@5.2.4/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/devtools-api",
+    "version": "7.7.10",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__devtools-api@7.7.10/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/shared",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__shared@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vueuse/core",
+    "version": "12.8.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vueuse__core@12.8.2/LICENSE"
+    ]
+  },
+  {
+    "name": "@vueuse/integrations",
+    "version": "12.8.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vueuse__integrations@12.8.2/LICENSE"
+    ]
+  },
+  {
+    "name": "focus-trap",
+    "version": "7.8.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/focus-trap@7.8.0/LICENSE"
+    ]
+  },
+  {
+    "name": "mark.js",
+    "version": "8.11.1",
+    "ecosystem": "npm",
+    "files": [
+      "npm/mark.js@8.11.1/LICENSE"
+    ]
+  },
+  {
+    "name": "minisearch",
+    "version": "7.2.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/minisearch@7.2.0/LICENSE.txt"
+    ]
+  },
+  {
+    "name": "postcss",
+    "version": "8.5.28",
+    "ecosystem": "npm",
+    "files": [
+      "npm/postcss@8.5.28/LICENSE"
+    ]
+  },
+  {
+    "name": "shiki",
+    "version": "2.5.0",
+    "ecosystem": "npm",
+    "files": [
+      "npm/shiki@2.5.0/LICENSE"
+    ]
+  },
+  {
+    "name": "vite",
+    "version": "6.4.3",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vite@6.4.3/LICENSE.md"
+    ]
+  },
+  {
+    "name": "vitepress",
+    "version": "1.6.4",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vitepress@1.6.4/LICENSE"
+    ]
+  },
+  {
+    "name": "vue",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/compiler-dom",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__compiler-dom@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/compiler-sfc",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__compiler-sfc@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/runtime-dom",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__runtime-dom@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/server-renderer",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__server-renderer@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "@vue/shared",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue__shared@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "typescript",
+    "version": "7.0.2",
+    "ecosystem": "npm",
+    "files": [
+      "npm/typescript@7.0.2/LICENSE",
+      "npm/typescript@7.0.2/NOTICE.txt"
+    ]
+  },
+  {
+    "name": "vue",
+    "version": "3.5.43",
+    "ecosystem": "npm",
+    "files": [
+      "npm/vue@3.5.43/LICENSE"
+    ]
+  },
+  {
+    "name": "zwitch",
+    "version": "2.0.4",
+    "ecosystem": "npm",
+    "files": [
+      "npm/zwitch@2.0.4/license"
+    ]
+  }
+]
