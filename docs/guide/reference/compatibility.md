@@ -1,7 +1,8 @@
 # Compatibility and acceptance
 
 Verified on 29 September 2026. This records measured results, not a general
-production-readiness certification. Public image/chart publication is pending.
+production-readiness certification. Release artifact digests and verification
+instructions accompany the versioned GitHub release.
 
 | Area | Status |
 | --- | --- |

@@ -2,8 +2,9 @@
 
 Updated: 2026-09-29. Target: Apache-2.0, `github.com/grantlinehq/grantline`.
 The local candidate is implemented and testable. **It is not yet approved as
-production ready.** Private GitHub preparation is authorized; public source and
-registry publication remain separate steps. See the prelaunch record below.
+production ready.** The release process produces versioned Docker and Helm
+distribution packages. The historical prelaunch record below separates measured
+acceptance from remaining product and publication checks.
 
 ## Implemented
 
@@ -177,3 +178,13 @@ workstation identifiers are excluded. Actual Overview/finding/evidence navigatio
 was checked with synthetic imported data. A reliable publication screenshot was
 not produced by the current browser capture; the README does not substitute a
 design mockup for a real screenshot.
+
+### Release distribution preparation
+
+The maintainer authorized GHCR image, OCI chart and ready installation-package
+publication for v0.1.0-rc.1, and reported that Owner 2FA/recovery preparation is
+complete. The release workflow now creates versioned installation ZIP/TAR files,
+source, chart, release metadata and signed checksums. It verifies both registry
+architectures, a fresh Compose installation, image/chart signatures and chart
+download before creating the GitHub prerelease. Registry and anonymous download
+results are recorded separately from the earlier local-only artifact tests.

@@ -1,8 +1,42 @@
 # Release operations
 
-The current candidate is a preview. Source visibility, image/chart publication and
-production-readiness approval are separate decisions. No automation turns a private
-repository public. The maintainer controls that transition.
+The current release is **v0.1.0-rc.1**, a preview. The release provides a multiarch
+image, OCI Helm chart, Docker installation ZIP/TAR, source ZIP and signed checksums.
+The maintainer controls source visibility and registry publication. Release
+automation never changes repository visibility or declares production readiness.
+
+## Verify a release
+
+Download the assets from the versioned [release page](https://github.com/grantlinehq/grantline/releases/tag/v0.1.0-rc.1).
+`release.json` records the exact source commit, image digest, chart digest and
+architectures. Installation packages pin the application digest in `.env`.
+
+Install Cosign from its [official releases](https://github.com/sigstore/cosign/releases)
+to verify the workflow identity and signed checksum file:
+
+```sh
+SIGNER=https://github.com/grantlinehq/grantline/.github/workflows/release.yml@refs/heads/main
+ISSUER=https://token.actions.githubusercontent.com
+cosign verify-blob --bundle SHA256SUMS.sigstore.json --certificate-identity "$SIGNER" --certificate-oidc-issuer "$ISSUER" SHA256SUMS
+sha256sum --check --ignore-missing SHA256SUMS
+```
+
+Run this in the download directory with the selected assets present. The checksum
+command skips assets you did not download; it does not verify missing files.
+On Windows use `Get-FileHash -Algorithm SHA256` and compare each downloaded asset
+with its entry in the authenticated `SHA256SUMS` file.
+
+Use the exact digests from `release.json` to verify the registry artifacts:
+
+```sh
+cosign verify ghcr.io/grantlinehq/grantline@sha256:IMAGE_DIGEST --certificate-identity "$SIGNER" --certificate-oidc-issuer "$ISSUER"
+cosign verify ghcr.io/grantlinehq/charts/grantline@sha256:CHART_DIGEST --certificate-identity "$SIGNER" --certificate-oidc-issuer "$ISSUER"
+```
+
+Replace `IMAGE_DIGEST` and `CHART_DIGEST` with their hex values. BuildKit attaches
+runtime/frontend SPDX SBOMs and provenance to the multiarch image. Signature
+verification establishes the publisher and content digest; it does not replace
+the compatibility or security acceptance record.
 
 ## Private preparation
 
@@ -18,16 +52,21 @@ repository public. The maintainer controls that transition.
 
 ## Candidate artifacts
 
-The manual **Release candidate** workflow defaults `publish` to false. Its build
+The manual **Release candidate** workflow defaults `publish` to false and accepts
+explicit `0.1.0-rc.N` versions. Its build
 uses Go/Node version constraints, lockfiles and SHA-pinned actions. Base images in
 the Dockerfile are pinned to multiarchitecture digests; dependency updates must be
 reviewed and tested. Tool versions and vulnerability databases have different
 lifecycles: scanners are versioned, while advisory data is fetched at scan time.
 
-The workflow builds linux/amd64 and linux/arm64 images with BuildKit SBOM/provenance,
-packages the Helm chart and Compose installation bundle, and generates checksums.
-With publication disabled the OCI archive is a downloadable CI artifact, not a
-published registry image. Load it before using that candidate's installation bundle.
+The workflow runs the shared Checks suite, builds linux/amd64 and linux/arm64
+images with BuildKit SBOM/provenance, scans both registry architectures and tests
+clean Compose installation. It signs the image and chart digests, verifies the
+chart downloaded from GHCR, generates digest-pinned ZIP/TAR packages and signs
+their checksums before creating a GitHub prerelease. Existing release tags and
+image versions must not be overwritten; use a new candidate version for changes.
+With publication disabled only the OCI archive, chart and checksums are uploaded
+as CI artifacts; no registry package or GitHub release is created.
 Release artifacts are not normal Git files. Local `scripts/package-local-candidate.py`
 can assemble already-built image/chart/source artifacts under ignored `bin/`.
 
@@ -48,7 +87,7 @@ Registry publication is another explicit action. The workflow checks the configu
 `ALLOW_REGISTRY_PUBLISH` repository variable before allowing `publish=true` and uses
 the `release` environment. Keep that variable disabled until publication is intended.
 Where the plan supports it, configure required reviewers for that environment.
-On publication, cosign signs the image digest using GitHub OIDC. Verify the expected
+On publication, Cosign signs the image, chart and checksums using GitHub OIDC. Verify the expected
 repository/workflow identity and issuer before trusting a signature; a valid
 signature alone does not demonstrate application safety.
 

@@ -6,19 +6,29 @@ lists platforms that have actually been tested.
 
 ## From a published release package
 
-Extract the release package in a private directory, then run:
+Download the [v0.1.0-rc.1 installation ZIP](https://github.com/grantlinehq/grantline/releases/download/v0.1.0-rc.1/grantline-install-0.1.0-rc.1.zip)
+or [TAR package](https://github.com/grantlinehq/grantline/releases/download/v0.1.0-rc.1/grantline-install-0.1.0-rc.1.tar.gz).
+Verify it using the release checksums and [signature guide](../operations/releases#verify-a-release).
+Extract into a new private directory, then run:
 
 ```sh
-docker compose up -d
+docker compose up -d --wait
 docker compose ps
 ```
 
-Publication is pending; before publication, build from the source tree:
+The package's `.env` pins the multiarchitecture application image by digest.
+Docker selects amd64 or arm64 for your host. No source checkout, Go or Node is required.
+
+## Build from source
+
+From a source checkout, use both Compose files for build and startup:
 
 ```sh
 docker compose -f compose.yaml -f compose.build.yaml build app
-docker compose -f compose.yaml -f compose.build.yaml up -d
+docker compose -f compose.yaml -f compose.build.yaml up -d --wait
 ```
+
+## First Owner
 
 Open **http://127.0.0.1:8080**. Use `127.0.0.1`, not an interchangeable hostname:
 the server checks the configured public origin.
@@ -28,6 +38,8 @@ Read the one-time setup token on your own terminal:
 ```sh
 docker compose exec app cat /var/lib/grantline/secrets/setup-token
 ```
+
+For a source build, include `-f compose.yaml -f compose.build.yaml` in that command too.
 
 Create the organization and first Owner, then enroll a TOTP authenticator. The
 setup endpoint closes after the first organization is created. Keep your
@@ -69,8 +81,8 @@ for the tested Linux environment and remaining platform coverage.
 
 ## A server with HTTPS
 
-Point your DNS name at the server and permit inbound TCP 80/443. Create a `.env`
-file containing public configuration only:
+Point your DNS name at the server and permit inbound TCP 80/443. Add the following
+public settings to the package's `.env`, preserving its `GRANTLINE_IMAGE` digest:
 
 ```dotenv
 GRANTLINE_DOMAIN=grantline.example.com
@@ -103,10 +115,10 @@ docker compose -f deploy/compose.external.yaml up -d
 ```
 
 For direct `docker run`, use an absolute path to your private secret directory.
-The database URL must resolve from inside the container. After publication:
+The database URL must resolve from inside the container:
 
 ```sh
-IMAGE=ghcr.io/grantlinehq/grantline:0.1.0
+IMAGE=ghcr.io/grantlinehq/grantline:0.1.0-rc.1
 SECRETS=/private/grantline
 docker run --rm --read-only --user 65532:65532 --cap-drop ALL \
   --security-opt no-new-privileges \

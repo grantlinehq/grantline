@@ -9,10 +9,10 @@ The first version supports **one organization and one active application instanc
 PostgreSQL stores accounts, connections, reports, review decisions and the durable
 collection queue. Redis is not required. Kubernetes does not add application HA.
 
-::: warning Release candidate acceptance
-The v0.1.0 implementation is under acceptance testing. Do not treat an unverified
-development image as production ready. See [compatibility](./reference/compatibility).
-The GitHub repository, image and chart publication are separate release actions.
+::: warning Preview release
+v0.1.0-rc.1 is a release candidate with ready Docker and Helm installation packages.
+Full live-provider/IdP/SMTP and accessibility acceptance remains open; this version
+is not labeled production ready. See [compatibility](./reference/compatibility).
 :::
 
 Start with [Docker Compose](./install/docker), or use the official

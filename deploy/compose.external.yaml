@@ -1,6 +1,6 @@
 name: grantline
 x-app: &app
-  image: ${GRANTLINE_IMAGE:-ghcr.io/grantlinehq/grantline:0.1.0}
+  image: ${GRANTLINE_IMAGE:-ghcr.io/grantlinehq/grantline:0.1.0-rc.1}
   user: '65532:65532'
   read_only: true
   cap_drop: [ALL]

@@ -1,23 +1,19 @@
 # Security policy
 
-Grantline is being prepared for its first public release. The current candidate
+Grantline is an open-source project in preview. The current candidate
 is `v0.1.0-rc.1`; it is not approved as production ready. No stable release has a
 security-support commitment yet. Fixes currently target the latest development
 candidate; older milestone builds do not receive separate maintained branches.
 
 ## Private vulnerability reports
 
-The selected public-launch reporting channel is GitHub private vulnerability
-reporting for `grantlinehq/grantline`:
+Use GitHub private vulnerability reporting for `grantlinehq/grantline`:
 [Report a vulnerability](https://github.com/grantlinehq/grantline/security/advisories/new).
-The repository must be public and this feature enabled before that link is usable.
-Enabling and verifying the channel is a public-launch gate, not a completed action.
 No security email address has been designated.
 
 Do not disclose vulnerabilities, secret values or private identity reports in a
-public issue, discussion or pull request. During the private pre-launch phase,
-use an existing private communication channel with the maintainer. If the public
-reporting link is unavailable later, request restoration of the reporting channel
+public issue, discussion or pull request. If the reporting link is unavailable,
+request restoration of the reporting channel
 without publishing vulnerability details or credentials.
 
 Reports are handled on a best-effort basis; no response-time SLA is promised.

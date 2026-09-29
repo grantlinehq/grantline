@@ -18,8 +18,11 @@ def main():
     parser.add_argument('--context', required=True)
     parser.add_argument('--image', default='grantline')
     parser.add_argument('--tag', default='prelaunch')
+    parser.add_argument('--chart', default=str(Path(__file__).resolve().parents[1] / 'charts/grantline'))
+    parser.add_argument('--chart-version', default='')
+    parser.add_argument('--image-digest', default='')
+    parser.add_argument('--pull-policy', choices=['Never', 'IfNotPresent', 'Always'], default='Never')
     args = parser.parse_args()
-    root = Path(__file__).resolve().parents[1]
     ns = 'grantline-check-' + uuid.uuid4().hex[:10]
     kubectl = ['kubectl', '--kubeconfig', args.kubeconfig, '--context', args.context]
     release, app = 'check', 'check-grantline'
@@ -35,13 +38,15 @@ def main():
         return run(kubectl + ['-n', ns] + list(arguments))
 
     def helm(extra=None):
-        return run(['helm', 'upgrade', '--install', release, str(root / 'charts/grantline'),
+        return run(['helm', 'upgrade', '--install', release, args.chart,
                     '--kubeconfig', args.kubeconfig, '--kube-context', args.context, '-n', ns,
                     '--set', 'existingSecret=app-secrets', '--set', 'postgresql.enabled=true',
                     '--set', 'postgresql.existingSecret=database-secrets',
                     '--set', 'publicURL=http://127.0.0.1:8080', '--set', 'image.repository=' + args.image,
-                    '--set', 'image.tag=' + args.tag, '--set', 'image.pullPolicy=Never',
-                    '--wait', '--timeout', '5m'] + (extra or []))
+                    '--set', 'image.tag=' + args.tag, '--set', 'image.digest=' + args.image_digest,
+                    '--set', 'image.pullPolicy=' + args.pull_policy,
+                    '--wait', '--timeout', '5m']
+                   + (['--version', args.chart_version] if args.chart_version else []) + (extra or []))
 
     def sql(query):
         return k('exec', app + '-postgres-0', '--', 'psql', '-XAt', '-U', 'postgres',

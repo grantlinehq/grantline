@@ -24,6 +24,9 @@ COPY --from=web /src/web/dist web/dist
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath -ldflags="-s -w -X github.com/grantlinehq/grantline/internal/command.Version=$VERSION" -o /out/grantline ./cmd/grantline
 
 FROM alpine:3.23@sha256:85fe1e81d6758c208f3e1eed4338a1997e19d4be002d4dd32d3100c9a8c010a0
+LABEL org.opencontainers.image.source="https://github.com/grantlinehq/grantline" \
+      org.opencontainers.image.description="Evidence-first non-human identity security" \
+      org.opencontainers.image.licenses="Apache-2.0"
 RUN apk add --no-cache ca-certificates tzdata && \
     addgroup -g 65532 grantline && adduser -D -H -u 65532 -G grantline grantline && \
     mkdir -p /var/lib/grantline/secrets /var/lib/grantline/database-secrets && \

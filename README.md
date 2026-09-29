@@ -5,7 +5,7 @@
 Open-source, evidence-first security for discovering and analyzing non-human
 identities across software delivery and workload environments.
 
-**Preview: v0.1.0 release candidate. No public image or chart is published yet.**
+**Preview: v0.1.0-rc.1.**
 See the [implementation and acceptance ledger](docs/PRODUCTION_WORK.md) for verified
 capabilities and remaining gates. Development builds are not labeled production ready.
 
@@ -28,31 +28,45 @@ This is not OWASP certification or full NHI coverage.
 
 ## Start with Docker
 
+Download the [installation ZIP](https://github.com/grantlinehq/grantline/releases/download/v0.1.0-rc.1/grantline-install-0.1.0-rc.1.zip)
+or [TAR package](https://github.com/grantlinehq/grantline/releases/download/v0.1.0-rc.1/grantline-install-0.1.0-rc.1.tar.gz),
+extract it into a new directory, then run:
+
+```sh
+docker compose up -d --wait
+```
+
+Open http://127.0.0.1:8080. Read the setup token in your terminal:
+
+```sh
+docker compose exec app cat /var/lib/grantline/secrets/setup-token
+```
+
+Create the first Owner and enroll an authenticator. Invite your team and configure
+connections through the UI. Go, Node and a source build are not required. The
+package pins the application image by digest and includes the installation guides.
+
+Prerequisites: Docker with Compose, Linux containers, a free loopback port 8080
+and network access to pull the images. Budget 4 vCPU / 8 GB for the reference workload.
+Keep generated secret volumes private; do not use `down -v` to stop a real workspace.
+
+[Docker and HTTPS guide](docs/guide/install/docker.md) ·
+[Kubernetes and Helm guide](docs/guide/install/kubernetes.md) ·
+[Product documentation](docs/guide/index.md)
+
+Container: `ghcr.io/grantlinehq/grantline:0.1.0-rc.1` (`linux/amd64`, `linux/arm64`).
+Helm chart: `oci://ghcr.io/grantlinehq/charts/grantline --version 0.1.0-rc.1`.
+The [release page](https://github.com/grantlinehq/grantline/releases/tag/v0.1.0-rc.1)
+includes checksums, signatures and the source archive.
+
+To build from a checkout instead:
+
 ```sh
 git clone https://github.com/grantlinehq/grantline.git
 cd grantline
 docker compose -f compose.yaml -f compose.build.yaml build app
 docker compose -f compose.yaml -f compose.build.yaml up -d --wait
 ```
-
-Open http://127.0.0.1:8080. Read the setup token in your terminal:
-
-```sh
-docker compose -f compose.yaml -f compose.build.yaml exec app cat /var/lib/grantline/secrets/setup-token
-```
-
-Create the first Owner and enroll an authenticator. Invite your team and configure
-connections through the UI. The published installation bundle will require only
-`docker compose up -d`; Go and Node are not runtime dependencies.
-
-Prerequisites: Git and Docker with Compose, Linux containers, a free loopback port
-8080 and network access to pull build dependencies. The current private preview
-also requires repository access. Budget 4 vCPU / 8 GB for the reference workload.
-Keep generated secret volumes private; do not use `down -v` to stop a real workspace.
-
-[Docker and HTTPS guide](docs/guide/install/docker.md) ·
-[Kubernetes and Helm guide](docs/guide/install/kubernetes.md) ·
-[Product documentation](docs/guide/index.md)
 
 ## What you can investigate
 
@@ -117,4 +131,4 @@ Read [CONTRIBUTING](CONTRIBUTING.md), [SECURITY](SECURITY.md), and
 separate from development labs. Never publish private reports or observer credentials.
 
 Licensed under [Apache-2.0](LICENSE). [Release operations](docs/guide/operations/releases.md)
-separate private preview, public source and container/chart publication.
+describe package verification, upgrades and the preview release process.
