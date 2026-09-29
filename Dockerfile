@@ -23,7 +23,7 @@ COPY web/assets.go web/assets.go
 COPY --from=web /src/web/dist web/dist
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath -ldflags="-s -w -X github.com/grantlinehq/grantline/internal/command.Version=$VERSION" -o /out/grantline ./cmd/grantline
 
-FROM alpine:3.23@sha256:85fe1e81d6758c208f3e1eed4338a1997e19d4be002d4dd32d3100c9a8c010a0
+FROM alpine:3.24@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
 RUN apk add --no-cache ca-certificates tzdata && \
     addgroup -g 65532 grantline && adduser -D -H -u 65532 -G grantline grantline && \
     mkdir -p /var/lib/grantline/secrets /var/lib/grantline/database-secrets && \
