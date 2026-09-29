@@ -116,7 +116,7 @@ Public publishing remains on hold, as requested.
 
 Local delivery: `bin/release-0.1.0-rc.1/` contains the multiarch OCI image,
 installation tarball, Helm chart, allowlisted source ZIP, README-FIRST and SHA256SUMS.
-Current image index: `sha256:e7be99768d4c0ac78080ba96bb413285ec28ecbccf7fcdab0a8452623ef009fd`.
+Current image index: `sha256:dda8c6acfcb9f004fc89ce665d5625c0039c117d6a9ddf6e087e20b3856f55e8`.
 The updated image passed a fresh ARM64 init/migrate/server check under emulation.
 Each architecture has runtime and frontend SPDX SBOMs and SLSA provenance. Explicit
 amd64 and arm64 artifact scans found no high/critical vulnerability. Existing
