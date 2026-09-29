@@ -10,6 +10,10 @@ on:
         description: 'Publish image, chart and a GitHub prerelease'
         type: boolean
         default: false
+      resume_digest:
+        description: 'Optional existing image digest: finish an interrupted publication without rebuilding or retagging'
+        type: string
+        default: ''
 permissions:
   contents: read
 concurrency:
@@ -29,11 +33,13 @@ jobs:
       id-token: write
     env:
       RELEASE_VERSION: ${{ inputs.version }}
+      RESUME_DIGEST: ${{ inputs.resume_digest }}
       IMAGE: ghcr.io/grantlinehq/grantline
       CHART: ghcr.io/grantlinehq/charts/grantline
       SIGNER: https://github.com/grantlinehq/grantline/.github/workflows/release.yml@refs/heads/main
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: {fetch-depth: 0}
       - name: Validate release inputs
         env:
           PUBLISH_REQUESTED: ${{ inputs.publish }}
@@ -44,6 +50,10 @@ jobs:
           if [ "$PUBLISH_REQUESTED" = true ]; then
             test "$REGISTRY_ALLOWED" = true || { echo 'Registry publication is not enabled by the maintainer.'; exit 1; }
           fi
+          if [ -n "$RESUME_DIGEST" ]; then
+            test "$PUBLISH_REQUESTED" = true
+            [[ "$RESUME_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          fi
           mkdir -p /tmp/release
       - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
@@ -53,7 +63,8 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Reject an existing release version
+      - name: Resolve the immutable release source
+        id: source
         if: inputs.publish
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -64,12 +75,24 @@ jobs:
           if result.returncode == 0 or str(json.loads(result.stdout).get('status')) != '404':
               raise SystemExit('Release tag exists or its absence could not be verified')
           PY
-          if docker buildx imagetools inspect "$IMAGE:$RELEASE_VERSION" >/dev/null 2>&1; then
-            echo 'Image version already exists; choose a new candidate version.'
+          SOURCE_COMMIT="$GITHUB_SHA"
+          if [ -n "$RESUME_DIGEST" ]; then
+            EXISTING_DIGEST=$(docker buildx imagetools inspect "$IMAGE:$RELEASE_VERSION" | awk '$1 == "Digest:" {print $2; exit}')
+            test "$EXISTING_DIGEST" = "$RESUME_DIGEST"
+            docker pull --platform linux/amd64 "$IMAGE@$RESUME_DIGEST"
+            SOURCE_COMMIT=$(docker image inspect "$IMAGE@$RESUME_DIGEST" --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')
+            [[ "$SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+            git merge-base --is-ancestor "$SOURCE_COMMIT" "$GITHUB_SHA"
+            # Package the exact source that produced this image, not later files.
+            git checkout --detach "$SOURCE_COMMIT"
+          elif docker buildx imagetools inspect "$IMAGE:$RELEASE_VERSION" >/dev/null 2>&1; then
+            echo 'Image version already exists; provide its exact digest to resume, or choose a new version.'
             exit 1
           fi
+          echo "commit=$SOURCE_COMMIT" >> "$GITHUB_OUTPUT"
       - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
         id: image
+        if: inputs.resume_digest == ''
         with:
           context: .
           platforms: linux/amd64,linux/arm64
@@ -84,6 +107,11 @@ jobs:
             org.opencontainers.image.version=${{ inputs.version }}
           annotations: |
             index:org.opencontainers.image.description=Evidence-first non-human identity security
+      - name: Select candidate digest
+        id: candidate
+        env:
+          BUILT_DIGEST: ${{ steps.image.outputs.digest }}
+        run: echo "digest=${RESUME_DIGEST:-$BUILT_DIGEST}" >> "$GITHUB_OUTPUT"
       - name: Scan published amd64 image
         if: inputs.publish
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
@@ -94,7 +122,7 @@ jobs:
           TRIVY_IMAGE_SRC: remote
         with:
           version: v0.74.0
-          image-ref: ${{ env.IMAGE }}@${{ steps.image.outputs.digest }}
+          image-ref: ${{ env.IMAGE }}@${{ steps.candidate.outputs.digest }}
           scanners: vuln
           severity: CRITICAL,HIGH
           exit-code: '1'
@@ -110,7 +138,7 @@ jobs:
           TRIVY_IMAGE_SRC: remote
         with:
           version: v0.74.0
-          image-ref: ${{ env.IMAGE }}@${{ steps.image.outputs.digest }}
+          image-ref: ${{ env.IMAGE }}@${{ steps.candidate.outputs.digest }}
           scanners: vuln
           severity: CRITICAL,HIGH
           exit-code: '1'
@@ -119,7 +147,7 @@ jobs:
       - name: Verify the registry image and clean installation
         if: inputs.publish
         env:
-          DIGEST: ${{ steps.image.outputs.digest }}
+          DIGEST: ${{ steps.candidate.outputs.digest }}
         run: |
           python3 - <<'PY'
           import json
@@ -129,7 +157,9 @@ jobs:
           PY
           docker pull "$IMAGE@$DIGEST"
           python3 scripts/acceptance-compose.py --image "$IMAGE@$DIGEST"
-          docker run --rm --platform linux/arm64 "$IMAGE@$DIGEST" version
+          docker buildx imagetools inspect "$IMAGE@$DIGEST" --raw > /tmp/image-index.json
+          ARM_DIGEST=$(python3 -c 'import json; m=json.load(open("/tmp/image-index.json")); print(next(x["digest"] for x in m["manifests"] if x.get("platform",{}).get("os")=="linux" and x["platform"].get("architecture")=="arm64"))')
+          docker run --rm --platform linux/arm64 "$IMAGE@$ARM_DIGEST" version
           docker buildx imagetools inspect "$IMAGE@$DIGEST" --format '{{json .SBOM}}' > /tmp/release/sbom.json
           docker buildx imagetools inspect "$IMAGE@$DIGEST" --format '{{json .Provenance}}' > /tmp/release/provenance.json
       - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6
@@ -138,7 +168,7 @@ jobs:
       - name: Sign published digest
         if: inputs.publish
         env:
-          DIGEST: ${{ steps.image.outputs.digest }}
+          DIGEST: ${{ steps.candidate.outputs.digest }}
         run: |
           cosign sign --yes "$IMAGE@$DIGEST"
           cosign verify "$IMAGE@$DIGEST" --certificate-identity "$SIGNER" --certificate-oidc-issuer https://token.actions.githubusercontent.com > /tmp/release/image-signature-verification.json
@@ -167,10 +197,17 @@ jobs:
       - name: Package and sign release downloads
         if: inputs.publish
         env:
-          IMAGE_DIGEST: ${{ steps.image.outputs.digest }}
+          IMAGE_DIGEST: ${{ steps.candidate.outputs.digest }}
           CHART_DIGEST: ${{ steps.chart.outputs.digest }}
+          SOURCE_COMMIT: ${{ steps.source.outputs.commit }}
         run: |
-          python3 scripts/package-release.py --version "$RELEASE_VERSION" --commit "$GITHUB_SHA" --image-digest "$IMAGE_DIGEST" --chart-digest "$CHART_DIGEST" --chart "/tmp/release/grantline-$RELEASE_VERSION.tgz" --output /tmp/release
+          python3 - <<'PY'
+          import json, os
+          publisher = {'source_commit': os.environ['SOURCE_COMMIT'], 'workflow_commit': os.environ['GITHUB_SHA'], 'workflow_run': os.environ['GITHUB_SERVER_URL'] + '/' + os.environ['GITHUB_REPOSITORY'] + '/actions/runs/' + os.environ['GITHUB_RUN_ID']}
+          with open('/tmp/release/publisher.json', 'w') as target:
+              json.dump(publisher, target, indent=2)
+          PY
+          python3 scripts/package-release.py --version "$RELEASE_VERSION" --commit "$SOURCE_COMMIT" --image-digest "$IMAGE_DIGEST" --chart-digest "$CHART_DIGEST" --chart "/tmp/release/grantline-$RELEASE_VERSION.tgz" --output /tmp/release
           cosign sign-blob --yes --bundle /tmp/release/SHA256SUMS.sigstore.json /tmp/release/SHA256SUMS
           cosign verify-blob --bundle /tmp/release/SHA256SUMS.sigstore.json --certificate-identity "$SIGNER" --certificate-oidc-issuer https://token.actions.githubusercontent.com /tmp/release/SHA256SUMS
           cd /tmp/release
@@ -185,8 +222,9 @@ jobs:
         if: inputs.publish
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOURCE_COMMIT: ${{ steps.source.outputs.commit }}
         run: |
-          gh release create "v$RELEASE_VERSION" /tmp/release/* --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Grantline v$RELEASE_VERSION" --notes-file /tmp/release/RELEASE-NOTES.md --prerelease --latest=false
+          gh release create "v$RELEASE_VERSION" /tmp/release/* --repo "$GITHUB_REPOSITORY" --target "$SOURCE_COMMIT" --title "Grantline v$RELEASE_VERSION" --notes-file /tmp/release/RELEASE-NOTES.md --prerelease --latest=false
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: grantline-${{ inputs.version }}
