@@ -156,8 +156,10 @@ database role checks, upgrade and restart. The private repository is
 `https://github.com/grantlinehq/grantline`; its Apache-2.0 license is detected.
 Dependabot alerts and security updates, Issues, Discussions and topics are enabled.
 Workflow tokens default to read permissions, and registry publication is disabled.
-No dependency alerts were open when checked. Automated dependency-update PRs are
-review proposals, not approved upgrades.
+No dependency alerts were open when checked. Routine dependency version-update
+PRs are disabled during prelaunch; the initial eight proposals were closed and
+their branches removed at the maintainer's request. Security alerts and security
+updates remain enabled; a security fix may still generate a review proposal.
 
 GitHub rejected rulesets, secret scanning/push protection and required environment
 reviewers for the current private Free-plan repository. CodeQL is explicitly
