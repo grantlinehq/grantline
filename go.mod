@@ -9,7 +9,7 @@ require (
 	github.com/spiffe/spire-api-sdk v1.2.5-0.20240916165922-16526993814a
 	go.yaml.in/yaml/v3 v3.0.4
 	golang.org/x/crypto v0.57.0
-	golang.org/x/oauth2 v0.36.0
+	golang.org/x/oauth2 v0.37.0
 	google.golang.org/grpc v1.83.2
 	k8s.io/api v0.34.0
 	k8s.io/apimachinery v0.34.0
@@ -18,7 +18,6 @@ require (
 )
 
 require (
-	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/emicklei/go-restful/v3 v3.12.2 // indirect
 	github.com/fxamacker/cbor/v2 v2.9.0 // indirect
