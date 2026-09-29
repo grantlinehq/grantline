@@ -78,9 +78,12 @@ kubeconfig, real historical reports and local outputs stay outside public artifa
   Controlled issuer and SMTP fixtures pass, but tenant-specific claims vary.
 - [ ] Full WCAG 2.2 AA evaluation, including assistive technology, every wizard,
   focus/contrast/error flow and zoom; responsive spot checks alone are insufficient.
-- [ ] Run CI on the intended repository, configure its protected release environment,
-  review source/notice inventory, and validate published image/chart signatures.
-  These involve the separately authorized public-release step.
+- [x] Private repository CI and fresh clone: Checks run `36506984328` passed on
+  commit `b8712a5`, including Ubuntu Compose acceptance. A separate clean HTTPS
+  clone passed README build/up, UI/docs/readiness and initial setup-token access.
+- [ ] Enable protections unavailable on the private Free plan at public launch
+  (or after a separately chosen plan change), run public CodeQL, enable private
+  vulnerability reporting, and validate published image/chart signatures.
 
 ## Release material and local context
 
@@ -107,17 +110,17 @@ provided neither the test database nor the test container filesystem. A new
 disabled synthetic connection was saved without contacting a provider. The test
 removed its volumes after passing; the temporary daemon was stopped afterward.
 
-The earlier local delivery bundle below predates this deployment-file correction.
-Use the current source Compose/chart definitions for new tests; do not distribute
-that older bundle as a validated installation package. Public publishing remains
-on hold, as requested.
+The local delivery bundle was regenerated after this correction and the private
+prelaunch work. Previously copied bundles with an older image index are obsolete.
+Public publishing remains on hold, as requested.
 
 Local delivery: `bin/release-0.1.0-rc.1/` contains the multiarch OCI image,
 installation tarball, Helm chart, allowlisted source ZIP, README-FIRST and SHA256SUMS.
-Final image index: `sha256:563b8c321528bf34cf91cbcd270bee1ab41bec94700fba147763bf59233f4a78`.
-Both running installations report `v0.1.0-rc.1` and ready. The installation tarball
-itself passed a fresh ARM64 init/migrate/server check. SBOMs include both runtime
-and frontend build dependencies. Kubernetes acceptance uses the locally loaded
+Current image index: `sha256:e7be99768d4c0ac78080ba96bb413285ec28ecbccf7fcdab0a8452623ef009fd`.
+The updated image passed a fresh ARM64 init/migrate/server check under emulation.
+Each architecture has runtime and frontend SPDX SBOMs and SLSA provenance. Explicit
+amd64 and arm64 artifact scans found no high/critical vulnerability. Existing
+development installations were preserved. Kubernetes acceptance uses the locally loaded
 version tag: kind's archive import does not retain the registry digest reference.
 Registry digest-pull/signature verification remains part of the publication gate.
 The narrow-screen menu now excludes hidden links from focus, traps focus while
@@ -149,5 +152,26 @@ maintainer-controlled `ALLOW_REGISTRY_PUBLISH=true` setting.
 
 Go race tests with PostgreSQL and frontend/docs builds passed after the namespace
 change. The corrected chart passed a clean Kubernetes installation, restricted
-database role checks, upgrade and restart. Repository-side CI/security settings
-and fresh-clone results will be recorded once observed.
+database role checks, upgrade and restart. The private repository is
+`https://github.com/grantlinehq/grantline`; its Apache-2.0 license is detected.
+Dependabot alerts and security updates, Issues, Discussions and topics are enabled.
+Workflow tokens default to read permissions, and registry publication is disabled.
+No dependency alerts were open when checked. Automated dependency-update PRs are
+review proposals, not approved upgrades.
+
+GitHub rejected rulesets, secret scanning/push protection and required environment
+reviewers for the current private Free-plan repository. CodeQL is explicitly
+skipped there, and private vulnerability reporting is unavailable until public
+launch. These are outstanding controls, not successful scans or protections.
+One organization owner and no outside collaborators were observed. Owner 2FA and
+recovery-code custody require the maintainer's own verification; organization-wide
+2FA enforcement is currently off and was not changed automatically.
+
+The initial history contains only the reviewed 463-file source allowlist (about
+2.83 MB; largest file about 163 KB). Gitleaks scanned that source and the entire
+initial Git history without findings. This is bounded scanner evidence, not a
+guarantee that all sensitive data is discoverable. Real provider reports and known
+workstation identifiers are excluded. Actual Overview/finding/evidence navigation
+was checked with synthetic imported data. A reliable publication screenshot was
+not produced by the current browser capture; the README does not substitute a
+design mockup for a real screenshot.

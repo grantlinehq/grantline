@@ -72,7 +72,7 @@ jobs:
           mkdir -p /tmp/release
           helm package charts/grantline --version "$RELEASE_VERSION" --app-version "$RELEASE_VERSION" -d /tmp/release
           printf 'GRANTLINE_IMAGE=ghcr.io/grantlinehq/grantline:%s\n' "$RELEASE_VERSION" > .env
-          tar -czf /tmp/release/grantline-install.tar.gz .env compose.yaml deploy README.md LICENSE NOTICE docs/guide web/public/brand
+          tar -czf /tmp/release/grantline-install.tar.gz .env compose.yaml deploy README.md LICENSE NOTICE THIRD_PARTY_NOTICES.md CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md docs/guide docs/PRODUCTION_WORK.md docs/architecture.md docs/permissions.md docs/metadata-handling.md docs/owasp-nhi-mapping.md docs/supported-sources.md web/public/brand third_party/licenses
           if [ -f /tmp/grantline.oci.tar ]; then mv /tmp/grantline.oci.tar /tmp/release/; fi
           cd /tmp/release
           sha256sum * > SHA256SUMS

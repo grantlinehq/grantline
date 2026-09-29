@@ -42,7 +42,12 @@ image.tag set to that available image. Follow docs/guide/install/kubernetes.md.
 Public GHCR image/chart references become usable only after the publication step.
 '''
 with tarfile.open(output / ('grantline-install-' + VERSION + '.tar.gz'), 'w:gz') as archive:
-    for name in ['compose.yaml', 'deploy', 'README.md', 'LICENSE', 'NOTICE', 'THIRD_PARTY_NOTICES.md', 'docs/guide', 'docs/PRODUCTION_WORK.md', 'web/public/brand']:
+    for name in ['compose.yaml', 'deploy', 'README.md', 'LICENSE', 'NOTICE',
+                 'THIRD_PARTY_NOTICES.md', 'CONTRIBUTING.md', 'CODE_OF_CONDUCT.md',
+                 'SECURITY.md', 'CHANGELOG.md', 'docs/guide', 'docs/PRODUCTION_WORK.md',
+                 'docs/architecture.md', 'docs/permissions.md', 'docs/metadata-handling.md',
+                 'docs/owasp-nhi-mapping.md', 'docs/supported-sources.md', 'web/public/brand',
+                 'third_party/licenses']:
         archive.add(ROOT / name, arcname=name)
     for name, value in [('.env', 'GRANTLINE_IMAGE=grantline:' + VERSION + '\n'), ('README-FIRST.md', instructions)]:
         data = value.encode()
