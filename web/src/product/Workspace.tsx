@@ -18,7 +18,14 @@ import {
   Unplug,
   X,
 } from "lucide-react";
-import { Badge, EvidenceList, Mark, Modal, SourceIcon } from "../components";
+import {
+  Badge,
+  EntityIcon,
+  EvidenceList,
+  Mark,
+  Modal,
+  SourceIcon,
+} from "../components";
 import {
   ruleNames,
   human,
@@ -26,11 +33,13 @@ import {
   type Finding,
   type Evidence,
   type Edge,
+  type Source,
 } from "../types";
 import { api, APIError, setCSRF, when, type Status, type User } from "./api";
 import { Auth } from "./Auth";
 import { Integrations } from "./Integrations";
 import { Settings } from "./Settings";
+import { sourceCollectionMessage } from "./sourceHealth";
 
 export const admin = (u: User) => ["owner", "admin"].includes(u.role);
 const selectedRun = () =>
@@ -370,9 +379,11 @@ function Overview({
   const [data, setData] = useState<any>(null),
     [queue, setQueue] = useState<Finding[]>([]),
     [runs, setRuns] = useState<any[]>([]),
+    [connections, setConnections] = useState<any[]>([]),
     [busy, setBusy] = useState(false);
   useEffect(() => {
     let active = true;
+    let timer: ReturnType<typeof setTimeout>;
     const load = () =>
       Promise.all([
         api(`/overview?run=${encodeURIComponent(selectedRun())}`),
@@ -380,25 +391,37 @@ function Overview({
           `/objects/findings?state=active&run=${encodeURIComponent(selectedRun())}`,
         ),
         api("/runs"),
+        api("/integrations"),
       ])
-        .then(([d, f, r]) => {
+        .then(([d, f, r, connections]) => {
           if (!active) return;
           setData(d);
           setQueue(f.items.slice(0, 5));
           setRuns(r.slice(0, 4));
+          setConnections(connections);
+          timer = setTimeout(
+            load,
+            r.some((run: any) => ["queued", "running"].includes(run.state))
+              ? 1000
+              : 15000,
+          );
         })
-        .catch((e) => active && onError(e.message));
+        .catch((e) => {
+          if (!active) return;
+          onError(e.message);
+          timer = setTimeout(load, 15000);
+        });
     load();
-    const timer = setInterval(load, 15000);
     return () => {
       active = false;
-      clearInterval(timer);
+      clearTimeout(timer);
     };
   }, []);
   async function collect() {
     setBusy(true);
     try {
       await api("/runs", "POST", {});
+      location.hash = "overview";
       changed();
     } catch (e) {
       onError((e as Error).message);
@@ -406,6 +429,8 @@ function Overview({
       setBusy(false);
     }
   }
+  const collecting =
+    busy || runs.some((run) => ["queued", "running"].includes(run.state));
   return (
     <>
       <Heading
@@ -414,9 +439,9 @@ function Overview({
         description="Follow what needs attention, with the evidence close at hand."
       >
         {user.role !== "viewer" && (
-          <button className="button" disabled={busy} onClick={collect}>
+          <button className="button" disabled={collecting} onClick={collect}>
             <RefreshCw size={15} />
-            Collect now
+            {collecting ? "Collecting…" : "Collect now"}
           </button>
         )}
         {admin(user) && (
@@ -442,12 +467,13 @@ function Overview({
               <small>Conditions worth a closer look</small>
             </button>
             <button onClick={() => go("integrations")}>
-              <span>Source coverage</span>
-              <strong>
-                {data.sources.filter((s: any) => s.complete).length}
-                <i> / {data.sources.length}</i>
-              </strong>
-              <small>Complete at collection</small>
+              <span>Configured sources</span>
+              <strong>{connections.length}</strong>
+              <small>
+                {connections.filter((i) => i.enabled).length} active ·{" "}
+                {data.sources.filter((s: Source) => s.complete).length} /{" "}
+                {data.sources.length} complete in this collection
+              </small>
             </button>
             <div className="last-observation">
               <span className="overline">LAST OBSERVATION</span>
@@ -470,6 +496,25 @@ function Overview({
               {selectedRun() && <a href="#overview">Return to latest</a>}
             </div>
           )}
+          {data.sources.some((s: Source) => !s.complete) && (
+            <div className="product-notice coverage-notice" role="status">
+              <div>
+                <strong>Source coverage is incomplete</strong>
+                {data.sources
+                  .filter((s: Source) => !s.complete)
+                  .map((s: Source) => (
+                    <p key={s.id}>
+                      <b>{s.id}</b> · {sourceCollectionMessage(s)}
+                    </p>
+                  ))}
+                <p>
+                  Findings reflect only the evidence available in this
+                  collection.
+                </p>
+              </div>
+              <a href="#integrations">Review integrations →</a>
+            </div>
+          )}
           <p className="section-note">
             Last successful collection: {when(data.last_success)}
             {runs[0] && (
@@ -480,41 +525,58 @@ function Overview({
               </>
             )}
           </p>
+          {runs[0]?.collection && !selectedRun() && (
+            <details
+              className="collection-progress"
+              open={collecting || undefined}
+            >
+              <summary>
+                Collection details · {human(runs[0].state)}
+                {runs[0].started_at &&
+                  runs[0].finished_at &&
+                  ` · ${((Date.parse(runs[0].finished_at) - Date.parse(runs[0].started_at)) / 1000).toFixed(2)} s`}
+              </summary>
+              <ul>
+                {runs[0].collection.sources.map((source: any) => (
+                  <li key={source.source_id}>
+                    <SourceIcon kind={source.kind} />
+                    <div>
+                      <strong>{source.source_id}</strong>
+                      <small>
+                        {human(source.method)}
+                        {source.observed_at &&
+                          ` · Observed ${when(source.observed_at)}`}
+                        {source.error_code && ` · ${source.error_code}`}
+                      </small>
+                    </div>
+                    <span>
+                      {source.entities} objects · {source.evidence} evidence
+                    </span>
+                    <span>
+                      {source.state === "pending" || source.state === "running"
+                        ? "—"
+                        : source.duration_ms < 1000
+                          ? source.duration_ms === 0
+                            ? "<1 ms"
+                            : `${source.duration_ms} ms`
+                          : `${(source.duration_ms / 1000).toFixed(2)} s`}
+                    </span>
+                    <Badge value={source.state} />
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
           {data.fixture_notice && (
-            <div className="product-notice">
-              Synthetic fixture · {data.fixture_notice}
-            </div>
+            <p className="section-note">
+              Sample dataset · This saved report contains generated records.
+            </p>
           )}
           {!data.run_id ? (
             <Blank title="Start with what you run.">
               Connect your first source to bring identities, permissions and
               evidence into one workspace.{" "}
               <a href="#integrations">Explore integrations →</a>
-              {admin(user) && (
-                <label className="import-report">
-                  Or import an existing Grantline report
-                  <input
-                    type="file"
-                    accept="application/json,.json"
-                    onChange={async (e) => {
-                      const f = e.target.files?.[0];
-                      if (!f) return;
-                      try {
-                        if (f.size > 64 * 1024 * 1024)
-                          throw new Error("Report exceeds 64 MiB");
-                        await api(
-                          "/reports/import",
-                          "POST",
-                          JSON.parse(await f.text()),
-                        );
-                        changed();
-                      } catch (e) {
-                        onError((e as Error).message);
-                      }
-                    }}
-                  />
-                </label>
-              )}
             </Blank>
           ) : (
             <div className="overview-columns">
@@ -524,7 +586,7 @@ function Overview({
                     <span className="overline">01 / PRIORITIES</span>
                     <h2>Your review queue</h2>
                   </div>
-                  <a href="#findings">
+                  <a href={`#findings?run=${encodeURIComponent(data.run_id)}`}>
                     All findings <ArrowRight size={15} />
                   </a>
                 </div>
@@ -586,7 +648,10 @@ function Overview({
             </div>
             <div className="policy-lines">
               {data.rule_results.map((r: any) => (
-                <a href="#findings" key={r.rule_id}>
+                <a
+                  href={`#findings?${new URLSearchParams({ run: data.run_id, kind: r.rule_id })}`}
+                  key={r.rule_id}
+                >
                   <code>{r.rule_id}</code>
                   <span>{ruleNames[r.rule_id]}</span>
                   <small>{r.finding_ids?.length || 0} findings</small>
@@ -695,7 +760,9 @@ function Records({
               : "Configured and observed connections, with their provenance."
         }
       />
-      <div className="record-toolbar">
+      <div
+        className={`record-toolbar ${category === "findings" ? "findings-toolbar" : ""}`}
+      >
         <label className="record-search">
           <Search size={17} />
           <input
@@ -727,27 +794,27 @@ function Records({
             setPage(0);
           }}
         />
+        {category === "findings" && (
+          <label className="review-filter">
+            <span className="sr-only">Review status</span>
+            <select
+              aria-label="Filter by review status"
+              value={state}
+              onChange={(e) => {
+                setState(e.target.value);
+                setPage(0);
+              }}
+            >
+              <option value="">All reviews</option>
+              <option value="active">Needs attention</option>
+              <option value="open">Open</option>
+              <option value="in_review">In review</option>
+              <option value="accepted_risk">Accepted risk</option>
+              <option value="resolved">Resolved</option>
+            </select>
+          </label>
+        )}
       </div>
-      {category === "findings" && (
-        <label className="review-filter">
-          Review status{" "}
-          <select
-            aria-label="Filter by review status"
-            value={state}
-            onChange={(e) => {
-              setState(e.target.value);
-              setPage(0);
-            }}
-          >
-            <option value="">All reviews</option>
-            <option value="active">Needs attention</option>
-            <option value="open">Open</option>
-            <option value="in_review">In review</option>
-            <option value="accepted_risk">Accepted risk</option>
-            <option value="resolved">Resolved</option>
-          </select>
-        </label>
-      )}
       {error && (
         <div className="product-error" role="alert">
           {error}
@@ -761,7 +828,10 @@ function Records({
         </Blank>
       ) : (
         <div className="product-table-wrap">
-          <table className="product-table">
+          <table
+            className={`product-table ${category === "findings" ? "findings-table" : ""}`}
+          >
+            <caption className="sr-only">{human(category)} results</caption>
             <thead>
               <tr>
                 <th>
@@ -782,7 +852,7 @@ function Records({
             <tbody>
               {data.items.map((item: any) => (
                 <tr key={item.id}>
-                  <td>
+                  <td className="record-title-cell">
                     <button onClick={() => go(`${category}/${item.id}`)}>
                       <strong>
                         {item.name ||
@@ -794,24 +864,26 @@ function Records({
                       </small>
                     </button>
                   </td>
-                  <td>
+                  <td
+                    data-label={category === "findings" ? "Severity" : "Type"}
+                  >
                     {item.severity ? (
                       <Badge value={item.severity} />
                     ) : (
                       human(item.kind || item.type || "")
                     )}
                   </td>
-                  <td>
+                  <td data-label={category === "findings" ? "Rule" : "Source"}>
                     <code>
                       {item.source_id || item.rule_id || item.assertion_kind}
                     </code>
                   </td>
                   {category === "findings" && (
-                    <td>
+                    <td data-label="Review">
                       <Badge value={item.triage_state || "open"} />
                     </td>
                   )}
-                  <td>
+                  <td className="record-open-cell">
                     <button
                       aria-label={`Open ${item.name || item.rule_id || item.type}`}
                       onClick={() => go(`${category}/${item.id}`)}
@@ -915,258 +987,295 @@ function RecordDetail({
   }
   return (
     <Modal
-      title={
-        data?.item.name || ruleNames[data?.item.rule_id] || "Evidence detail"
-      }
+      title={category === "findings" ? "Finding details" : "Evidence details"}
       onClose={close}
       drawer
+      className="record-drawer"
     >
-      {error && (
-        <div className="product-error" role="alert">
-          {error}
-        </div>
-      )}
-      {!data ? (
-        <p role="status">Loading evidence…</p>
-      ) : (
-        <div className="product-detail">
-          <span className="overline">{human(category)}</span>
-          <h2>
-            {data.item.name ||
-              ruleNames[data.item.rule_id] ||
-              human(data.item.type)}
-          </h2>
-          <p>
-            {data.item.description || data.item.native_id || data.item.scope}
-          </p>
-          <div className="detail-badges">
-            {data.item.severity && <Badge value={data.item.severity} />}
-            <Badge
-              value={
-                data.item.provenance ||
-                data.item.assertion_kind ||
-                data.item.rule_id
-              }
-            />
+      <div className="record-drawer-scroll" key={`${category}:${id}`}>
+        {error && (
+          <div className="product-error" role="alert">
+            {error}
           </div>
-          {data.item.recommendation && (
+        )}
+        {!data ? (
+          <p role="status">Loading evidence…</p>
+        ) : (
+          <div className="product-detail">
+            <header className="detail-summary">
+              <span className="overline">{human(category)}</span>
+              <div className="detail-badges">
+                {data.item.severity && <Badge value={data.item.severity} />}
+                <Badge
+                  value={
+                    data.item.provenance ||
+                    data.item.assertion_kind ||
+                    data.item.rule_id
+                  }
+                />
+                {category === "findings" && <Badge value={data.triage.state} />}
+              </div>
+              <h2>
+                {data.item.name ||
+                  ruleNames[data.item.rule_id] ||
+                  human(data.item.type)}
+              </h2>
+              <p>
+                {data.item.description ||
+                  data.item.native_id ||
+                  data.item.scope}
+              </p>
+            </header>
+            {data.item.recommendation && (
+              <section className="detail-recommendation">
+                <h3>Recommended next step</h3>
+                <p>{data.item.recommendation}</p>
+              </section>
+            )}
+            {data.entities?.length > 0 && (
+              <section>
+                <h3>
+                  Affected identities{" "}
+                  <span className="count-pill">
+                    {data.entities.length}
+                    {data.entities_truncated ? "+" : ""}
+                  </span>
+                </h3>
+                {data.entities_truncated && (
+                  <p>
+                    Showing the first 100 identities. Export the report for the
+                    complete set.
+                  </p>
+                )}
+                {data.entities.map((e: Entity) => (
+                  <button
+                    className="detail-entity"
+                    key={e.id}
+                    onClick={() => go(`identities/${e.id}`)}
+                  >
+                    <EntityIcon kind={e.kind} />
+                    <span className="detail-entity-label">
+                      <strong>{e.name || e.native_id}</strong>
+                      <small>
+                        {human(e.kind)} · {e.source_id}
+                      </small>
+                    </span>
+                    <ArrowRight size={15} />
+                  </button>
+                ))}
+              </section>
+            )}
+            {category === "identities" && (
+              <>
+                <button
+                  className="button"
+                  onClick={() =>
+                    api(
+                      `/graph?entity=${id}&depth=1&run=${encodeURIComponent(run)}`,
+                    )
+                      .then(setGraph)
+                      .catch((e) => setError(e.message))
+                  }
+                >
+                  <Network size={16} />
+                  Explore connections
+                </button>
+                {graph && (
+                  <section>
+                    <h3>{graph.edges.length} evidence-backed connections</h3>
+                    {graph.edges.map((e) => (
+                      <button
+                        className="connection-line"
+                        key={e.id}
+                        onClick={() => go(`relationships/${e.id}`)}
+                      >
+                        <span>
+                          {graph.nodes.find((n) => n.id === e.from)?.name ||
+                            e.from}
+                        </span>
+                        <small>{human(e.type)} →</small>
+                        <span>
+                          {graph.nodes.find((n) => n.id === e.to)?.name || e.to}
+                        </span>
+                      </button>
+                    ))}
+                    {graph.truncated && (
+                      <p>Showing the first 75 connected objects.</p>
+                    )}
+                  </section>
+                )}
+                <details>
+                  <summary>Identity metadata</summary>
+                  <pre>{JSON.stringify(data.item.attributes, null, 2)}</pre>
+                </details>
+              </>
+            )}
+            {category === "relationships" && (
+              <section>
+                <h3>Endpoints</h3>
+                {[data.item.from, data.item.to].map((v) => (
+                  <button
+                    key={v}
+                    className="detail-entity"
+                    onClick={() => go(`identities/${v}`)}
+                  >
+                    <code>{v}</code>
+                    <ArrowRight size={16} />
+                  </button>
+                ))}
+              </section>
+            )}
             <section>
-              <h3>Recommended next step</h3>
-              <p>{data.item.recommendation}</p>
-            </section>
-          )}
-          {data.entities?.length > 0 && (
-            <section>
-              <h3>Affected identities</h3>
-              {data.entities_truncated && (
+              <h3>
+                Supporting evidence{" "}
+                <span className="count-pill">
+                  {data.evidence.length}
+                  {data.evidence_truncated ? "+" : ""}
+                </span>
+              </h3>
+              {data.evidence_truncated && (
                 <p>
-                  Showing the first 100 identities. Export the report for the
-                  complete set.
+                  Showing the first 100 evidence records. Export the report for
+                  the complete set.
                 </p>
               )}
-              {data.entities.map((e: Entity) => (
-                <button
-                  className="detail-entity"
-                  key={e.id}
-                  onClick={() => go(`identities/${e.id}`)}
-                >
-                  {e.name || e.native_id}
-                  <ArrowRight size={15} />
-                </button>
-              ))}
+              <EvidenceList
+                compact
+                ids={(data.evidence as Evidence[]).map((e) => e.id)}
+                evidence={data.evidence}
+              />
             </section>
-          )}
-          {category === "identities" && (
-            <>
-              <button
-                className="button"
-                onClick={() =>
-                  api(
-                    `/graph?entity=${id}&depth=1&run=${encodeURIComponent(run)}`,
-                  )
-                    .then(setGraph)
-                    .catch((e) => setError(e.message))
-                }
-              >
-                <Network size={16} />
-                Explore connections
-              </button>
-              {graph && (
-                <section>
-                  <h3>{graph.edges.length} evidence-backed connections</h3>
-                  {graph.edges.map((e) => (
-                    <button
-                      className="connection-line"
-                      key={e.id}
-                      onClick={() => go(`relationships/${e.id}`)}
-                    >
-                      <span>
-                        {graph.nodes.find((n) => n.id === e.from)?.name ||
-                          e.from}
-                      </span>
-                      <small>{human(e.type)} →</small>
-                      <span>
-                        {graph.nodes.find((n) => n.id === e.to)?.name || e.to}
-                      </span>
-                    </button>
-                  ))}
-                  {graph.truncated && (
-                    <p>Showing the first 75 connected objects.</p>
-                  )}
-                </section>
-              )}
-              <details>
-                <summary>Identity metadata</summary>
-                <pre>{JSON.stringify(data.item.attributes, null, 2)}</pre>
-              </details>
-            </>
-          )}
-          {category === "relationships" && (
-            <section>
-              <h3>Endpoints</h3>
-              {[data.item.from, data.item.to].map((v) => (
-                <button
-                  key={v}
-                  className="detail-entity"
-                  onClick={() => go(`identities/${v}`)}
-                >
-                  <code>{v}</code>
-                  <ArrowRight size={16} />
-                </button>
-              ))}
-            </section>
-          )}
-          <section>
-            <h3>Supporting evidence</h3>
-            {data.evidence_truncated && (
-              <p>
-                Showing the first 100 evidence records. Export the report for
-                the complete set.
-              </p>
+            {data.item.limitations?.length > 0 && (
+              <section>
+                <h3>What remains uncertain</h3>
+                {data.item.limitations.map((l: string) => (
+                  <p key={l}>{l}</p>
+                ))}
+              </section>
             )}
-            <EvidenceList
-              ids={(data.evidence as Evidence[]).map((e) => e.id)}
-              evidence={data.evidence}
-            />
-          </section>
-          {data.item.limitations?.length > 0 && (
-            <section>
-              <h3>What remains uncertain</h3>
-              {data.item.limitations.map((l: string) => (
-                <p key={l}>{l}</p>
-              ))}
-            </section>
-          )}
-          {category === "findings" && (
-            <section>
-              <h3>Review decision</h3>
-              {user.role !== "viewer" ? (
-                <form onSubmit={save} key={id} onChange={() => setSaved(false)}>
-                  <label>
-                    Status
-                    <select name="state" defaultValue={data.triage.state}>
-                      {["open", "in_review", "accepted_risk", "resolved"].map(
-                        (s) => (
-                          <option key={s} value={s}>
-                            {human(s)}
-                          </option>
-                        ),
-                      )}
-                    </select>
-                  </label>
-                  <label>
-                    Assignee
-                    <select
-                      name="assignee"
-                      defaultValue={data.triage.assignee_id || ""}
-                    >
-                      <option value="">Unassigned</option>
-                      {members
-                        .filter((m) => !m.disabled)
-                        .map((m) => (
-                          <option value={m.id} key={m.id}>
-                            {m.name}
-                          </option>
-                        ))}
-                    </select>
-                  </label>
-                  <label>
-                    Reason
-                    <textarea
-                      name="reason"
-                      maxLength={4000}
-                      defaultValue={data.triage.reason}
-                    />
-                  </label>
-                  <label>
-                    Risk acceptance expires
-                    <input
-                      name="expiry"
-                      type="datetime-local"
-                      defaultValue={
-                        data.triage.expires_at
-                          ? new Date(
-                              new Date(data.triage.expires_at).getTime() -
-                                new Date().getTimezoneOffset() * 60000,
-                            )
-                              .toISOString()
-                              .slice(0, 16)
-                          : ""
-                      }
-                    />
-                  </label>
-                  <button
-                    className="primary-button"
-                    aria-disabled={saving}
-                    aria-busy={saving}
+            {category === "findings" && (
+              <section>
+                <h3>Review decision</h3>
+                {user.role !== "viewer" ? (
+                  <form
+                    className="review-decision-form"
+                    onSubmit={save}
+                    key={id}
+                    onChange={() => setSaved(false)}
                   >
-                    {saving ? "Saving…" : "Save review"}
-                  </button>
-                  {saved && <p role="status">Review saved.</p>}
-                  <small>
-                    Review decisions do not change the underlying policy result.
-                  </small>
-                </form>
-              ) : (
-                <Badge value={data.triage.state} />
-              )}
-              <h3>Discussion</h3>
-              {data.comments_truncated && (
-                <p>Showing the 100 most recent comments.</p>
-              )}
-              {data.comments.map((c: any) => (
-                <article className="comment" key={c.id}>
-                  <strong>{c.name}</strong>
-                  <small>{when(c.created_at)}</small>
-                  <p>{c.body}</p>
-                </article>
-              ))}
-              {user.role !== "viewer" && (
-                <form
-                  onSubmit={async (e) => {
-                    e.preventDefault();
-                    const form = e.currentTarget;
-                    const Body = new FormData(form).get("body");
-                    try {
-                      await api(`/comments/${id}`, "POST", { Body });
-                      form.reset();
-                      await load();
-                    } catch (e) {
-                      setError((e as Error).message);
-                    }
-                  }}
-                >
-                  <label>
-                    Add a comment
-                    <textarea name="body" required maxLength={4000} />
-                  </label>
-                  <button className="button">Post comment</button>
-                </form>
-              )}
-            </section>
-          )}
-        </div>
-      )}
+                    <label>
+                      Status
+                      <select name="state" defaultValue={data.triage.state}>
+                        {["open", "in_review", "accepted_risk", "resolved"].map(
+                          (s) => (
+                            <option key={s} value={s}>
+                              {human(s)}
+                            </option>
+                          ),
+                        )}
+                      </select>
+                    </label>
+                    <label>
+                      Assignee
+                      <select
+                        name="assignee"
+                        defaultValue={data.triage.assignee_id || ""}
+                      >
+                        <option value="">Unassigned</option>
+                        {members
+                          .filter((m) => !m.disabled)
+                          .map((m) => (
+                            <option value={m.id} key={m.id}>
+                              {m.name}
+                            </option>
+                          ))}
+                      </select>
+                    </label>
+                    <label className="review-field-wide">
+                      Reason
+                      <textarea
+                        name="reason"
+                        maxLength={4000}
+                        defaultValue={data.triage.reason}
+                      />
+                    </label>
+                    <label className="review-field-wide">
+                      Risk acceptance expires
+                      <input
+                        name="expiry"
+                        type="datetime-local"
+                        defaultValue={
+                          data.triage.expires_at
+                            ? new Date(
+                                new Date(data.triage.expires_at).getTime() -
+                                  new Date().getTimezoneOffset() * 60000,
+                              )
+                                .toISOString()
+                                .slice(0, 16)
+                            : ""
+                        }
+                      />
+                    </label>
+                    <div className="review-actions">
+                      <button
+                        className="primary-button"
+                        aria-disabled={saving}
+                        aria-busy={saving}
+                      >
+                        {saving ? "Saving…" : "Save review"}
+                      </button>
+                      {saved && <p role="status">Review saved.</p>}
+                    </div>
+                    <small>
+                      Review decisions do not change the underlying policy
+                      result.
+                    </small>
+                  </form>
+                ) : (
+                  <Badge value={data.triage.state} />
+                )}
+              </section>
+            )}
+            {category === "findings" && (
+              <section>
+                <h3>Discussion</h3>
+                {data.comments_truncated && (
+                  <p>Showing the 100 most recent comments.</p>
+                )}
+                {data.comments.map((c: any) => (
+                  <article className="comment" key={c.id}>
+                    <strong>{c.name}</strong>
+                    <small>{when(c.created_at)}</small>
+                    <p>{c.body}</p>
+                  </article>
+                ))}
+                {user.role !== "viewer" && (
+                  <form
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      const form = e.currentTarget;
+                      const Body = new FormData(form).get("body");
+                      try {
+                        await api(`/comments/${id}`, "POST", { Body });
+                        form.reset();
+                        await load();
+                      } catch (e) {
+                        setError((e as Error).message);
+                      }
+                    }}
+                  >
+                    <label>
+                      Add a comment
+                      <textarea name="body" required maxLength={4000} />
+                    </label>
+                    <button className="button">Post comment</button>
+                  </form>
+                )}
+              </section>
+            )}
+          </div>
+        )}
+      </div>
     </Modal>
   );
 }

@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && pnpm docs:build",
     "docs:build": "vitepress build ../docs",
-    "build:all": "pnpm build && pnpm docs:build",
+    "build:all": "pnpm build",
     "dev": "vite --host 127.0.0.1",
     "check-render": "vite build --ssr src/components.tsx --outDir .test-output && node scripts/check-render.mjs",
     "format": "prettier --write src"

@@ -2,11 +2,11 @@ package viewer
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/grantlinehq/grantline/internal/analyze"
 	"github.com/grantlinehq/grantline/internal/model"
 	"github.com/grantlinehq/grantline/internal/policy"
 	"github.com/grantlinehq/grantline/internal/snapshot"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -57,6 +57,9 @@ func TestViewerSessionAndRequestBoundaries(t *testing.T) {
 		if w.Code != 401 || strings.Contains(w.Body.String(), "k8s-lab") {
 			t.Fatal("unauthenticated data exposed")
 		}
+	}
+	if request("GET", "/api/v1/status", "127.0.0.1:8080", "", "", nil).Code != 404 {
+		t.Fatal("frontend cannot identify report viewer")
 	}
 	for _, host := range []string{"localhost:8080", "example.invalid:8080", "127.0.0.1:9000"} {
 		if request("GET", "/", host, "", "", nil).Code != 403 {

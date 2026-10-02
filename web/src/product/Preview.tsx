@@ -40,7 +40,10 @@ const entities = [
   id: `sample-identity-${i}`,
   name,
   kind,
-  native_id: `${provider}://${name}`,
+  native_id:
+    i === 3
+      ? "00000000-0000-4000-8000-000000000001/servicePrincipals/00000000-0000-4000-8000-0000000000cf/appRoleAssignments/00000000-0000-4000-8000-0000000002c3"
+      : `${provider}://${name}`,
   source_id: `${provider}-production`,
   scope: `${provider}/production`,
   observed_at: at,
@@ -56,7 +59,10 @@ const evidence = entities.map((e, i) => ({
   id: `sample-evidence-${i}`,
   source_id: e.source_id,
   native_id: e.native_id,
-  locator: i < 3 ? `clusterroles/${e.name}` : `metadata/${e.name}`,
+  locator:
+    i < 3
+      ? `clusterroles/${e.name}`
+      : `synthetic/demo-catalog/role_binding/${e.native_id}`,
   fields:
     i < 3
       ? ["rules.apiGroups", "rules.resources", "rules.verbs"]
@@ -65,6 +71,20 @@ const evidence = entities.map((e, i) => ({
   assertion_kind: "synthetic_fixture",
 }));
 const findings = [
+  {
+    id: "sample-finding-long",
+    rule_id: "IL005",
+    severity: "critical",
+    condition: "Unreviewed application role",
+    description:
+      'Service principal "00000000-0000-4000-8000-0000000000cf" is assigned role "00000000-0000-4000-8000-00000000025f" on resource service principal "00000000-0000-4000-8000-000000002328".',
+    recommendation:
+      "Review the actual app-role assignment and add an exact exception only when approved.",
+    affected_entity_ids: [entities[3].id],
+    evidence_ids: [evidence[3].id, evidence[4].id],
+    limitations: [],
+    affected_relationship_ids: [],
+  },
   {
     id: "sample-finding-1",
     rule_id: "IL001",

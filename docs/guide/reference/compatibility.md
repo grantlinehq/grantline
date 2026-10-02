@@ -8,7 +8,7 @@ instructions accompany the versioned GitHub release.
 | --- | --- |
 | Docker Desktop / Windows, Linux amd64 containers | Compose clean installation, persistent secrets, schema 1 → 3 upgrade, restart and restore passed |
 | Ubuntu 24.04.5 / WSL2, independent Linux Docker Engine 29.7.2 / Compose 5.5.0 | Clean ext4 source package, init/migration, first Owner/TOTP, saved connection, container recreation, persistent keys/accounts/sessions, logout and database privilege checks passed |
-| GitHub-hosted Ubuntu Linux | Private-repository Checks passed, including build/race/dependency tests and clean Compose installation with account/data persistence |
+| GitHub-hosted Ubuntu Linux | Public Checks passed for rc.1, including build/race/dependency tests and clean Compose installation with account/data persistence; every new candidate must pass again |
 | Standalone production Linux server | Not deployed separately; local runtime acceptance used the WSL2 kernel, with additional GitHub-hosted Ubuntu CI |
 | macOS Docker Desktop | Deferred by maintainer; unverified |
 | Kubernetes 1.37.0 | kind 0.33.0 / Helm 4.3.0: installation, Recreate upgrade, retained independent Secrets, readiness and restore passed |
@@ -59,5 +59,6 @@ matrix is still a release gate.
 
 The local release ledger is `docs/PRODUCTION_WORK.md`. A production-ready label
 requires its outstanding gates to close, including live provider and SSO checks,
-accessibility review, and public CI/signature
-validation. Standalone Linux and macOS coverage remain explicitly unverified.
+accessibility review, and CI/signature validation for each new candidate. The
+[static analysis review](security-review.md) explains bounded CodeQL exceptions.
+Standalone Linux and macOS coverage remain explicitly unverified.

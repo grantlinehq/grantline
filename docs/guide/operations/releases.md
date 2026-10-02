@@ -1,13 +1,13 @@
 # Release operations
 
-The current release is **v0.1.0-rc.1**, a preview. The release provides a multiarch
+The current release is **v0.1.0-rc.2**, a preview. The release provides a multiarch
 image, OCI Helm chart, Docker installation ZIP/TAR, source ZIP and signed checksums.
 The maintainer controls source visibility and registry publication. Release
 automation never changes repository visibility or declares production readiness.
 
 ## Verify a release
 
-Download the assets from the versioned [release page](https://github.com/grantlinehq/grantline/releases/tag/v0.1.0-rc.1).
+Download the assets from the versioned [release page](https://github.com/grantlinehq/grantline/releases/tag/v0.1.0-rc.2).
 `release.json` records the exact source commit, image digest, chart digest and
 architectures. Installation packages pin the application digest in `.env`.
 
@@ -38,13 +38,13 @@ runtime/frontend SPDX SBOMs and provenance to the multiarch image. Signature
 verification establishes the publisher and content digest; it does not replace
 the compatibility or security acceptance record.
 
-## Private preparation
+## Source preparation
 
 1. Use the source allowlist: `python3 scripts/package-source.py --list`. Exclude
    private workstation/lab notes, reports, secret files and build outputs.
 2. Review staged paths and run Gitleaks on source and all Git history. Revoke a real
    exposed credential; deleting a file alone does not repair history or exposure.
-3. Push to the private repository and require a successful actual Checks workflow.
+3. Push the reviewed source and require a successful actual Checks workflow.
    Fresh-clone the pushed commit and follow README. Test updated Compose and Helm
    against new disposable data; retain evidence without credentials.
 4. Review supported scope, permissions, screenshots, metadata handling, license,
@@ -67,6 +67,11 @@ their checksums before creating a GitHub prerelease. Existing release tags and
 image versions must not be overwritten; use a new candidate version for changes.
 With publication disabled only the OCI archive, chart and checksums are uploaded
 as CI artifacts; no registry package or GitHub release is created.
+When publishing, the workflow creates or verifies the tag against the exact source
+commit before writing registry artifacts. GitHub Releases uses that existing tag
+without asking the release API to create a ref on a historical commit. A failure
+preserves the signed CI artifact; resume only with the existing image/chart digests,
+or choose a new version for changed source. Never move an existing release tag.
 Release artifacts are not normal Git files. Local `scripts/package-local-candidate.py`
 can assemble already-built image/chart/source artifacts under ignored `bin/`.
 

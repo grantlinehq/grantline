@@ -217,6 +217,8 @@ func EvidenceID(sourceID, nativeID, locator string) string {
 }
 
 func stableID(prefix string, values ...string) string {
+	// Inventory IDs hash native identifiers and metadata locators, never secret
+	// values. Password authentication uses Argon2id in internal/platform/crypto.go.
 	hasher := sha256.New()
 	for index, value := range values {
 		if index > 0 {

@@ -9,9 +9,10 @@ import {
   Unplug,
 } from "lucide-react";
 import { Badge, Modal, SourceIcon } from "../components";
-import { human } from "../types";
+import { human, type Source } from "../types";
 import { api, when, type User } from "./api";
 import { admin, Blank, Heading } from "./Workspace";
+import { sourceCollectionMessage } from "./sourceHealth";
 
 const providers = [
   {
@@ -72,15 +73,27 @@ export function Integrations({
   onError: (s: string) => void;
 }) {
   const [items, setItems] = useState<any[]>([]),
+    [collection, setCollection] = useState<{
+      sources: Source[];
+      snapshot_collected_at?: string;
+      fixture_notice?: string;
+    }>({ sources: [] }),
     [loading, setLoading] = useState(true),
     [editing, setEditing] = useState<any | null>(null);
   const load = () =>
-    api<any[]>("/integrations")
-      .then(setItems)
+    Promise.all([api<any[]>("/integrations"), api<any>("/overview")])
+      .then(([items, overview]) => {
+        setItems(items);
+        setCollection(
+          overview.run_kind === "import" ? { sources: [] } : overview,
+        );
+      })
       .catch((e) => onError(e.message))
       .finally(() => setLoading(false));
   useEffect(() => {
     load();
+    const timer = setInterval(load, 15000);
+    return () => clearInterval(timer);
   }, []);
   return (
     <>
@@ -105,44 +118,54 @@ export function Integrations({
         <p role="status">Loading connections…</p>
       ) : items.length ? (
         <div className="integration-list">
-          {items.map((i) => (
-            <article key={i.id}>
-              <SourceIcon kind={i.kind} />
-              <div className="integration-identity">
-                <h2>{i.name}</h2>
-                <small>
-                  {providers.find((p) => p.id === i.kind)?.name} ·{" "}
-                  <code>{i.id}</code>
-                </small>
-              </div>
-              <div>
-                <Badge value={i.enabled ? "active" : "paused"} />
-                <small>Last access test {when(i.tested_at)}</small>
-              </div>
-              <div>
-                <span>
-                  {i.test_result?.[0]
-                    ? human(i.test_result[0].status)
-                    : "Access not tested"}
-                </span>
-                <small>
-                  {i.test_result?.[0]?.complete
-                    ? "Selected scope collected"
-                    : "Review coverage before enabling"}
-                </small>
-              </div>
-              {admin(user) && (
-                <button
-                  className="button"
-                  onClick={() => setEditing(i)}
-                  aria-label={`Configure ${i.name}`}
-                >
-                  <Settings2 size={16} />
-                  Configure
-                </button>
-              )}
-            </article>
-          ))}
+          {items.map((i) => {
+            const latest = collection.sources.find((s) => s.id === i.id);
+            return (
+              <article key={i.id}>
+                <SourceIcon kind={i.kind} />
+                <div className="integration-identity">
+                  <h2>{i.name}</h2>
+                  <small>
+                    {providers.find((p) => p.id === i.kind)?.name} ·{" "}
+                    <code>{i.id}</code>
+                  </small>
+                </div>
+                <div className="integration-status">
+                  <Badge value={i.enabled ? "active" : "paused"} />
+                  <small>Last access test {when(i.tested_at)}</small>
+                </div>
+                <div className="integration-collection">
+                  <span>
+                    {latest
+                      ? `${collection.fixture_notice ? "Sample dataset" : "Last collection"}: ${latest.complete ? "Complete" : human(latest.status)}`
+                      : i.test_result?.[0]
+                        ? human(i.test_result[0].status)
+                        : "Access not tested"}
+                  </span>
+                  <small>
+                    {latest
+                      ? sourceCollectionMessage(latest)
+                      : i.test_result?.[0]?.complete
+                        ? "Selected scope collected"
+                        : "Review coverage before enabling"}
+                  </small>
+                  {latest && (
+                    <small>{when(collection.snapshot_collected_at)}</small>
+                  )}
+                </div>
+                {admin(user) && (
+                  <button
+                    className="button"
+                    onClick={() => setEditing(i)}
+                    aria-label={`Configure ${i.name}`}
+                  >
+                    <Settings2 size={16} />
+                    Configure
+                  </button>
+                )}
+              </article>
+            );
+          })}
         </div>
       ) : (
         <Blank title="Choose your first connection">
@@ -212,6 +235,10 @@ function Wizard({
   );
   const [secretRef, setSecretRef] = useState(!!initial.secret_ref),
     [upload, setUpload] = useState("");
+  const credentialChanged =
+    !!initial.id &&
+    (authMode !== initial.config?.auth_mode ||
+      (!secretRef && !!initial.secret_ref));
   const provider = providers.find((p) => p.id === kind),
     source = initial.config?.source || {};
   const choose = (id: string) => {
@@ -337,13 +364,19 @@ function Wizard({
     <Modal
       title={initial.id ? `Configure ${initial.name}` : "Add an integration"}
       onClose={close}
+      className="integration-modal"
     >
       <div className="wizard-progress" aria-label={`Step ${stage + 1} of 4`}>
         {["Provider", "Connection & scope", "Access test", "Ready"].map(
           (v, i) => (
-            <span key={v} className={i <= stage ? "current" : ""}>
+            <span
+              key={v}
+              className={i <= stage ? "current" : ""}
+              aria-current={i === stage ? "step" : undefined}
+              aria-label={v}
+            >
               <b>{i < stage ? <Check size={13} /> : i + 1}</b>
-              {v}
+              <span className="wizard-step-label">{v}</span>
             </span>
           ),
         )}
@@ -354,7 +387,7 @@ function Wizard({
         </div>
       )}
       {stage === 0 && (
-        <div className="wizard-providers">
+        <div className="wizard-body wizard-providers">
           {providers.map((p) => (
             <button key={p.id} onClick={() => choose(p.id)}>
               <SourceIcon kind={p.id} />
@@ -369,442 +402,483 @@ function Wizard({
       )}
       {stage === 1 && (
         <form className="integration-form" onSubmit={save}>
-          <div className="provider-intro">
-            <SourceIcon kind={kind} />
-            <div>
-              <h2>{provider?.name}</h2>
-              <p>{provider?.help}</p>
-              <a href={`/docs/integrations/#${kind}`}>Permission guide ↗</a>
-            </div>
-          </div>
-          <div className="form-columns">
-            <label>
-              Connection name
-              <input
-                name="name"
-                required
-                maxLength={100}
-                defaultValue={initial.name}
-                placeholder="Production infrastructure"
-              />
-            </label>
-            <label>
-              Scope name
-              <input
-                name="scope"
-                required
-                defaultValue={source.scope || `${prefix[kind]}/production`}
-                placeholder={`${prefix[kind]}/production`}
-              />
-            </label>
-          </div>
-          {["vault", "jenkins"].includes(kind) && (
-            <label>
-              API address
-              <input
-                name="address"
-                type="url"
-                required
-                defaultValue={source.address}
-                placeholder={`https://${kind}.example.com`}
-              />
-            </label>
-          )}
-          {kind === "kubernetes" && (
-            <label>
-              Kubeconfig context
-              <input
-                name="context"
-                defaultValue={source.context}
-                placeholder="Leave blank to use current-context"
-              />
-            </label>
-          )}
-          {kind === "vault" && (
-            <>
-              <label>
-                Policy names
-                <textarea
-                  name="policies"
-                  defaultValue={source.policies?.join("\n")}
-                  placeholder="One exact policy name per line"
-                />
-              </label>
-              <label>
-                Auth roles{" "}
-                <small>Explicit role metadata; no wildcard discovery</small>
-                <textarea
-                  name="auth_roles"
-                  className="code-input"
-                  defaultValue={JSON.stringify(
-                    source.auth_roles || [
-                      {
-                        mount: "approle",
-                        name: "observer-app",
-                        type: "approle",
-                      },
-                    ],
-                    null,
-                    2,
-                  )}
-                  required
-                />
-              </label>
-              <label>
-                Related Kubernetes connection ID
-                <input
-                  name="kubernetes_source_id"
-                  defaultValue={source.kubernetes_source_id}
-                  placeholder="Optional explicit mapping"
-                />
-              </label>
-            </>
-          )}
-          {kind === "jenkins" && (
-            <>
-              <label>
-                Job paths
-                <textarea
-                  name="jobs"
-                  required
-                  defaultValue={source.jobs?.map((j: any) => j.path).join("\n")}
-                  placeholder="One full job path per line"
-                />
-              </label>
-              <label>
-                Build metadata limit
-                <input
-                  name="build_limit"
-                  type="number"
-                  min={1}
-                  max={20}
-                  defaultValue={source.build_limit || 5}
-                />
-              </label>
-              <label>
-                Jenkinsfile mappings{" "}
-                <small>
-                  Optional: linked GitHub connection, exact repository ID,
-                  immutable commit and path.
-                </small>
-                <textarea
-                  name="jenkinsfiles"
-                  className="code-input"
-                  defaultValue={JSON.stringify(
-                    initial.config?.jenkinsfiles || [],
-                    null,
-                    2,
-                  )}
-                  placeholder='[ { "job": "release", "github_source_id": "connection-id", "repository": "org/repo", "repository_id": "123", "commit": "40-character-sha", "path": "Jenkinsfile" } ]'
-                />
-              </label>
-            </>
-          )}
-          {kind === "entra" && (
-            <>
-              <div className="form-columns">
-                <label>
-                  Tenant ID
-                  <input
-                    name="tenant_id"
-                    required
-                    defaultValue={source.tenant_id}
-                  />
-                </label>
-                <label>
-                  Collector application (client) ID
-                  <input
-                    name="client_id"
-                    required
-                    defaultValue={initial.config?.client_id}
-                  />
-                </label>
+          <div className="wizard-body integration-fields">
+            <div className="provider-intro">
+              <SourceIcon kind={kind} />
+              <div>
+                <h2>{provider?.name}</h2>
+                <p>
+                  {kind === "entra" && authMode === "token"
+                    ? "Temporary access tokens expire and require manual replacement. Choose application credentials for unattended, scheduled collection."
+                    : provider?.help}
+                </p>
+                <a href={`/docs/integrations/#${kind}`}>Permission guide ↗</a>
               </div>
+            </div>
+            <div className="form-columns">
               <label>
-                Application object IDs
-                <textarea
-                  name="applications"
-                  defaultValue={source.applications?.join("\n")}
-                  placeholder="One object ID per line"
+                Connection name
+                <input
+                  name="name"
+                  required
+                  maxLength={100}
+                  defaultValue={initial.name}
+                  placeholder="Production infrastructure"
                 />
               </label>
               <label>
-                Service principal object IDs
-                <textarea
-                  name="service_principals"
-                  defaultValue={source.service_principals?.join("\n")}
-                  placeholder="One object ID per line"
+                Scope name
+                <input
+                  name="scope"
+                  required
+                  defaultValue={source.scope || `${prefix[kind]}/production`}
+                  placeholder={`${prefix[kind]}/production`}
                 />
               </label>
-            </>
-          )}
-          {kind === "github" && (
-            <>
+            </div>
+            {["vault", "jenkins"].includes(kind) && (
               <label>
-                Authentication
-                <select
-                  value={authMode}
-                  onChange={(e) => setAuthMode(e.target.value)}
-                >
-                  <option value="token">Fine-grained token</option>
-                  <option value="github_app">GitHub App</option>
-                </select>
+                API address
+                <input
+                  name="address"
+                  type="url"
+                  required
+                  defaultValue={source.address}
+                  placeholder={`https://${kind}.example.com`}
+                />
               </label>
-              {authMode === "github_app" && (
+            )}
+            {kind === "kubernetes" && (
+              <label>
+                Kubeconfig context
+                <input
+                  name="context"
+                  defaultValue={source.context}
+                  placeholder="Leave blank to use current-context"
+                />
+              </label>
+            )}
+            {kind === "vault" && (
+              <>
+                <label>
+                  Policy names
+                  <textarea
+                    name="policies"
+                    defaultValue={source.policies?.join("\n")}
+                    placeholder="One exact policy name per line"
+                  />
+                </label>
+                <label>
+                  Auth roles{" "}
+                  <small>Explicit role metadata; no wildcard discovery</small>
+                  <textarea
+                    name="auth_roles"
+                    className="code-input"
+                    defaultValue={JSON.stringify(
+                      source.auth_roles || [
+                        {
+                          mount: "approle",
+                          name: "observer-app",
+                          type: "approle",
+                        },
+                      ],
+                      null,
+                      2,
+                    )}
+                    required
+                  />
+                </label>
+                <label>
+                  Related Kubernetes connection ID
+                  <input
+                    name="kubernetes_source_id"
+                    defaultValue={source.kubernetes_source_id}
+                    placeholder="Optional explicit mapping"
+                  />
+                </label>
+              </>
+            )}
+            {kind === "jenkins" && (
+              <>
+                <label>
+                  Job paths
+                  <textarea
+                    name="jobs"
+                    required
+                    defaultValue={source.jobs
+                      ?.map((j: any) => j.path)
+                      .join("\n")}
+                    placeholder="One full job path per line"
+                  />
+                </label>
+                <label>
+                  Build metadata limit
+                  <input
+                    name="build_limit"
+                    type="number"
+                    min={1}
+                    max={20}
+                    defaultValue={source.build_limit || 5}
+                  />
+                </label>
+                <label>
+                  Jenkinsfile mappings{" "}
+                  <small>
+                    Optional: linked GitHub connection, exact repository ID,
+                    immutable commit and path.
+                  </small>
+                  <textarea
+                    name="jenkinsfiles"
+                    className="code-input"
+                    defaultValue={JSON.stringify(
+                      initial.config?.jenkinsfiles || [],
+                      null,
+                      2,
+                    )}
+                    placeholder='[ { "job": "release", "github_source_id": "connection-id", "repository": "org/repo", "repository_id": "123", "commit": "40-character-sha", "path": "Jenkinsfile" } ]'
+                  />
+                </label>
+              </>
+            )}
+            {kind === "entra" && (
+              <>
+                <label>
+                  Authentication
+                  <select
+                    value={authMode}
+                    onChange={(e) => {
+                      setAuthMode(e.target.value);
+                      setSecretRef(false);
+                    }}
+                  >
+                    <option value="client_secret">
+                      Application credentials (recommended)
+                    </option>
+                    <option value="token">Temporary access token</option>
+                  </select>
+                  <small>
+                    {authMode === "client_secret"
+                      ? "Uses the application's client secret to obtain access tokens automatically. Requires Application.Read.All application permission with admin consent. No user sign-in during collection."
+                      : "For a one-time connection check. This token does not renew automatically."}
+                  </small>
+                </label>
                 <div className="form-columns">
                   <label>
-                    App ID
+                    Tenant ID
                     <input
-                      name="app_id"
+                      name="tenant_id"
                       required
-                      defaultValue={initial.config?.app_id}
+                      defaultValue={source.tenant_id}
                     />
                   </label>
                   <label>
-                    Installation ID
+                    Collector application (client) ID
                     <input
-                      name="installation_id"
+                      name="client_id"
                       required
-                      defaultValue={initial.config?.installation_id}
+                      defaultValue={initial.config?.client_id}
                     />
                   </label>
                 </div>
-              )}
-              <label>
-                Repository scope{" "}
-                <small>
-                  Native repository IDs and full refs preserve identity when
-                  repositories are renamed.
-                </small>
-                <textarea
-                  className="code-input tall-input"
-                  name="repositories"
-                  required
-                  defaultValue={JSON.stringify(
-                    source.repositories || [
-                      {
-                        name: "organization/repository",
-                        repository_id: "123456",
-                        refs: ["refs/heads/main"],
-                        identity_mappings: [],
-                      },
-                    ],
-                    null,
-                    2,
-                  )}
-                />
-              </label>
-            </>
-          )}
-          {kind === "spire" && (
-            <>
-              <label>
-                Trust domain
-                <input
-                  name="trust_domain"
-                  required
-                  defaultValue={source.spire?.trust_domain}
-                  placeholder="example.org"
-                />
-              </label>
-              <label>
-                Parent SPIFFE IDs
-                <textarea
-                  name="parent_ids"
-                  required
-                  defaultValue={source.spire?.parent_ids?.join("\n")}
-                  placeholder="spiffe://example.org/spire/agent/..."
-                />
-              </label>
-            </>
-          )}
-          <fieldset className="credential-fields">
-            <legend>Observer credentials</legend>
-            <p>
-              {initial.id
-                ? "Leave credential fields empty to keep the stored value. New values replace the complete credential set."
-                : "Credentials are encrypted at rest and are never returned by the API."}
-            </p>
-            <label className="check-label">
-              <input
-                type="checkbox"
-                checked={secretRef}
-                onChange={(e) => setSecretRef(e.target.checked)}
-              />
-              Use a mounted secret reference
-            </label>
-            {secretRef ? (
-              <label>
-                Secret file name
-                <input
-                  name="secret_ref"
-                  required
-                  defaultValue={initial.secret_ref}
-                  placeholder="production-observer.json"
-                />
-                <small>
-                  A JSON credential file mounted in the configured secret
-                  directory.
-                </small>
-              </label>
-            ) : (
-              <>
-                {["kubernetes", "spire"].includes(kind) ? (
-                  <label>
-                    {kind === "spire"
-                      ? "Metadata export"
-                      : "Observer kubeconfig"}
-                    <input
-                      type="file"
-                      required={!initial.id}
-                      accept={
-                        kind === "spire" ? ".json" : ".yaml,.yml,.json,.config"
-                      }
-                      onChange={async (e) => {
-                        const f = e.target.files?.[0];
-                        if (!f) return;
-                        if (f.size > 10 * 1024 * 1024) {
-                          setError("File exceeds 10 MiB");
-                          e.target.value = "";
-                          return;
-                        }
-                        setUpload(await f.text());
-                      }}
-                    />
-                  </label>
-                ) : (
-                  <>
-                    {kind === "jenkins" && (
-                      <label>
-                        Observer username
-                        <input
-                          name="username"
-                          required={!initial.id}
-                          autoComplete="off"
-                        />
-                      </label>
-                    )}
-                    {authMode === "github_app" ? (
-                      <label>
-                        Private key (PEM)
-                        <textarea
-                          name="private_key"
-                          className="code-input"
-                          required={!initial.id}
-                          autoComplete="off"
-                        />
-                      </label>
-                    ) : (
-                      <label>
-                        {kind === "entra" ? "Client secret" : "Observer token"}
-                        <input
-                          name={kind === "entra" ? "client_secret" : "token"}
-                          type="password"
-                          required={!initial.id}
-                          autoComplete="new-password"
-                        />
-                      </label>
-                    )}
-                  </>
-                )}
+                <label>
+                  Application object IDs
+                  <textarea
+                    name="applications"
+                    defaultValue={source.applications?.join("\n")}
+                    placeholder="One object ID per line"
+                  />
+                </label>
+                <label>
+                  Service principal object IDs
+                  <textarea
+                    name="service_principals"
+                    defaultValue={source.service_principals?.join("\n")}
+                    placeholder="One object ID per line"
+                  />
+                </label>
               </>
             )}
-          </fieldset>
-          <div className="wizard-actions">
-            {!initial.id && (
-              <button
-                type="button"
-                className="button"
-                onClick={() => setStage(0)}
-              >
-                <ChevronLeft size={15} />
-                Back
-              </button>
+            {kind === "github" && (
+              <>
+                <label>
+                  Authentication
+                  <select
+                    value={authMode}
+                    onChange={(e) => setAuthMode(e.target.value)}
+                  >
+                    <option value="token">Fine-grained token</option>
+                    <option value="github_app">GitHub App</option>
+                  </select>
+                </label>
+                {authMode === "github_app" && (
+                  <div className="form-columns">
+                    <label>
+                      App ID
+                      <input
+                        name="app_id"
+                        required
+                        defaultValue={initial.config?.app_id}
+                      />
+                    </label>
+                    <label>
+                      Installation ID
+                      <input
+                        name="installation_id"
+                        required
+                        defaultValue={initial.config?.installation_id}
+                      />
+                    </label>
+                  </div>
+                )}
+                <label>
+                  Repository scope{" "}
+                  <small>
+                    Native repository IDs and full refs preserve identity when
+                    repositories are renamed.
+                  </small>
+                  <textarea
+                    className="code-input tall-input"
+                    name="repositories"
+                    required
+                    defaultValue={JSON.stringify(
+                      source.repositories || [
+                        {
+                          name: "organization/repository",
+                          repository_id: "123456",
+                          refs: ["refs/heads/main"],
+                          identity_mappings: [],
+                        },
+                      ],
+                      null,
+                      2,
+                    )}
+                  />
+                </label>
+              </>
             )}
+            {kind === "spire" && (
+              <>
+                <label>
+                  Trust domain
+                  <input
+                    name="trust_domain"
+                    required
+                    defaultValue={source.spire?.trust_domain}
+                    placeholder="example.org"
+                  />
+                </label>
+                <label>
+                  Parent SPIFFE IDs
+                  <textarea
+                    name="parent_ids"
+                    required
+                    defaultValue={source.spire?.parent_ids?.join("\n")}
+                    placeholder="spiffe://example.org/spire/agent/..."
+                  />
+                </label>
+              </>
+            )}
+            <fieldset className="credential-fields">
+              <legend>Observer credentials</legend>
+              <p>
+                {credentialChanged
+                  ? "Enter credentials for the selected authentication method. The previous credential cannot be reused."
+                  : initial.id
+                    ? "Leave credential fields empty to keep the stored value. New values replace the complete credential set."
+                    : "Credentials are encrypted at rest and are never returned by the API."}
+              </p>
+              <label className="check-label">
+                <input
+                  type="checkbox"
+                  checked={secretRef}
+                  onChange={(e) => setSecretRef(e.target.checked)}
+                />
+                Use a mounted secret reference
+              </label>
+              {secretRef ? (
+                <label>
+                  Secret file name
+                  <input
+                    name="secret_ref"
+                    required
+                    defaultValue={initial.secret_ref}
+                    placeholder="production-observer.json"
+                  />
+                  <small>
+                    A JSON credential file mounted in the configured secret
+                    directory.
+                  </small>
+                </label>
+              ) : (
+                <>
+                  {["kubernetes", "spire"].includes(kind) ? (
+                    <label>
+                      {kind === "spire"
+                        ? "Metadata export"
+                        : "Observer kubeconfig"}
+                      <input
+                        type="file"
+                        required={!initial.id}
+                        accept={
+                          kind === "spire"
+                            ? ".json"
+                            : ".yaml,.yml,.json,.config"
+                        }
+                        onChange={async (e) => {
+                          const f = e.target.files?.[0];
+                          if (!f) return;
+                          if (f.size > 10 * 1024 * 1024) {
+                            setError("File exceeds 10 MiB");
+                            e.target.value = "";
+                            return;
+                          }
+                          setUpload(await f.text());
+                        }}
+                      />
+                    </label>
+                  ) : (
+                    <>
+                      {kind === "jenkins" && (
+                        <label>
+                          Observer username
+                          <input
+                            name="username"
+                            required={!initial.id}
+                            autoComplete="off"
+                          />
+                        </label>
+                      )}
+                      {authMode === "github_app" ? (
+                        <label>
+                          Private key (PEM)
+                          <textarea
+                            name="private_key"
+                            className="code-input"
+                            required={!initial.id}
+                            autoComplete="off"
+                          />
+                        </label>
+                      ) : (
+                        <label>
+                          {authMode === "client_secret"
+                            ? "Client secret"
+                            : kind === "entra"
+                              ? "Microsoft Graph access token"
+                              : "Observer token"}
+                          <input
+                            key={authMode}
+                            name={
+                              authMode === "client_secret"
+                                ? "client_secret"
+                                : "token"
+                            }
+                            type="password"
+                            required={!initial.id || credentialChanged}
+                            autoComplete="new-password"
+                          />
+                        </label>
+                      )}
+                    </>
+                  )}
+                </>
+              )}
+            </fieldset>
+            {initial.id && (
+              <div className="connection-management">
+                <button
+                  type="button"
+                  className="text-button"
+                  onClick={async () => {
+                    try {
+                      await api(`/integrations/${initial.id}`, "PUT", {
+                        name: initial.name,
+                        config: initial.config,
+                        secret_ref: initial.secret_ref,
+                        enabled: !initial.enabled,
+                        revision: initial.revision,
+                      });
+                      updated();
+                      close();
+                    } catch (e) {
+                      setError((e as Error).message);
+                    }
+                  }}
+                >
+                  {initial.enabled
+                    ? "Pause scheduled collection"
+                    : "Resume scheduled collection"}
+                </button>
+                <button
+                  type="button"
+                  className="danger-button"
+                  onClick={async () => {
+                    if (
+                      !confirm(
+                        `Remove ${initial.name} and its stored credentials? Existing reports will be retained.`,
+                      )
+                    )
+                      return;
+                    try {
+                      await api(`/integrations/${initial.id}`, "DELETE");
+                      updated();
+                      close();
+                    } catch (e) {
+                      setError((e as Error).message);
+                    }
+                  }}
+                >
+                  Remove connection
+                </button>
+              </div>
+            )}
+          </div>
+          <div className="wizard-actions">
+            <button
+              type="button"
+              className="button"
+              onClick={initial.id ? close : () => setStage(0)}
+            >
+              {!initial.id && <ChevronLeft size={15} />}
+              {initial.id ? "Cancel" : "Back"}
+            </button>
             <button className="primary-button" disabled={busy}>
               {busy ? "Saving…" : "Save & continue"}
               <ArrowRight size={16} />
             </button>
           </div>
-          {initial.id && (
-            <div className="connection-management">
-              <button
-                type="button"
-                className="text-button"
-                onClick={async () => {
-                  try {
-                    await api(`/integrations/${initial.id}`, "PUT", {
-                      name: initial.name,
-                      config: initial.config,
-                      secret_ref: initial.secret_ref,
-                      enabled: !initial.enabled,
-                      revision: initial.revision,
-                    });
-                    updated();
-                    close();
-                  } catch (e) {
-                    setError((e as Error).message);
-                  }
-                }}
-              >
-                {initial.enabled
-                  ? "Pause scheduled collection"
-                  : "Resume scheduled collection"}
-              </button>
-              <button
-                type="button"
-                className="danger-button"
-                onClick={async () => {
-                  if (
-                    !confirm(
-                      `Remove ${initial.name} and its stored credentials? Existing reports will be retained.`,
-                    )
-                  )
-                    return;
-                  try {
-                    await api(`/integrations/${initial.id}`, "DELETE");
-                    updated();
-                    close();
-                  } catch (e) {
-                    setError((e as Error).message);
-                  }
-                }}
-              >
-                Remove connection
-              </button>
-            </div>
-          )}
         </form>
       )}
       {stage === 2 && (
-        <div className="wizard-test">
-          <Unplug size={32} />
-          <h2>Check the path to your source.</h2>
-          <p>
-            The access test collects the selected metadata and reports any gaps.
-            Your connection is saved and paused until you enable it.
-          </p>
-          <button className="button" disabled={busy} onClick={test}>
-            <RefreshCw size={16} />
-            {busy ? "Checking access…" : "Test connection"}
-          </button>
-          {result?.map((s: any) => (
-            <div key={s.id} className="test-result">
-              <Badge value={s.status} />
-              <p>
-                {s.complete
-                  ? "The selected scope is available."
-                  : "Collection is incomplete. Review the source permissions and scope."}
-              </p>
-              {s.errors?.map((e: any, i: number) => (
-                <p key={i}>
-                  {typeof e === "string"
-                    ? e
-                    : e.code || "Source reported a coverage gap"}
+        <div className="wizard-stage">
+          <div className="wizard-body wizard-test">
+            <Unplug size={32} />
+            <h2>Check the path to your source.</h2>
+            <p>
+              The access test collects the selected metadata and reports any
+              gaps. Your connection is saved and paused until you enable it.
+            </p>
+            <button className="button" disabled={busy} onClick={test}>
+              <RefreshCw size={16} />
+              {busy ? "Checking access…" : "Test connection"}
+            </button>
+            {result?.map((s: any) => (
+              <div key={s.id} className="test-result">
+                <Badge value={s.status} />
+                <p>
+                  {s.complete
+                    ? "The selected scope is available."
+                    : sourceCollectionMessage(s)}
                 </p>
-              ))}
-            </div>
-          ))}
+                {s.errors?.map((e: any, i: number) => (
+                  <p key={i}>
+                    {typeof e === "string"
+                      ? e
+                      : e.code || "Source reported a coverage gap"}
+                  </p>
+                ))}
+              </div>
+            ))}
+          </div>
           <div className="wizard-actions">
             <button className="button" onClick={close}>
               Keep paused
@@ -821,7 +895,7 @@ function Wizard({
         </div>
       )}
       {stage === 3 && (
-        <div className="wizard-test">
+        <div className="wizard-body wizard-test">
           <span className="success-mark">
             <Check size={30} />
           </span>

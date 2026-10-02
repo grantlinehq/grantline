@@ -1,0 +1,35 @@
+# Local development: use with compose.yaml; the existing database/secrets stay in place.
+services:
+  app:
+    image: golang:1.27.1
+    pull_policy: missing
+    init: true
+    working_dir: /workspace
+    entrypoint: [/bin/sh, /workspace/scripts/dev-watch.sh]
+    command: !reset []
+    restart: unless-stopped
+    environment:
+      HOME: /tmp
+      GOCACHE: /tmp/build-cache
+      GOMODCACHE: /tmp/module-cache
+      GOTOOLCHAIN: local
+      GOFLAGS: -buildvcs=false
+      GRANTLINE_PUBLIC_URL: http://127.0.0.1:8080
+      GRANTLINE_SECRET_DIR: /var/lib/grantline/local-integrations
+    ports: !override ["127.0.0.1:8082:8080"]
+    tmpfs: !reset []
+    volumes:
+      - .:/workspace:ro
+      - dev-go-cache:/tmp
+      - local-integrations:/var/lib/grantline/local-integrations:ro
+    depends_on: !override
+      postgres: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, curl, --fail, --silent, http://127.0.0.1:8080/readyz]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 180s
+volumes:
+  dev-go-cache:
+  local-integrations:

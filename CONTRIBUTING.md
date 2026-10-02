@@ -29,6 +29,19 @@ The design preview is a separate Vite development entry at `/design-preview.html
 It uses fictional data and is excluded from the shipped build. Never enter real
 credentials into it. Product flows must also pass tests against the real API.
 
+For local hot reload, initialize the normal Compose installation once, then use
+`docker compose -f compose.yaml -f compose.dev.yaml up -d --no-deps app` and run
+`pnpm dev` in `web`. Open http://127.0.0.1:8080; Vite proxies the API and docs to
+the Go watcher at port 8082. Stop the regular app before starting the Vite listener.
+On Windows, `scripts/dev.ps1` starts the existing database, backend and frontend.
+The existing database and secret volumes are reused; never use `down --volumes`
+on data you need to keep. Run `pnpm build` after documentation changes to refresh
+the embedded docs. Source changes do not require an application image rebuild.
+
+Optional offline analyzer fixtures are described in
+[the catalog guide](scripts/demo-catalog/README.md). They never replace a source
+collector or run automatically in the server.
+
 ## Required checks
 
 Run relevant Go tests, frontend build and component render checks. For chart changes

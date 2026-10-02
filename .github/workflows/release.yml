@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Candidate version, e.g. 0.1.0-rc.1'
+        description: 'Candidate version, e.g. 0.1.0-rc.2'
         required: true
         type: string
       publish:
@@ -102,6 +102,19 @@ jobs:
             test "$(git rev-parse "refs/tags/v$RELEASE_VERSION^{}")" = "$SOURCE_COMMIT"
           fi
           echo "commit=$SOURCE_COMMIT" >> "$GITHUB_OUTPUT"
+      - name: Create and verify the exact release tag
+        if: inputs.publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOURCE_COMMIT: ${{ steps.source.outputs.commit }}
+        run: |
+          TAG="v$RELEASE_VERSION"
+          if ! git show-ref --verify --quiet "refs/tags/$TAG"; then
+            gh api --method POST "repos/$GITHUB_REPOSITORY/git/refs" \
+              -f "ref=refs/tags/$TAG" -f "sha=$SOURCE_COMMIT" >/dev/null
+          fi
+          git fetch --no-tags origin "refs/tags/$TAG:refs/tags/$TAG"
+          test "$(git rev-parse "refs/tags/$TAG^{}")" = "$SOURCE_COMMIT"
       - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
         id: image
         if: inputs.resume_digest == ''
@@ -248,6 +261,5 @@ jobs:
         if: inputs.publish
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SOURCE_COMMIT: ${{ steps.source.outputs.commit }}
         run: |
-          gh release create "v$RELEASE_VERSION" /tmp/release/* --repo "$GITHUB_REPOSITORY" --target "$SOURCE_COMMIT" --title "Grantline v$RELEASE_VERSION" --notes-file /tmp/release/RELEASE-NOTES.md --prerelease --latest=false
+          gh release create "v$RELEASE_VERSION" /tmp/release/* --repo "$GITHUB_REPOSITORY" --verify-tag --title "Grantline v$RELEASE_VERSION" --notes-file /tmp/release/RELEASE-NOTES.md --prerelease --latest=false

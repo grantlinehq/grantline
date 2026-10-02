@@ -15,7 +15,7 @@ FILES = [
     'README.md', 'LICENSE', 'NOTICE', 'THIRD_PARTY_NOTICES.md', 'CONTRIBUTING.md',
     'CODE_OF_CONDUCT.md', 'SECURITY.md', 'CHANGELOG.md', 'go.mod', 'go.sum',
     'Dockerfile', '.dockerignore', '.gitignore', '.gitleaks.toml', '.gitattributes',
-    'compose.yaml', 'compose.build.yaml', 'web/assets.go', 'web/package.json',
+    'compose.yaml', 'compose.build.yaml', 'compose.dev.yaml', 'web/assets.go', 'web/package.json',
     'web/pnpm-lock.yaml', 'web/pnpm-workspace.yaml', 'web/index.html',
     'web/design-preview.html', 'web/vite.config.ts', 'web/tsconfig.json',
     'web/tsconfig.app.json', 'web/tsconfig.node.json', 'docs/.vitepress/config.mts',

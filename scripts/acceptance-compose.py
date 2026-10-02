@@ -100,6 +100,9 @@ def main():
             require(status['setup_required'], 'Fresh installation must require setup')
             require('Grantline' in request('GET', '/', html=True), 'Application assets missing')
             require('Grantline' in request('GET', '/docs/', html=True), 'Embedded docs missing')
+            for page in ('integrations/', 'install/docker.html', 'install/kubernetes.html'):
+                require('Grantline' in request('GET', '/docs/' + page, html=True),
+                        'Embedded documentation page missing: ' + page)
             request('GET', '/api/v1/overview', want=401)
             before = secret_fingerprints()
             app_id = compose('ps', '-q', 'app', capture=True).stdout.strip()

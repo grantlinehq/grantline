@@ -53,6 +53,20 @@ client ID and client secret, then list exact **object IDs** for applications and
 service principals. These are not interchangeable with client IDs. Credential key:
 `client_secret`. The collector does not change permissions or create credentials.
 
+Choose **Authentication → Application credentials (recommended)** for scheduled
+collection. Grantline obtains a fresh app-only access token before each collection;
+no user sign-in is required during a scan. Set up the application permission and
+admin consent once, and rotate the client secret before it expires. When switching
+an existing token connection, enter the new client secret or select a mounted JSON
+file containing `client_secret`; an old access-token file is not interchangeable.
+
+**Temporary access token** is intended for one-time connection checks. Its
+credential key is `token`; it expires and cannot renew itself. Do not use a user's
+browser session as the authentication mechanism for unattended collection.
+
+See Microsoft's [app-only access guide](https://learn.microsoft.com/en-us/graph/auth-v2-service)
+for the application registration, permission and admin-consent steps.
+
 ## GitHub
 
 Use a GitHub App installed only on selected repositories, or a fine-grained token

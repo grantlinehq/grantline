@@ -6,8 +6,8 @@ lists platforms that have actually been tested.
 
 ## From a published release package
 
-Download the [v0.1.0-rc.1 installation ZIP](https://github.com/grantlinehq/grantline/releases/download/v0.1.0-rc.1/grantline-install-0.1.0-rc.1.zip)
-or [TAR package](https://github.com/grantlinehq/grantline/releases/download/v0.1.0-rc.1/grantline-install-0.1.0-rc.1.tar.gz).
+Download the [v0.1.0-rc.2 installation ZIP](https://github.com/grantlinehq/grantline/releases/download/v0.1.0-rc.2/grantline-install-0.1.0-rc.2.zip)
+or [TAR package](https://github.com/grantlinehq/grantline/releases/download/v0.1.0-rc.2/grantline-install-0.1.0-rc.2.tar.gz).
 Verify it using the release checksums and [signature guide](../operations/releases#verify-a-release).
 Extract into a new private directory, then run:
 
@@ -118,7 +118,7 @@ For direct `docker run`, use an absolute path to your private secret directory.
 The database URL must resolve from inside the container:
 
 ```sh
-IMAGE=ghcr.io/grantlinehq/grantline:0.1.0-rc.1
+IMAGE=ghcr.io/grantlinehq/grantline:0.1.0-rc.2
 SECRETS=/private/grantline
 docker run --rm --read-only --user 65532:65532 --cap-drop ALL \
   --security-opt no-new-privileges \

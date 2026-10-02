@@ -142,29 +142,54 @@ type runConnection struct {
 	Failure     bool
 }
 
+type sourceCollection struct {
+	SourceID   string     `json:"source_id"`
+	Kind       string     `json:"kind"`
+	Method     string     `json:"method"`
+	State      string     `json:"state"`
+	DurationMS int64      `json:"duration_ms"`
+	Entities   int        `json:"entities"`
+	Evidence   int        `json:"evidence"`
+	ErrorCode  string     `json:"error_code,omitempty"`
+	ObservedAt *time.Time `json:"observed_at,omitempty"`
+}
+type collectionProgress struct {
+	Phase   string             `json:"phase"`
+	Sources []sourceCollection `json:"sources"`
+}
+
+func (s *Server) collectionProgress(ctx context.Context, id string, progress collectionProgress) error {
+	data, err := json.Marshal(progress)
+	if err != nil {
+		return err
+	}
+	_, err = s.db.ExecContext(ctx, "UPDATE runs SET configuration=jsonb_set(configuration,'{collection}',$2::jsonb) WHERE id=$1", id, data)
+	return err
+}
+
 func (s *Server) run(parent context.Context, id string) {
 	ctx, cancel := context.WithTimeout(parent, 10*time.Minute)
 	defer cancel()
 	watchDone := make(chan struct{})
 	defer close(watchDone)
-	go func() {
+	go func(watchCtx context.Context) {
 		t := time.NewTicker(time.Second)
 		defer t.Stop()
 		for {
 			select {
 			case <-watchDone:
 				return
-			case <-ctx.Done():
+			case <-watchCtx.Done():
 				return
 			case <-t.C:
 				var stop bool
-				if s.db.QueryRowContext(ctx, "SELECT cancel_requested FROM runs WHERE id=$1", id).Scan(&stop) == nil && stop {
+				if s.db.QueryRowContext(watchCtx, "SELECT cancel_requested FROM runs WHERE id=$1", id).Scan(&stop) == nil && stop {
 					cancel()
 					return
 				}
 			}
 		}
-	}()
+	}(ctx)
 	state, code := "failed", "collection_failed"
 	committed := false
 	defer func() {
@@ -212,17 +237,19 @@ func (s *Server) run(parent context.Context, id string) {
 			rows.Close()
 			return
 		}
+		credentials := map[string]string{}
+		failed := false
 		var clear []byte
 		if ref != "" {
 			clear, e = s.secretReference(ref)
 		} else {
 			clear, e = unseal(s.cfg.EncryptionKey, "connection:"+sourceID, cipher)
 		}
-		credentials := map[string]string{}
-		failed := e != nil
+		failed = e != nil
 		if !failed {
 			failed = json.Unmarshal(clear, &credentials) != nil
 		}
+
 		connections = append(connections, runConnection{c, credentials, failed})
 		sources = append(sources, c.Source)
 	}
@@ -248,16 +275,58 @@ func (s *Server) run(parent context.Context, id string) {
 	if _, e = s.db.ExecContext(ctx, "UPDATE runs SET config_revision=$2,configuration=$3 WHERE id=$1", id, revision, configuration); e != nil {
 		return
 	}
+	declared := bindings.Config{SchemaVersion: 1}
+	configured := policy.Policy{}
 	snapshot := model.Snapshot{SchemaVersion: model.SnapshotSchemaVersion, CollectedAt: time.Now().UTC(), Entities: []model.Entity{}, Relationships: []model.Relationship{}, Evidence: []model.Evidence{}, Sources: []model.Source{}}
+	progress := collectionProgress{Phase: "collecting", Sources: []sourceCollection{}}
 	for _, connection := range connections {
+		method := "live_api"
+		if connection.Config.Source.Kind == "spire" {
+			method = "provider_export"
+		}
+		progress.Sources = append(progress.Sources, sourceCollection{SourceID: connection.Config.Source.ID, Kind: connection.Config.Source.Kind, Method: method, State: "pending"})
+	}
+	for index, connection := range connections {
 		if ctx.Err() != nil {
 			return
 		}
 		c := connection.Config
+		step := &progress.Sources[index]
+		step.State = "running"
+		if s.collectionProgress(ctx, id, progress) != nil {
+			code = "progress_save_failed"
+			return
+		}
+		started := time.Now()
 		var next model.Snapshot
 		var err error
 		if !connection.Failure {
 			next, err = s.collect(ctx, c, connection.Credentials)
+		}
+		step.DurationMS = time.Since(started).Milliseconds()
+		step.Entities = len(next.Entities)
+		step.Evidence = len(next.Evidence)
+		step.State = "completed"
+		if !next.CollectedAt.IsZero() {
+			observed := next.CollectedAt
+			step.ObservedAt = &observed
+		}
+		for _, source := range next.Sources {
+			if !source.Complete {
+				step.State = "partial"
+				step.ErrorCode = source.ErrorCode
+			}
+			if source.Status == model.SourceError {
+				step.State = "failed"
+			}
+		}
+		if connection.Failure || err != nil {
+			step.State = "failed"
+			step.ErrorCode = "connection_unavailable"
+		}
+		if s.collectionProgress(ctx, id, progress) != nil {
+			code = "progress_save_failed"
+			return
 		}
 		if connection.Failure || err != nil {
 			provenance := model.ProvenanceLiveAPI
@@ -272,7 +341,11 @@ func (s *Server) run(parent context.Context, id string) {
 		snapshot.Evidence = append(snapshot.Evidence, next.Evidence...)
 		snapshot.Sources = append(snapshot.Sources, next.Sources...)
 	}
-	declared := bindings.Config{SchemaVersion: 1}
+	progress.Phase = "analyzing"
+	if s.collectionProgress(ctx, id, progress) != nil {
+		code = "progress_save_failed"
+		return
+	}
 	if bindingText != "" && (yaml.UnmarshalStrict([]byte(bindingText), &declared) != nil || declared.Validate(sources) != nil) {
 		code = "invalid_bindings"
 		return
@@ -288,7 +361,7 @@ func (s *Server) run(parent context.Context, id string) {
 	}
 	correlate.AddJenkinsVaultBindings(&snapshot, declared.JenkinsVault)
 	correlate.AddGitHubEntraTrusts(&snapshot)
-	configured := defaultPolicy(sources)
+	configured = defaultPolicy(sources)
 	if policyText != "" {
 		configured, e = policy.Parse([]byte(policyText))
 		if e != nil {
@@ -296,8 +369,10 @@ func (s *Server) run(parent context.Context, id string) {
 			return
 		}
 	}
+
 	report, e := (analyze.Analyzer{Bindings: &declared}).Analyze(snapshot, configured)
 	if e != nil {
+		code = "analysis_failed"
 		return
 	}
 	write, e := s.db.BeginTx(ctx, nil)
@@ -305,7 +380,12 @@ func (s *Server) run(parent context.Context, id string) {
 		return
 	}
 	defer write.Rollback()
-	if saveReport(ctx, write, id, report) != nil || audit(ctx, write, "", "collection.finished", id) != nil {
+	if e = saveReport(ctx, write, id, report); e != nil {
+		code = "report_save_failed"
+		return
+	}
+	if audit(ctx, write, "", "collection.finished", id) != nil {
+		code = "audit_save_failed"
 		return
 	}
 	finalState := "completed"
@@ -314,7 +394,9 @@ func (s *Server) run(parent context.Context, id string) {
 	}
 	// Commit the immutable report and terminal run state together. A crash cannot
 	// leave a saved report attached to a job that will be retried on restart.
-	if _, e = write.ExecContext(ctx, "UPDATE runs SET state=$2,error_code='',finished_at=now() WHERE id=$1", id, finalState); e != nil || write.Commit() != nil {
+	progress.Phase = "finished"
+	progressJSON, _ := json.Marshal(progress)
+	if _, e = write.ExecContext(ctx, "UPDATE runs SET state=$2,error_code='',finished_at=now(),configuration=jsonb_set(configuration,'{collection}',$3::jsonb) WHERE id=$1", id, finalState, progressJSON); e != nil || write.Commit() != nil {
 		return
 	}
 	committed = true
@@ -331,7 +413,7 @@ func defaultPolicy(sources []config.Source) policy.Policy {
 	for _, source := range sources {
 		p.RequiredSources = append(p.RequiredSources, source.ID)
 		for _, id := range source.Applications {
-			owners.RequireOwnersFor = append(owners.RequireOwnersFor, policy.EntraOwnerTarget{SourceID: source.ID, ObjectID: id, ObjectKind: "application"})
+			owners.RequireOwnersFor = append(owners.RequireOwnersFor, policy.EntraOwnerTarget{SourceID: source.ID, ObjectID: id, ObjectKind: "application_registration"})
 		}
 	}
 	p.Rules["IL004"] = owners

@@ -6,9 +6,9 @@ import (
 	"crypto/subtle"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"github.com/grantlinehq/grantline/internal/model"
 	"github.com/grantlinehq/grantline/web"
-	"fmt"
 	"io"
 	"io/fs"
 	"net"
@@ -116,6 +116,12 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet && r.Method != http.MethodHead {
 		w.Header().Set("Allow", "GET, HEAD, POST")
 		http.Error(w, "Method not allowed", 405)
+		return
+	}
+	// The shared frontend probes this endpoint to distinguish the persistent
+	// workspace from the local report viewer before showing its unlock form.
+	if r.URL.Path == "/api/v1/status" {
+		http.NotFound(w, r)
 		return
 	}
 	if strings.HasPrefix(r.URL.Path, "/api/") {
@@ -239,6 +245,9 @@ func (s *Server) login(w http.ResponseWriter, r *http.Request) {
 	}
 	s.sessions[session] = now.Add(8 * time.Hour)
 	s.failures = 0
+	// This legacy viewer only accepts literal 127.0.0.1 over HTTP (Address and
+	// ServeHTTP enforce it). Secure would break that supported local-only flow.
+	// Network deployments use grantline server with HTTPS and Secure cookies.
 	http.SetCookie(w, &http.Cookie{Name: CookieName, Value: session, Path: "/", HttpOnly: true, SameSite: http.SameSiteStrictMode, MaxAge: 8 * 60 * 60})
 	s.json(w, map[string]bool{"authenticated": true})
 }
@@ -251,6 +260,7 @@ func (s *Server) logout(w http.ResponseWriter, r *http.Request) {
 	s.mu.Lock()
 	delete(s.sessions, c.Value)
 	s.mu.Unlock()
+	// Match the loopback-only login cookie; see the documented viewer exception.
 	http.SetCookie(w, &http.Cookie{Name: CookieName, Path: "/", HttpOnly: true, SameSite: http.SameSiteStrictMode, MaxAge: -1})
 	w.WriteHeader(http.StatusNoContent)
 }

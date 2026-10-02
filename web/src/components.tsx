@@ -132,14 +132,16 @@ export function PanelTitle({
 export function EvidenceList({
   ids,
   evidence,
+  compact = false,
 }: {
   ids: string[];
   evidence: Evidence[];
+  compact?: boolean;
 }) {
   const selected = new Set(ids);
   const items = evidence.filter((e) => selected.has(e.id));
   return (
-    <div className="evidence-list">
+    <div className={`evidence-list${compact ? " evidence-list-compact" : ""}`}>
       {items.length === 0 ? (
         <p className="muted">No evidence attached.</p>
       ) : (
@@ -147,11 +149,31 @@ export function EvidenceList({
           <details key={e.id}>
             <summary>
               <Database size={15} />
-              <span>{e.locator}</span>
+              {compact ? (
+                <span className="evidence-summary-text">
+                  <strong>{e.source_id}</strong>
+                  <small>{e.native_id}</small>
+                </span>
+              ) : (
+                <span>{e.locator}</span>
+              )}
               <Badge value={e.assertion_kind} />
+              {compact && (
+                <ChevronRight
+                  className="evidence-chevron"
+                  size={16}
+                  aria-hidden="true"
+                />
+              )}
             </summary>
             <div className="evidence-content">
               <dl>
+                {compact && (
+                  <>
+                    <dt>Locator</dt>
+                    <dd className="mono">{e.locator}</dd>
+                  </>
+                )}
                 <dt>Source</dt>
                 <dd>{e.source_id}</dd>
                 <dt>Native object</dt>
@@ -175,11 +197,13 @@ export function Modal({
   onClose,
   children,
   drawer = false,
+  className = "",
 }: {
   title: string;
   onClose: () => void;
   children: ReactNode;
   drawer?: boolean;
+  className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const closeRef = useRef(onClose);
@@ -243,7 +267,7 @@ export function Modal({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={drawer ? "drawer" : "modal"}
+        className={`${drawer ? "drawer" : "modal"} ${className}`.trim()}
       >
         <div className="modal-head">
           <span>{title}</span>

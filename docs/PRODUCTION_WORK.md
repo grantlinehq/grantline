@@ -1,10 +1,33 @@
 # Grantline v0.1.0 implementation and acceptance
 
-Updated: 2026-09-29. Target: Apache-2.0, `github.com/grantlinehq/grantline`.
+Updated: 2026-10-03. Target: Apache-2.0, `github.com/grantlinehq/grantline`.
 The local candidate is implemented and testable. **It is not yet approved as
 production ready.** The release process produces versioned Docker and Helm
 distribution packages. The historical prelaunch record below separates measured
 acceptance from remaining product and publication checks.
+
+## Current publication status
+
+The repository, rc.1 multiarchitecture GHCR image, OCI chart and signed installation
+packages are public. Public Checks and CodeQL run on main; secret scanning, push
+protection and private vulnerability reporting are enabled. The private-preparation
+and publication-on-hold statements below are historical, not current blockers.
+
+The rc.2 candidate repairs embedded documentation builds, integration layout and
+collection reporting, and verifies the exact release tag before publishing assets.
+It adds no generated-data mode to the server. Optional analyzer fixtures remain
+offline and are always labeled synthetic. Provider collection uses the configured
+APIs, with SPIRE explicitly recorded as a provider export.
+
+The three initial CodeQL findings were reviewed: one inventory-ID false positive
+and two loopback HTTP viewer exceptions. The rationale is recorded in
+[static analysis review](guide/reference/security-review.md). This does not disable
+any query or exempt the persistent HTTPS server.
+
+Each candidate still requires successful CI, signed artifact verification and fresh
+Compose/Helm installation against its exact published digests. Live-provider
+failure/expiry matrices, a customer IdP/SMTP run and full WCAG review remain required
+before any production-ready claim. macOS and real ARM64 hardware are unverified.
 
 ## Implemented
 

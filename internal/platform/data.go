@@ -188,7 +188,7 @@ func (s *Server) importReport(w http.ResponseWriter, r *http.Request) {
 	send(w, 201, map[string]string{"run_id": id})
 }
 func (s *Server) runs(w http.ResponseWriter, r *http.Request) {
-	rows, e := jsonRows(r.Context(), s.db, "SELECT to_jsonb(r)-'configuration' FROM runs r ORDER BY created_at DESC LIMIT 100")
+	rows, e := jsonRows(r.Context(), s.db, "SELECT (to_jsonb(r)-'configuration') || jsonb_build_object('collection',configuration->'collection') FROM runs r ORDER BY created_at DESC LIMIT 100")
 	if e != nil {
 		fail(w, 503, "database_unavailable")
 		return
