@@ -10,7 +10,14 @@ import {
 } from "lucide-react";
 import { Badge, Modal, SourceIcon } from "../components";
 import { human, type Source } from "../types";
-import { api, when, type User } from "./api";
+import { api, APIError, when, type FieldIssue, type User } from "./api";
+import { FieldErrors } from "./FormFields";
+import {
+  JenkinsMappingFields,
+  ProviderPreparation,
+  RepositoryFields,
+  VaultRoleFields,
+} from "./IntegrationFields";
 import { admin, Blank, Heading } from "./Workspace";
 import { sourceCollectionMessage } from "./sourceHealth";
 
@@ -200,6 +207,7 @@ export function Integrations({
       {editing && (
         <Wizard
           initial={editing}
+          connections={items}
           close={() => setEditing(null)}
           updated={load}
         />
@@ -209,10 +217,12 @@ export function Integrations({
 }
 function Wizard({
   initial,
+  connections,
   close,
   updated,
 }: {
   initial: any;
+  connections: any[];
   close: () => void;
   updated: () => void;
 }) {
@@ -223,6 +233,23 @@ function Wizard({
     [error, setError] = useState(""),
     [result, setResult] = useState<any[] | null>(null),
     [formData, setFormData] = useState<any>(null);
+  const [issues, setIssues] = useState<FieldIssue[]>([]),
+    [roles, setRoles] = useState<any[]>(
+      initial.config?.source?.auth_roles || [],
+    ),
+    [repositories, setRepositories] = useState<any[]>(
+      initial.config?.source?.repositories || [],
+    ),
+    [jenkinsfiles, setJenkinsfiles] = useState<any[]>(
+      initial.config?.jenkinsfiles || [],
+    );
+  const field = (name: string) => {
+    const key = name.replace(/^source\.(spire\.)?/, "");
+    return {
+      id: `field-${key}`,
+      "aria-invalid": issues.some((i) => i.field === key) || undefined,
+    };
+  };
   const [authMode, setAuthMode] = useState(
     initial.config?.auth_mode ||
       (initial.kind === "entra"
@@ -258,6 +285,7 @@ function Wizard({
     event.preventDefault();
     setBusy(true);
     setError("");
+    setIssues([]);
     const f = Object.fromEntries(new FormData(event.currentTarget)) as Record<
       string,
       string
@@ -268,7 +296,7 @@ function Wizard({
       if (kind === "kubernetes") source.context = f.context;
       if (kind === "vault") {
         source.policies = lines(f.policies);
-        source.auth_roles = JSON.parse(f.auth_roles || "[]");
+        source.auth_roles = roles;
         source.kubernetes_source_id = f.kubernetes_source_id;
       }
       if (kind === "jenkins") {
@@ -276,11 +304,18 @@ function Wizard({
         source.jobs = lines(f.jobs).map((path) => ({ path, kind: "job" }));
       }
       if (kind === "entra") {
-        source.tenant_id = f.tenant_id;
-        source.applications = lines(f.applications);
-        source.service_principals = lines(f.service_principals);
+        source.tenant_id = f.tenant_id.trim().toLowerCase();
+        source.scope = `tenant/${source.tenant_id}`;
+        source.applications = lines(f.applications).map((v) => v.toLowerCase());
+        source.service_principals = lines(f.service_principals).map((v) =>
+          v.toLowerCase(),
+        );
       }
-      if (kind === "github") source.repositories = JSON.parse(f.repositories);
+      if (kind === "github")
+        source.repositories = repositories.map((r) => ({
+          ...r,
+          refs: (r.refs || []).map((v: string) => v.trim()).filter(Boolean),
+        }));
       if (kind === "spire")
         source.spire = {
           trust_domain: f.trust_domain,
@@ -299,11 +334,10 @@ function Wizard({
         config: {
           source,
           auth_mode: authMode,
-          client_id: f.client_id || "",
+          client_id: f.client_id?.trim().toLowerCase() || "",
           app_id: f.app_id || "",
           installation_id: f.installation_id || "",
-          jenkinsfiles:
-            kind === "jenkins" ? JSON.parse(f.jenkinsfiles || "[]") : undefined,
+          jenkinsfiles: kind === "jenkins" ? jenkinsfiles : undefined,
         },
         credentials,
         secret_ref: secretRef ? f.secret_ref : "",
@@ -322,6 +356,7 @@ function Wizard({
       updated();
     } catch (e) {
       setError((e as Error).message);
+      if (e instanceof APIError) setIssues(e.fields);
     } finally {
       setBusy(false);
     }
@@ -386,6 +421,7 @@ function Wizard({
           {error}
         </div>
       )}
+      <FieldErrors issues={issues} />
       {stage === 0 && (
         <div className="wizard-body wizard-providers">
           {providers.map((p) => (
@@ -402,7 +438,11 @@ function Wizard({
       )}
       {stage === 1 && (
         <form className="integration-form" onSubmit={save}>
-          <div className="wizard-body integration-fields">
+          <div
+            className="wizard-body integration-fields"
+            id="field-config"
+            tabIndex={-1}
+          >
             <div className="provider-intro">
               <SourceIcon kind={kind} />
               <div>
@@ -415,6 +455,7 @@ function Wizard({
                 <a href={`/docs/integrations/#${kind}`}>Permission guide ↗</a>
               </div>
             </div>
+            <ProviderPreparation key={kind} kind={kind} />
             <div className="form-columns">
               <label>
                 Connection name
@@ -426,20 +467,28 @@ function Wizard({
                   placeholder="Production infrastructure"
                 />
               </label>
-              <label>
-                Scope name
-                <input
-                  name="scope"
-                  required
-                  defaultValue={source.scope || `${prefix[kind]}/production`}
-                  placeholder={`${prefix[kind]}/production`}
-                />
-              </label>
+              {kind !== "entra" && (
+                <label>
+                  Scope name
+                  <input
+                    {...field("source.scope")}
+                    name="scope"
+                    required
+                    defaultValue={source.scope || `${prefix[kind]}/production`}
+                    placeholder={`${prefix[kind]}/production`}
+                  />
+                  <small>
+                    A stable name for this source, starting with {prefix[kind]}
+                    /.
+                  </small>
+                </label>
+              )}
             </div>
             {["vault", "jenkins"].includes(kind) && (
               <label>
                 API address
                 <input
+                  {...field("source.address")}
                   name="address"
                   type="url"
                   required
@@ -463,38 +512,46 @@ function Wizard({
                 <label>
                   Policy names
                   <textarea
+                    {...field("source.policies")}
                     name="policies"
                     defaultValue={source.policies?.join("\n")}
                     placeholder="One exact policy name per line"
                   />
                 </label>
+                <VaultRoleFields
+                  value={roles}
+                  onChange={setRoles}
+                  issues={issues}
+                />
                 <label>
-                  Auth roles{" "}
-                  <small>Explicit role metadata; no wildcard discovery</small>
-                  <textarea
-                    name="auth_roles"
-                    className="code-input"
-                    defaultValue={JSON.stringify(
-                      source.auth_roles || [
-                        {
-                          mount: "approle",
-                          name: "observer-app",
-                          type: "approle",
-                        },
-                      ],
-                      null,
-                      2,
-                    )}
-                    required
-                  />
-                </label>
-                <label>
-                  Related Kubernetes connection ID
-                  <input
+                  Related Kubernetes connection
+                  <select
+                    {...field("source.kubernetes_source_id")}
                     name="kubernetes_source_id"
-                    defaultValue={source.kubernetes_source_id}
-                    placeholder="Optional explicit mapping"
-                  />
+                    defaultValue={source.kubernetes_source_id || ""}
+                  >
+                    <option value="">No Kubernetes mapping</option>
+                    {connections
+                      .filter((c) => c.kind === "kubernetes")
+                      .map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                          {c.enabled ? "" : " (paused)"}
+                        </option>
+                      ))}
+                    {source.kubernetes_source_id &&
+                      !connections.some(
+                        (c) => c.id === source.kubernetes_source_id,
+                      ) && (
+                        <option value={source.kubernetes_source_id}>
+                          Missing connection: {source.kubernetes_source_id}
+                        </option>
+                      )}
+                  </select>
+                  <small>
+                    Select the cluster trusted by these Vault roles. This is an
+                    explicit relationship.
+                  </small>
                 </label>
               </>
             )}
@@ -503,6 +560,7 @@ function Wizard({
                 <label>
                   Job paths
                   <textarea
+                    {...field("source.jobs")}
                     name="jobs"
                     required
                     defaultValue={source.jobs
@@ -521,23 +579,12 @@ function Wizard({
                     defaultValue={source.build_limit || 5}
                   />
                 </label>
-                <label>
-                  Jenkinsfile mappings{" "}
-                  <small>
-                    Optional: linked GitHub connection, exact repository ID,
-                    immutable commit and path.
-                  </small>
-                  <textarea
-                    name="jenkinsfiles"
-                    className="code-input"
-                    defaultValue={JSON.stringify(
-                      initial.config?.jenkinsfiles || [],
-                      null,
-                      2,
-                    )}
-                    placeholder='[ { "job": "release", "github_source_id": "connection-id", "repository": "org/repo", "repository_id": "123", "commit": "40-character-sha", "path": "Jenkinsfile" } ]'
-                  />
-                </label>
+                <JenkinsMappingFields
+                  value={jenkinsfiles}
+                  onChange={setJenkinsfiles}
+                  connections={connections}
+                  issues={issues}
+                />
               </>
             )}
             {kind === "entra" && (
@@ -566,35 +613,56 @@ function Wizard({
                   <label>
                     Tenant ID
                     <input
+                      {...field("source.tenant_id")}
                       name="tenant_id"
                       required
                       defaultValue={source.tenant_id}
                     />
+                    <small>
+                      Directory (tenant) ID from the collector app’s Overview.
+                      Grantline derives the tenant scope automatically.
+                    </small>
                   </label>
                   <label>
                     Collector application (client) ID
                     <input
+                      {...field("client_id")}
                       name="client_id"
                       required
                       defaultValue={initial.config?.client_id}
                     />
+                    <small>
+                      Application (client) ID of the collector app, not its
+                      Object ID.
+                    </small>
                   </label>
                 </div>
                 <label>
                   Application object IDs
                   <textarea
+                    {...field("source.applications")}
                     name="applications"
                     defaultValue={source.applications?.join("\n")}
                     placeholder="One object ID per line"
                   />
+                  <small>
+                    App registrations → target app → Overview → Object ID. These
+                    are applications to inspect; enter at least one application
+                    or service principal.
+                  </small>
                 </label>
                 <label>
                   Service principal object IDs
                   <textarea
+                    {...field("source.service_principals")}
                     name="service_principals"
                     defaultValue={source.service_principals?.join("\n")}
                     placeholder="One object ID per line"
                   />
+                  <small>
+                    Enterprise applications → target app → Overview → Object ID.
+                    This differs from the app registration’s Object ID.
+                  </small>
                 </label>
               </>
             )}
@@ -615,6 +683,7 @@ function Wizard({
                     <label>
                       App ID
                       <input
+                        {...field("app_id")}
                         name="app_id"
                         required
                         defaultValue={initial.config?.app_id}
@@ -623,6 +692,7 @@ function Wizard({
                     <label>
                       Installation ID
                       <input
+                        {...field("installation_id")}
                         name="installation_id"
                         required
                         defaultValue={initial.config?.installation_id}
@@ -630,30 +700,11 @@ function Wizard({
                     </label>
                   </div>
                 )}
-                <label>
-                  Repository scope{" "}
-                  <small>
-                    Native repository IDs and full refs preserve identity when
-                    repositories are renamed.
-                  </small>
-                  <textarea
-                    className="code-input tall-input"
-                    name="repositories"
-                    required
-                    defaultValue={JSON.stringify(
-                      source.repositories || [
-                        {
-                          name: "organization/repository",
-                          repository_id: "123456",
-                          refs: ["refs/heads/main"],
-                          identity_mappings: [],
-                        },
-                      ],
-                      null,
-                      2,
-                    )}
-                  />
-                </label>
+                <RepositoryFields
+                  value={repositories}
+                  onChange={setRepositories}
+                  issues={issues}
+                />
               </>
             )}
             {kind === "spire" && (
@@ -661,6 +712,7 @@ function Wizard({
                 <label>
                   Trust domain
                   <input
+                    {...field("source.spire.trust_domain")}
                     name="trust_domain"
                     required
                     defaultValue={source.spire?.trust_domain}
@@ -670,6 +722,7 @@ function Wizard({
                 <label>
                   Parent SPIFFE IDs
                   <textarea
+                    {...field("source.spire.parent_ids")}
                     name="parent_ids"
                     required
                     defaultValue={source.spire?.parent_ids?.join("\n")}
@@ -776,6 +829,13 @@ function Wizard({
                             required={!initial.id || credentialChanged}
                             autoComplete="new-password"
                           />
+                          {authMode === "client_secret" && (
+                            <small>
+                              Certificates &amp; secrets → Client secrets →
+                              Value. The Secret ID cannot authenticate. Store
+                              the expiry in your rotation process.
+                            </small>
+                          )}
                         </label>
                       )}
                     </>

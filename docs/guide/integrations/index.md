@@ -3,6 +3,18 @@
 Use **Integrations → Add integration**. Choose provider, connection and explicit
 scope, save, test access, then enable and collect. New connections remain paused
 until you enable them. A failed or incomplete test is not a healthy source.
+Expand **Before you connect: permissions & preparation** in the wizard for the
+provider's setup steps, collected metadata and access boundaries. Kubernetes and
+Vault include copyable permission examples to adapt in your own change process.
+Grantline does not apply those permissions or widen provider access automatically.
+
+Use **Add repository**, **Add auth role**, or **Add Jenkinsfile mapping** to enter
+scope as structured rows; no JSON is needed for these forms. GitHub's optional
+identity declarations and existing-run checks are nested under each repository
+and are retained when editing it. Related Kubernetes/GitHub connections use
+pickers, including paused-state labels. A source access test can still find an
+expiry, permission or availability problem after the fields validate.
+
 Credentials are encrypted with a key stored outside PostgreSQL. The API never
 returns saved credentials. Replacing credentials replaces the complete credential
 set; leaving fields blank preserves it. Removing a connection removes its stored
@@ -47,6 +59,23 @@ its commit-pinned local repository method.
 
 ## Entra
 
+The IDs come from different places in the Entra admin center:
+
+| Form field | Where to copy it |
+| --- | --- |
+| Tenant ID | Collector app registration → Overview → Directory (tenant) ID |
+| Collector application (client) ID | Collector app registration → Overview → Application (client) ID |
+| Client secret | Collector app → Certificates & secrets → Client secrets → **Value**, not Secret ID |
+| Application object IDs | Each target app registration → Overview → **Object ID** |
+| Service principal object IDs | Each target Enterprise application → Overview → **Object ID** |
+
+Use a collector application separate from the applications being inspected and
+from product SSO. Choose **Application permissions**, not Delegated permissions,
+for unattended collection and grant tenant admin consent. The Graph permission
+is tenant-wide; the selected object IDs bound Grantline's collection requests.
+The guided form derives `tenant/<tenant-id>` automatically. Select at least one
+application or service principal. An application/client ID is not its Object ID.
+
 Use a dedicated collector app with admin-consented Microsoft Graph
 `Application.Read.All` application permission. Provide tenant ID, application
 client ID and client secret, then list exact **object IDs** for applications and
@@ -68,6 +97,14 @@ See Microsoft's [app-only access guide](https://learn.microsoft.com/en-us/graph/
 for the application registration, permission and admin-consent steps.
 
 ## GitHub
+
+For each repository, supply `owner/repository`, its numeric repository ID and
+1–10 full refs such as `refs/heads/main` or `refs/tags/v1.0.0`. Obtain the ID with
+`gh api repos/OWNER/REPO --jq .id` or GitHub's `GET /repos/OWNER/REPO` API; do not
+substitute a repository name. Optional identity declarations require a pinned
+commit, workflow/job/step, the exact reference and a tenant/client UUID. These
+UUIDs are identifiers, not secret values. Existing-run checks do not dispatch a
+workflow or prove access to every downstream resource.
 
 Use a GitHub App installed only on selected repositories, or a fine-grained token
 with Metadata, Contents and Actions read permissions. For an App provide App ID,

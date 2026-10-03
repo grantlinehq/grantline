@@ -5,6 +5,7 @@ import { human } from "../types";
 import { api, when, type User } from "./api";
 import { SessionSettings, SSOSettings } from "./SecuritySettings";
 import { Heading } from "./Workspace";
+import { PolicyEditor } from "./PolicyEditor";
 
 export function Settings({
   user,
@@ -316,41 +317,13 @@ export function Settings({
         </>
       )}
       {settings && tab === "policies" && (
-        <form onSubmit={save} className="settings-form">
-          <div className="section-heading">
-            <div>
-              <h2>Policy &amp; explicit context</h2>
-              <p className="section-note">
-                Changes are validated and versioned. They apply to the next
-                collection; existing reports remain unchanged.
-              </p>
-            </div>
-            <a href="/docs/policies/">Configuration reference ↗</a>
-          </div>
-          <label>
-            IL001–IL008 policy configuration
-            <textarea
-              name="policy"
-              className="code-input policy-input"
-              defaultValue={settings.policy}
-              placeholder="Leave blank to use the documented defaults"
-            />
-          </label>
-          <label>
-            Environment, business context &amp; relationship declarations
-            <textarea
-              name="bindings"
-              className="code-input policy-input"
-              defaultValue={settings.bindings}
-              placeholder="Optional strict YAML context bindings"
-            />
-          </label>
-          <div className="wizard-actions">
-            <button className="primary-button" disabled={busy}>
-              Save new revision
-            </button>
-          </div>
-        </form>
+        <PolicyEditor
+          settings={settings}
+          updated={async () => {
+            await load();
+            await refresh();
+          }}
+        />
       )}
       {tab === "sso" && user.role === "owner" && (
         <SSOSettings onError={onError} />

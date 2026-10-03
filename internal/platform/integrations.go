@@ -92,9 +92,15 @@ func normalizeConnection(c *Connection, id string) error {
 		if c.AuthMode != "client_secret" && c.AuthMode != "token" {
 			return errors.New("unsupported authentication")
 		}
+		if c.AuthMode == "client_secret" && !connectionUUID.MatchString(c.ClientID) {
+			return errors.New("invalid application client ID")
+		}
 	case "github":
 		if c.AuthMode != "github_app" && c.AuthMode != "token" {
 			return errors.New("unsupported authentication")
+		}
+		if c.AuthMode == "github_app" && (!model.GitHubNumericID.MatchString(c.AppID) || !model.GitHubNumericID.MatchString(c.InstallationID)) {
+			return errors.New("invalid GitHub App identifiers")
 		}
 	case "vault":
 		if c.AuthMode != "token" {
@@ -141,7 +147,11 @@ func (s *Server) saveIntegration(w http.ResponseWriter, r *http.Request) {
 		id = randomID()
 	}
 	if e := normalizeConnection(&in.Config, id); e != nil {
-		fail(w, 400, "invalid_provider_configuration")
+		issues := integrationIssues(in.Config)
+		if len(issues) == 0 {
+			issues = []fieldIssue{{Field: "config", Message: "Review the provider scope, authentication method and resource fields."}}
+		}
+		invalidFields(w, issues)
 		return
 	}
 	if in.SecretRef != "" && (strings.ContainsAny(in.SecretRef, "/\\") || len(in.Credentials) > 0) {

@@ -14,10 +14,12 @@ export type Status = {
   email_enabled?: boolean;
 };
 let csrf = "";
+export type FieldIssue = { field: string; message: string; line?: number };
 export class APIError extends Error {
   constructor(
     message: string,
     public status: number,
+    public fields: FieldIssue[] = [],
   ) {
     super(message);
   }
@@ -42,11 +44,13 @@ export async function api<T = any>(
   const data = await response.json().catch(() => ({}));
   if (!response.ok)
     throw new APIError(
-      (data.error || `Request failed (${response.status})`).replaceAll(
-        "_",
-        " ",
-      ),
+      (
+        data.message ||
+        data.error ||
+        `Request failed (${response.status})`
+      ).replaceAll("_", " "),
       response.status,
+      data.fields || [],
     );
   return data as T;
 }

@@ -42,7 +42,42 @@ secrets, 24 hours for X.509-SVIDs and one hour for JWT-SVIDs.
 | IL007 | Long-lived workload identities |
 | IL008 | Identity shared across environments |
 
-The CLI and server use the same strict policy parser. Example:
+Open **Settings → Policies** as an Owner or Admin. The guided editor shows the
+effective configuration, including defaults: all eight rules, severity, duration
+limits, required connections and exact exception lists. Use the connection picker
+and copy native IDs from an identity's evidence details. Display names do not
+replace native IDs. IL004's owner requirement applies only to its listed targets;
+an empty target list does not require owners on every object.
+
+1. Adjust the rules, sources, thresholds or exact exceptions in the guided form.
+2. Select **Validate & preview**. Errors identify the field and, for YAML syntax,
+   the line. The preview compares rule outcomes and findings with the latest saved
+   report, showing its time and whether it was imported or synthetic.
+3. Review the change, acknowledge any disabled rules or removed required sources,
+   then select **Save new revision**. A concurrent settings edit requires reloading.
+
+Preview uses saved evidence only: it does not test provider credentials, collect
+fresh data, overwrite reports, change triage or resolve findings. Existing
+collection gaps remain. If no reusable snapshot exists, configuration validation
+still works and the preview explains how to obtain one. A lower finding count can
+mean reduced detection coverage; it is not proof that the risks were fixed.
+Changes take effect on the next collection.
+
+**Use built-in defaults** restores dynamic defaults, including all enabled
+connections. Custom configuration is a **complete replacement**, not a patch:
+omitted rules do not run, and newly enabled connections are not automatically
+added to a custom required-source list. The API also rejects an unacknowledged
+rule/source coverage reduction. Exact exceptions and weaker thresholds can also
+reduce detection; review their preview carefully.
+
+**Advanced YAML** remains available. Switching editors validates and preserves
+supported exception lists; unsupported syntax is rejected rather than discarded.
+The CLI and server use the same strict parser: block lists, two-space indentation,
+plain single-line scalars and duration units such as `168h`, `24h` or `15m` (not
+`7d`). Do not use flow arrays, anchors, multiline values or inline comments.
+
+This example keeps all eight rules enabled. Replace `production-cluster` with an
+actual connection ID and add your other required connection IDs:
 
 ```yaml
 schema_version: 1
@@ -55,9 +90,60 @@ limits:
 rules:
   IL001:
     severity: high
+  IL002:
+    severity: medium
   IL003:
     severity: medium
+  IL004:
+    severity: medium
+  IL005:
+    severity: medium
+  IL006:
+    severity: high
+    forbid_namespace_only: true
+  IL007:
+    severity: medium
+  IL008:
+    severity: medium
+    separated_environments:
+      - first: production
+        second: staging
 ```
+
+## Context declarations
+
+Expand **Advanced business context & relationship declarations** beneath the
+rules. Context uses a separate, validated YAML document. This complete example
+declares that the same native service account is used by two application contexts.
+Replace the connection and native IDs with your actual evidence. The declarations
+are operator assertions; they do not prove runtime use.
+
+```yaml
+schema_version: 1
+applications:
+  - id: payments-production
+    name: Payments production
+    owner_hint: Payments security team
+    members:
+      - source_id: production-cluster
+        kind: service_account
+        native_id: replace-with-service-account-uid
+        environment: production
+  - id: payments-staging
+    name: Payments staging
+    owner_hint: Payments security team
+    members:
+      - source_id: production-cluster
+        kind: service_account
+        native_id: replace-with-service-account-uid
+        environment: staging
+```
+
+For IL008, configure the same exact environment pair in the rule. A missing
+connection, unresolved native identity or incomplete evidence is a coverage gap,
+not evidence of absence. Removing context in a preview removes only the previous
+context-derived relationships; provider evidence and workflow declarations keep
+their provenance.
 
 Use exact connection and native object IDs in context declarations. Names alone
 never establish cross-system identity. Evidence remains marked as provider

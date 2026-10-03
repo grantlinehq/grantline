@@ -1687,6 +1687,90 @@
         }
       }
     },
+    "/settings/policy": {
+      "get": {
+        "summary": "Effective policy, dynamic defaults and canonical YAML",
+        "operationId": "get_settings_policy",
+        "tags": [
+          "settings"
+        ],
+        "description": "Minimum role: admin.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyEditor"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/settings/policy/validate": {
+      "post": {
+        "summary": "Validate candidate and optionally simulate on saved evidence without mutation",
+        "operationId": "post_settings_policy_validate",
+        "tags": [
+          "settings"
+        ],
+        "description": "Minimum role: admin. Requires configured public Origin. Signed-in writes also require X-Grantline-CSRF from GET /auth/session.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyValidation"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Structured error: 400 input; 401 session; 403 role/MFA/CSRF; 404 missing; 409 revision; 422 access test; 429 rate limit; 503 unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Grantline-CSRF",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PolicyCandidate"
+              }
+            }
+          }
+        }
+      }
+    },
     "/settings/sso": {
       "get": {
         "summary": "Read SSO configuration without secret",
@@ -1770,6 +1854,37 @@
         "properties": {
           "error": {
             "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "line": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "field",
+                "message"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
@@ -1888,6 +2003,9 @@
           },
           "Revision": {
             "type": "integer"
+          },
+          "acknowledge_coverage_reduction": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -2012,6 +2130,387 @@
           },
           "page_size": {
             "const": 50
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "PolicyRule": {
+        "type": "object",
+        "properties": {
+          "Severity": {
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          },
+          "ForbidNamespaceOnly": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "AllowedGrants": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "object",
+              "properties": {
+                "SourceID": {
+                  "type": "string"
+                },
+                "RoleNativeID": {
+                  "type": "string"
+                },
+                "ServiceAccountNativeID": {
+                  "type": "string"
+                },
+                "Scope": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "SourceID",
+                "RoleNativeID",
+                "ServiceAccountNativeID",
+                "Scope"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "AllowedVaultKubernetesBindings": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "object",
+              "properties": {
+                "VaultSourceID": {
+                  "type": "string"
+                },
+                "RoleNativeID": {
+                  "type": "string"
+                },
+                "KubernetesSourceID": {
+                  "type": "string"
+                },
+                "ServiceAccountID": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "VaultSourceID",
+                "RoleNativeID",
+                "KubernetesSourceID",
+                "ServiceAccountID"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "RequireOwnersFor": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "object",
+              "properties": {
+                "SourceID": {
+                  "type": "string"
+                },
+                "ObjectID": {
+                  "type": "string"
+                },
+                "ObjectKind": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "SourceID",
+                "ObjectID",
+                "ObjectKind"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "AllowedAppRoles": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "object",
+              "properties": {
+                "SourceID": {
+                  "type": "string"
+                },
+                "PrincipalObjectID": {
+                  "type": "string"
+                },
+                "ResourceObjectID": {
+                  "type": "string"
+                },
+                "AppRoleID": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "SourceID",
+                "PrincipalObjectID",
+                "ResourceObjectID",
+                "AppRoleID"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "SeparatedEnvironments": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "object",
+              "properties": {
+                "First": {
+                  "type": "string"
+                },
+                "Second": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "First",
+                "Second"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "AllowedSharedIdentities": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "object",
+              "properties": {
+                "First": {
+                  "type": "string"
+                },
+                "Second": {
+                  "type": "string"
+                },
+                "SourceID": {
+                  "type": "string"
+                },
+                "Kind": {
+                  "type": "string"
+                },
+                "NativeID": {
+                  "type": "string"
+                },
+                "Reason": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "First",
+                "Second",
+                "SourceID",
+                "Kind",
+                "NativeID",
+                "Reason"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "Severity"
+        ],
+        "additionalProperties": false
+      },
+      "PolicyForm": {
+        "type": "object",
+        "properties": {
+          "required_sources": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "limits": {
+            "type": "object",
+            "properties": {
+              "max_client_secret_validity": {
+                "type": "string"
+              },
+              "max_x509_svid_ttl": {
+                "type": "string"
+              },
+              "max_jwt_svid_ttl": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          },
+          "rules": {
+            "type": "object",
+            "properties": {
+              "IL001": {
+                "$ref": "#/components/schemas/PolicyRule"
+              },
+              "IL002": {
+                "$ref": "#/components/schemas/PolicyRule"
+              },
+              "IL003": {
+                "$ref": "#/components/schemas/PolicyRule"
+              },
+              "IL004": {
+                "$ref": "#/components/schemas/PolicyRule"
+              },
+              "IL005": {
+                "$ref": "#/components/schemas/PolicyRule"
+              },
+              "IL006": {
+                "$ref": "#/components/schemas/PolicyRule"
+              },
+              "IL007": {
+                "$ref": "#/components/schemas/PolicyRule"
+              },
+              "IL008": {
+                "$ref": "#/components/schemas/PolicyRule"
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "required_sources",
+          "rules",
+          "limits"
+        ],
+        "additionalProperties": false
+      },
+      "PolicyCandidate": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "policy": {
+                "type": "string"
+              },
+              "bindings": {
+                "type": "string"
+              },
+              "revision": {
+                "type": "integer"
+              },
+              "preview": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "policy",
+              "revision"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "form": {
+                "$ref": "#/components/schemas/PolicyForm"
+              },
+              "bindings": {
+                "type": "string"
+              },
+              "revision": {
+                "type": "integer"
+              },
+              "preview": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "form",
+              "revision"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "PolicyEditor": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "integer"
+          },
+          "mode": {
+            "enum": [
+              "defaults",
+              "custom"
+            ]
+          },
+          "effective": {
+            "$ref": "#/components/schemas/PolicyForm"
+          },
+          "defaults": {
+            "$ref": "#/components/schemas/PolicyForm"
+          },
+          "yaml": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "PolicyValidation": {
+        "type": "object",
+        "properties": {
+          "valid": {
+            "type": "boolean"
+          },
+          "policy": {
+            "type": "string"
+          },
+          "yaml": {
+            "type": "string"
+          },
+          "effective": {
+            "$ref": "#/components/schemas/PolicyForm"
+          },
+          "disabled_rules": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "requires_acknowledgement": {
+            "type": "boolean"
+          },
+          "revision": {
+            "type": "integer"
+          },
+          "preview": {
+            "type": "object",
+            "description": "Read-only simulation on the latest stored snapshot. available=false includes a message; otherwise includes run_id, run_kind, observed_at, fixture_notice, before/after finding counts, added/no_longer_reported counts, per-rule counts/outcomes, completeness and binding_issues.",
+            "additionalProperties": true
           }
         },
         "required": [],

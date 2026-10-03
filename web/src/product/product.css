@@ -2150,3 +2150,330 @@ textarea:focus-visible {
   background: #fff;
   color: #193b2b;
 }
+
+/* Configuration forms share the workspace's quiet, evidence-first hierarchy. */
+.policy-workbench {
+  max-width: 1100px;
+}
+.policy-workbench label,
+.rows-editor label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  min-width: 0;
+}
+.policy-workbench input:not([type="checkbox"]),
+.policy-workbench select,
+.policy-workbench textarea {
+  width: 100%;
+  font: inherit;
+  color: var(--ink);
+  border: 1px solid #c6d0c6;
+  border-radius: 4px;
+  padding: 10px 11px;
+  background: #fff;
+  box-sizing: border-box;
+}
+.policy-workbench .check-label {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+}
+.policy-workbench .check-label input {
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+.policy-workbench small,
+.rows-editor small {
+  display: block;
+  font-weight: 400;
+  color: #5c6d61;
+  line-height: 1.5;
+}
+.policy-toolbar,
+.policy-toolbar > div {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.policy-toolbar {
+  justify-content: space-between;
+  border-block: 1px solid var(--line);
+  padding: 16px 0;
+  margin: 22px 0;
+  font-size: 12px;
+}
+.policy-toolbar .badge {
+  margin-right: 8px;
+}
+.policy-fields {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.policy-defaults {
+  display: flex;
+  gap: 20px;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  font-size: 13px;
+}
+.policy-defaults p {
+  max-width: 690px;
+  margin: 0;
+  line-height: 1.6;
+}
+.policy-defaults button {
+  flex-shrink: 0;
+}
+.policy-sources {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  border: 1px solid var(--line);
+  padding: 16px 20px 20px;
+  margin: 0 0 24px;
+  min-width: 0;
+}
+.policy-sources legend,
+.rows-editor legend {
+  font-size: 13px;
+  font-weight: 600;
+  padding-inline: 6px;
+}
+.policy-sources > p {
+  grid-column: 1 / -1;
+}
+.policy-rule {
+  border-top: 1px solid var(--line);
+  padding: 23px 0;
+}
+.policy-rule > p {
+  margin: 12px 0 15px 23px;
+  font-size: 13px;
+  color: #5c6d61;
+  line-height: 1.6;
+}
+.policy-rule-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 15px;
+}
+.policy-rule-head > span {
+  font-size: 12px;
+  flex-shrink: 0;
+  color: #47654e;
+}
+.policy-rule-off .policy-rule-head > span {
+  color: #76512e;
+}
+.policy-rule-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0 0 15px 23px;
+}
+.policy-rule-details {
+  margin-left: 23px;
+}
+.policy-rule-details summary,
+.mapping-details summary,
+.provider-preparation summary,
+.policy-context summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 0;
+  line-height: 1.5;
+}
+.policy-rule-details > p,
+.mapping-details > p,
+.policy-context > p {
+  font-size: 13px;
+  line-height: 1.6;
+}
+.policy-context {
+  border-block: 1px solid var(--line);
+  padding: 15px 0;
+}
+.policy-context > label {
+  margin-top: 15px;
+}
+.policy-workbench .policy-input {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  resize: vertical;
+}
+.policy-review {
+  border: 1px solid #bccabc;
+  border-left: 3px solid var(--green);
+  padding: 22px;
+  margin-top: 20px;
+  background: #f5f7f2;
+}
+.policy-review h3 {
+  margin-top: 0;
+}
+.policy-review p,
+.coverage-warnings {
+  font-size: 13px;
+  line-height: 1.7;
+}
+.policy-review table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.policy-review th,
+.policy-review td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+.policy-review .product-table-wrap {
+  overflow-x: auto;
+}
+.coverage-warnings {
+  color: #70481f;
+}
+.coverage-ack {
+  margin: 20px 0;
+}
+.rows-editor {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 16px;
+  margin: 16px 0;
+  min-width: 0;
+}
+.rows-editor .section-note {
+  margin: 0 0 12px;
+}
+.count-pill {
+  padding: 2px 6px;
+  margin-left: 5px;
+  font-weight: 400;
+  background: #e9eee7;
+  border-radius: 3px;
+}
+.editor-row {
+  background: #f4f6f1;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 14px;
+  margin: 14px 0;
+  min-width: 0;
+}
+.editor-row-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 14px;
+}
+.editor-row-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+}
+.editor-row-fields textarea {
+  min-height: 72px;
+}
+.editor-row-fields input,
+.editor-row-fields select {
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+.empty-rows {
+  font-size: 12px;
+  color: #5c6d61;
+  margin-top: 0;
+}
+.mapping-details {
+  margin-top: 15px;
+}
+.mapping-details .editor-row-fields {
+  grid-template-columns: minmax(0, 1fr);
+}
+.provider-preparation {
+  border: 1px solid #ccd6c8;
+  border-radius: 4px;
+  padding: 8px 16px;
+  background: #f4f6f1;
+}
+.provider-preparation li {
+  font-size: 13px;
+  line-height: 1.7;
+  padding: 4px 0;
+}
+.provider-preparation dl {
+  font-size: 12px;
+  line-height: 1.7;
+}
+.provider-preparation dt {
+  font-weight: 600;
+  margin-top: 10px;
+}
+.provider-preparation dd {
+  margin-left: 0;
+}
+.provider-preparation pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 11px;
+  line-height: 1.6;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+}
+.provider-preparation > a {
+  display: inline-block;
+  margin: 8px 0;
+  font-size: 12px;
+}
+.field-errors {
+  border: 1px solid #d6ada0;
+  padding: 16px;
+  background: #fff5f1;
+  color: #753326;
+  font-size: 13px;
+  margin-block: 15px;
+}
+.field-errors li {
+  margin-top: 8px;
+  overflow-wrap: anywhere;
+}
+.field-errors a,
+.field-error {
+  color: #8b3022 !important;
+}
+[aria-invalid="true"] {
+  border-color: #a94e3d !important;
+}
+@media (max-width: 760px) {
+  .policy-sources,
+  .policy-rule-options,
+  .editor-row-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .policy-rule-head,
+  .policy-defaults {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .policy-rule-head > span {
+    margin-left: 23px;
+  }
+  .policy-review {
+    padding: 15px;
+  }
+}

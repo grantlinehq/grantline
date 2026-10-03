@@ -3,12 +3,9 @@ package platform
 import (
 	"database/sql"
 	"encoding/json"
-	"github.com/grantlinehq/grantline/internal/bindings"
 	"github.com/grantlinehq/grantline/internal/model"
-	"github.com/grantlinehq/grantline/internal/policy"
 	"github.com/grantlinehq/grantline/internal/viewer"
 	"net/http"
-	"sigs.k8s.io/yaml"
 	"strconv"
 	"strings"
 	"time"
@@ -20,6 +17,8 @@ func (s *Server) registerData() {
 	}
 	s.mux.HandleFunc("POST /api/v1/reports/import", s.require("admin", s.importReport))
 	s.mux.HandleFunc("PUT /api/v1/settings", s.require("admin", s.saveSettings))
+	s.mux.HandleFunc("GET /api/v1/settings/policy", s.require("admin", s.policyEditor))
+	s.mux.HandleFunc("POST /api/v1/settings/policy/validate", s.require("admin", s.validatePolicy))
 	s.mux.HandleFunc("PUT /api/v1/triage/{id}", s.require("analyst", s.saveTriage))
 	s.mux.HandleFunc("POST /api/v1/comments/{id}", s.require("analyst", s.comment))
 }
@@ -217,29 +216,30 @@ func (s *Server) settings(w http.ResponseWriter, r *http.Request) {
 }
 func (s *Server) saveSettings(w http.ResponseWriter, r *http.Request) {
 	var in struct {
-		Name             string
-		ScheduleMinutes  int `json:"schedule_minutes"`
-		RetentionDays    int `json:"retention_days"`
-		Policy, Bindings string
-		Revision         int
+		Name                         string
+		ScheduleMinutes              int `json:"schedule_minutes"`
+		RetentionDays                int `json:"retention_days"`
+		Policy, Bindings             string
+		Revision                     int
+		AcknowledgeCoverageReduction bool `json:"acknowledge_coverage_reduction"`
 	}
 	if decode(r, &in) != nil || len(in.Name) < 1 || len(in.Name) > 100 || in.ScheduleMinutes < 15 || in.ScheduleMinutes > 10080 || in.RetentionDays < 1 || in.RetentionDays > 365 {
 		fail(w, 400, "invalid_settings")
 		return
 	}
-	if in.Policy != "" {
-		if _, e := policy.Parse([]byte(in.Policy)); e != nil {
-			fail(w, 400, "invalid_policy")
-			return
-		}
+	sources, e := s.integrationSources(r.Context())
+	if e != nil {
+		fail(w, 503, "database_unavailable")
+		return
 	}
-	if in.Bindings != "" {
-		var b bindings.Config
-		sources, e := s.integrationSources(r.Context())
-		if e != nil || yaml.UnmarshalStrict([]byte(in.Bindings), &b) != nil || b.Validate(sources) != nil {
-			fail(w, 400, "invalid_bindings")
-			return
-		}
+	if issues := configurationIssues(in.Policy, in.Bindings, sources); len(issues) > 0 {
+		invalidFields(w, issues)
+		return
+	}
+	enabled, e := s.enabledPolicySources(r.Context())
+	if e != nil {
+		fail(w, 503, "database_unavailable")
+		return
 	}
 	tx, e := s.db.BeginTx(r.Context(), nil)
 	if e != nil {
@@ -247,14 +247,27 @@ func (s *Server) saveSettings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer tx.Rollback()
-	var currentName string
-	if e = tx.QueryRowContext(r.Context(), "SELECT name FROM workspace WHERE id=1 FOR UPDATE").Scan(&currentName); e != nil {
+	var currentName, currentPolicy string
+	var currentRevision int
+	if e = tx.QueryRowContext(r.Context(), "SELECT name,policy,revision FROM workspace WHERE id=1 FOR UPDATE").Scan(&currentName, &currentPolicy, &currentRevision); e != nil {
 		fail(w, 503, "database_unavailable")
+		return
+	}
+	if in.Revision != currentRevision {
+		fail(w, 409, "settings_changed_reload")
 		return
 	}
 	if in.Name != currentName && actor(r).Role != "owner" {
 		fail(w, 403, "owner_required")
 		return
+	}
+	if in.Policy != currentPolicy && !in.AcknowledgeCoverageReduction {
+		before, oldErr := effectivePolicy(currentPolicy, enabled)
+		after, newErr := effectivePolicy(in.Policy, enabled)
+		if oldErr == nil && newErr == nil && len(coverageReduction(before, after)) > 0 {
+			send(w, 409, map[string]any{"error": "coverage_acknowledgement_required", "message": "This policy reduces rule or required-source coverage. Review the change and explicitly acknowledge it before saving.", "warnings": coverageReduction(before, after)})
+			return
+		}
 	}
 	result, e := tx.ExecContext(r.Context(), "UPDATE workspace SET name=$1,schedule_minutes=$2,retention_days=$3,policy=$4,bindings=$5,revision=revision+1,next_run=now()+($2::integer*interval '1 minute') WHERE id=1 AND revision=$6", in.Name, in.ScheduleMinutes, in.RetentionDays, in.Policy, in.Bindings, in.Revision)
 	if e != nil {

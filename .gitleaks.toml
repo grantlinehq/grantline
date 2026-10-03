@@ -1,3 +1,10 @@
 title = "Grantline source scan"
 [extend]
 useDefault = true
+
+# Literal policy field name, misidentified next to max_client_secret_validity.
+# Match only the whole metadata key; no files or credential patterns are excluded.
+[[allowlists]]
+description = "Policy X.509 lifetime field name"
+regexTarget = "secret"
+regexes = ['''^max_x509_svid_ttl$''']
