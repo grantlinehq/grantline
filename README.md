@@ -5,7 +5,7 @@
 Open-source, evidence-first security for discovering and analyzing non-human
 identities across software delivery and workload environments.
 
-**Preview: v0.1.0-rc.2.**
+**Early access: v0.1.0-rc.3.**
 See the [implementation and acceptance ledger](docs/PRODUCTION_WORK.md) for verified
 capabilities and remaining gates. Development builds are not labeled production ready.
 
@@ -28,8 +28,8 @@ This is not OWASP certification or full NHI coverage.
 
 ## Start with Docker
 
-Download the [installation ZIP](https://github.com/grantlinehq/grantline/releases/download/v0.1.0-rc.2/grantline-install-0.1.0-rc.2.zip)
-or [TAR package](https://github.com/grantlinehq/grantline/releases/download/v0.1.0-rc.2/grantline-install-0.1.0-rc.2.tar.gz),
+Download the [installation ZIP](https://github.com/grantlinehq/grantline/releases/download/v0.1.0-rc.3/grantline-install-0.1.0-rc.3.zip)
+or [TAR package](https://github.com/grantlinehq/grantline/releases/download/v0.1.0-rc.3/grantline-install-0.1.0-rc.3.tar.gz),
 extract it into a new directory, then run:
 
 ```sh
@@ -54,9 +54,9 @@ Keep generated secret volumes private; do not use `down -v` to stop a real works
 [Kubernetes and Helm guide](docs/guide/install/kubernetes.md) ·
 [Product documentation](docs/guide/index.md)
 
-Container: `ghcr.io/grantlinehq/grantline:0.1.0-rc.2` (`linux/amd64`, `linux/arm64`).
-Helm chart: `oci://ghcr.io/grantlinehq/charts/grantline --version 0.1.0-rc.2`.
-The [release page](https://github.com/grantlinehq/grantline/releases/tag/v0.1.0-rc.2)
+Container: `ghcr.io/grantlinehq/grantline:0.1.0-rc.3` (`linux/amd64`, `linux/arm64`).
+Helm chart: `oci://ghcr.io/grantlinehq/charts/grantline --version 0.1.0-rc.3`.
+The [release page](https://github.com/grantlinehq/grantline/releases/tag/v0.1.0-rc.3)
 includes checksums, signatures and the source archive.
 
 To build from a checkout instead:
@@ -125,6 +125,13 @@ fixtures and the development design preview are clearly labeled and are not live
   that an identity or finding was resolved.
 
 ## Contribute
+
+We welcome pilot users and contributors during early access. Share installation,
+integration and investigation feedback in [Discussions](https://github.com/grantlinehq/grantline/discussions),
+or use the [issue forms](https://github.com/grantlinehq/grantline/issues/new/choose)
+for bugs, connector requests and false positives. Include the version and sanitized
+reproduction steps; keep credentials and private reports out of public posts.
+Report vulnerabilities through the private channel in [SECURITY](SECURITY.md).
 
 Read [CONTRIBUTING](CONTRIBUTING.md), [SECURITY](SECURITY.md), and
 [third-party notices](THIRD_PARTY_NOTICES.md). Product installation files are

@@ -10,7 +10,7 @@ PostgreSQL stores accounts, connections, reports, review decisions and the durab
 collection queue. Redis is not required. Kubernetes does not add application HA.
 
 ::: warning Preview release
-v0.1.0-rc.2 is a release candidate with ready Docker and Helm installation packages.
+v0.1.0-rc.3 is an early-access release candidate with ready Docker and Helm installation packages.
 Full live-provider/IdP/SMTP and accessibility acceptance remains open; this version
 is not labeled production ready. See [compatibility](./reference/compatibility).
 :::

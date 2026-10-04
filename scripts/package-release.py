@@ -31,6 +31,12 @@ def main():
             parser.error('Image and chart digests must be sha256 values')
     if not args.chart.is_file():
         parser.error('The verified Helm chart archive is missing')
+    changelog = (ROOT / 'CHANGELOG.md').read_text(encoding='utf-8')
+    changes = re.search(rf'^## v{re.escape(args.version)}[^\n]*\n(.*?)(?=^## |\Z)',
+                        changelog, re.MULTILINE | re.DOTALL)
+    if changes is None:
+        parser.error('Add this candidate version to CHANGELOG.md before packaging')
+    candidate_changes = changes.group(1).strip()
     args.output.mkdir(parents=True, exist_ok=True)
     spec = importlib.util.spec_from_file_location('source_package', ROOT / 'scripts/package-source.py')
     package = importlib.util.module_from_spec(spec)
@@ -107,6 +113,12 @@ Download `grantline-install-{args.version}.zip` (Windows/macOS/Linux) or
 `docker compose up -d --wait`. Open http://127.0.0.1:8080 and follow README-FIRST.md.
 The bundle pins the application digest; no Go/Node installation or source build is required.
 
+## Changes in this candidate
+
+{candidate_changes}
+
+## Verified distribution
+
 - Container: `ghcr.io/grantlinehq/grantline:{args.version}` (amd64 and arm64).
 - Image digest: `{args.image_digest}`.
 - Helm: `oci://ghcr.io/grantlinehq/charts/grantline --version {args.version}`.
@@ -118,6 +130,11 @@ The bundle pins the application digest; no Go/Node installation or source build 
 Single organization and one active application instance. Provider access is read-only.
 This candidate is not labeled production ready: the full live-provider/IdP/SMTP and
 WCAG acceptance matrix remains open. See the compatibility and security documentation.
+
+Pilot users and contributors are welcome. Share feedback in
+[GitHub Discussions](https://github.com/grantlinehq/grantline/discussions) or the
+[issue forms](https://github.com/grantlinehq/grantline/issues/new/choose), using
+sanitized reproduction steps. Report vulnerabilities privately through SECURITY.md.
 '''
     (args.output / 'RELEASE-NOTES.md').write_text(notes, encoding='utf-8')
     checksums = []

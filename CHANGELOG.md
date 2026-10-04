@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.1.0-rc.3 — Early access
 
 - Add an effective-policy editor for all eight rules, required sources, lifetime
   thresholds and exact exception lists, with an advanced YAML view.

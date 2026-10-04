@@ -1,13 +1,13 @@
 # Release operations
 
-The current release is **v0.1.0-rc.2**, a preview. The release provides a multiarch
+The current release is **v0.1.0-rc.3**, an early-access preview. The release provides a multiarch
 image, OCI Helm chart, Docker installation ZIP/TAR, source ZIP and signed checksums.
 The maintainer controls source visibility and registry publication. Release
 automation never changes repository visibility or declares production readiness.
 
 ## Verify a release
 
-Download the assets from the versioned [release page](https://github.com/grantlinehq/grantline/releases/tag/v0.1.0-rc.2).
+Download the assets from the versioned [release page](https://github.com/grantlinehq/grantline/releases/tag/v0.1.0-rc.3).
 `release.json` records the exact source commit, image digest, chart digest and
 architectures. Installation packages pin the application digest in `.env`.
 
