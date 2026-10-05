@@ -34,6 +34,9 @@ import {
   type Evidence,
   type Edge,
   type Source,
+  type FindingContext,
+  isPrincipal,
+  sourceName,
 } from "../types";
 import { api, APIError, setCSRF, when, type Status, type User } from "./api";
 import { Auth } from "./Auth";
@@ -44,6 +47,10 @@ import { sourceCollectionMessage } from "./sourceHealth";
 export const admin = (u: User) => ["owner", "admin"].includes(u.role);
 const selectedRun = () =>
   new URLSearchParams(location.hash.split("?")[1] || "").get("run") || "";
+const affectedSummary = (c?: FindingContext) =>
+  c
+    ? `${c.identity_count} ${c.identity_count === 1 ? "identity" : "identities"} · ${c.configuration_count} configuration ${c.configuration_count === 1 ? "object" : "objects"}${c.unresolved_count ? ` · ${c.unresolved_count} unresolved references` : ""}`
+    : "Open to inspect affected objects";
 const navigation = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
   { id: "identities", label: "Identities", icon: Fingerprint },
@@ -590,6 +597,17 @@ function Overview({
                     All findings <ArrowRight size={15} />
                   </a>
                 </div>
+                <p className="section-note">
+                  Ordered by policy severity. Review scope and evidence before
+                  deciding.{" "}
+                  <a
+                    href="/docs/policies/three-investigations.html"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Learn with three investigations ↗
+                  </a>
+                </p>
                 {queue.length ? (
                   queue.map((f, i) => (
                     <button
@@ -599,10 +617,14 @@ function Overview({
                     >
                       <span className="row-number">0{i + 1}</span>
                       <div>
-                        <strong>{ruleNames[f.rule_id] || f.condition}</strong>
+                        <strong>
+                          {f.context?.subject ||
+                            ruleNames[f.rule_id] ||
+                            f.condition}
+                        </strong>
                         <small>
-                          {f.rule_id} · {f.affected_entity_ids.length} affected
-                          identities
+                          {f.rule_id} · {ruleNames[f.rule_id]} ·{" "}
+                          {affectedSummary(f.context)}
                         </small>
                       </div>
                       <Badge value={f.severity} />
@@ -699,7 +721,17 @@ function Records({
       Math.max(0, Number(parameters().get("page")) || 0),
     ),
     [data, setData] = useState<any>(null),
+    [sources, setSources] = useState<Source[]>([]),
     [error, setError] = useState("");
+  useEffect(() => {
+    let active = true;
+    api(`/overview?run=${encodeURIComponent(run)}`)
+      .then((d) => active && setSources(d.sources || []))
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [run]);
   useEffect(() => {
     const read = () => {
       const p = parameters();
@@ -776,24 +808,51 @@ function Records({
             }}
           />
         </label>
-        <input
+        <select
           aria-label="Filter by source ID"
-          placeholder="Source ID"
           value={source}
           onChange={(e) => {
             setSource(e.target.value);
             setPage(0);
           }}
-        />
-        <input
-          aria-label="Filter by kind or rule"
-          placeholder={category === "findings" ? "Rule, e.g. IL001" : "Kind"}
-          value={kind}
-          onChange={(e) => {
-            setKind(e.target.value);
-            setPage(0);
-          }}
-        />
+        >
+          <option value="">All sources</option>
+          {source && !sources.some((s) => s.id === source) && (
+            <option value={source}>{source}</option>
+          )}
+          {sources.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.id} · {sourceName[s.kind] || human(s.kind)}
+            </option>
+          ))}
+        </select>
+        {category === "findings" ? (
+          <select
+            aria-label="Filter by rule"
+            value={kind}
+            onChange={(e) => {
+              setKind(e.target.value);
+              setPage(0);
+            }}
+          >
+            <option value="">All rules</option>
+            {Object.entries(ruleNames).map(([id, name]) => (
+              <option key={id} value={id}>
+                {id} · {name}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <input
+            aria-label="Filter by kind or rule"
+            placeholder="Kind"
+            value={kind}
+            onChange={(e) => {
+              setKind(e.target.value);
+              setPage(0);
+            }}
+          />
+        )}
         {category === "findings" && (
           <label className="review-filter">
             <span className="sr-only">Review status</span>
@@ -815,6 +874,19 @@ function Records({
           </label>
         )}
       </div>
+      {category === "findings" && (
+        <p className="section-note">
+          Severity comes from your policy; it is not an exploitability score.
+          Review status is separate from PASS / FAIL / UNKNOWN.{" "}
+          <a
+            href="/docs/policies/three-investigations.html"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Investigation guide ↗
+          </a>
+        </p>
+      )}
       {error && (
         <div className="product-error" role="alert">
           {error}
@@ -839,7 +911,7 @@ function Records({
                     ? "Finding"
                     : "Identity / relationship"}
                 </th>
-                <th>{category === "findings" ? "Severity" : "Type"}</th>
+                <th>{category === "findings" ? "Policy severity" : "Type"}</th>
                 <th>
                   {category === "findings" ? "Rule" : "Source / assertion"}
                 </th>
@@ -855,17 +927,27 @@ function Records({
                   <td className="record-title-cell">
                     <button onClick={() => go(`${category}/${item.id}`)}>
                       <strong>
-                        {item.name ||
+                        {item.context?.subject ||
+                          item.name ||
                           ruleNames[item.rule_id] ||
                           human(item.type || item.condition)}
                       </strong>
                       <small>
-                        {item.native_id || item.description || item.scope}
+                        {category === "findings" ? (
+                          <>
+                            {ruleNames[item.rule_id]} ·{" "}
+                            {affectedSummary(item.context)}
+                          </>
+                        ) : (
+                          item.native_id || item.description || item.scope
+                        )}
                       </small>
                     </button>
                   </td>
                   <td
-                    data-label={category === "findings" ? "Severity" : "Type"}
+                    data-label={
+                      category === "findings" ? "Policy severity" : "Type"
+                    }
                   >
                     {item.severity ? (
                       <Badge value={item.severity} />
@@ -885,7 +967,7 @@ function Records({
                   )}
                   <td className="record-open-cell">
                     <button
-                      aria-label={`Open ${item.name || item.rule_id || item.type}`}
+                      aria-label={`Open ${item.context?.subject || item.name || item.rule_id || item.type}`}
                       onClick={() => go(`${category}/${item.id}`)}
                     >
                       <ArrowRight size={16} />
@@ -917,6 +999,85 @@ function Records({
             Next
           </button>
         </div>
+      )}
+    </>
+  );
+}
+function FindingExplanation({
+  context: c,
+  finding: f,
+}: {
+  context: FindingContext;
+  finding: Finding;
+}) {
+  return (
+    <>
+      <section className="finding-explanation">
+        <h3>Why this was flagged</h3>
+        <p className="section-note">
+          {c.source_ids.join(" · ")} · {affectedSummary(c)}
+        </p>
+        {c.scope && <p className="finding-scope">{c.scope}</p>}
+        {c.facts.length > 0 ? (
+          <dl className="finding-facts">
+            {c.facts.map((fact, i) => (
+              <div key={i}>
+                <dt>{fact.label}</dt>
+                <dd>
+                  <span className="fact-label">Observed</span>
+                  {fact.observed}
+                </dd>
+                {fact.expected && (
+                  <dd>
+                    <span className="fact-label">Review requirement</span>
+                    {fact.expected}
+                  </dd>
+                )}
+              </div>
+            ))}
+          </dl>
+        ) : (
+          <p>
+            Use the original condition and supporting evidence below to inspect
+            this finding.
+          </p>
+        )}
+        <p className="section-note">
+          Observed {when(c.observed_at)} ·{" "}
+          {c.policy_available
+            ? `Recorded policy${c.policy_revision != null ? ` revision ${c.policy_revision}` : ""}`
+            : "Original policy configuration unavailable; current settings are not substituted."}
+        </p>
+        <p className="section-note">
+          {human(f.severity)} is the severity assigned by policy, not a measured
+          likelihood of exploitation.
+        </p>
+        <details>
+          <summary>Original report condition</summary>
+          <p>{f.description}</p>
+          <code>{f.condition}</code>
+        </details>
+      </section>
+      {c.rule_outcome && (
+        <section className="rule-context">
+          <h3>
+            Rule coverage <Badge value={c.rule_outcome} />
+          </h3>
+          <p>
+            The rule result covers the selected snapshot. A known finding can
+            coexist with UNKNOWN when other checks lack evidence.
+          </p>
+          {c.rule_limitations.map((l, i) => (
+            <p key={i}>{l}</p>
+          ))}
+          <a
+            href="/docs/policies/three-investigations.html"
+            target="_blank"
+            rel="noreferrer"
+          >
+            How to interpret this result ↗
+          </a>
+        </section>
       )}
     </>
   );
@@ -1016,55 +1177,70 @@ function RecordDetail({
                 {category === "findings" && <Badge value={data.triage.state} />}
               </div>
               <h2>
-                {data.item.name ||
+                {data.context?.subject ||
+                  data.item.name ||
                   ruleNames[data.item.rule_id] ||
                   human(data.item.type)}
               </h2>
               <p>
-                {data.item.description ||
+                {(category === "findings"
+                  ? ruleNames[data.item.rule_id]
+                  : data.item.description) ||
                   data.item.native_id ||
                   data.item.scope}
               </p>
             </header>
+            {category === "findings" && data.context && (
+              <FindingExplanation context={data.context} finding={data.item} />
+            )}
             {data.item.recommendation && (
               <section className="detail-recommendation">
                 <h3>Recommended next step</h3>
                 <p>{data.item.recommendation}</p>
               </section>
             )}
-            {data.entities?.length > 0 && (
-              <section>
-                <h3>
-                  Affected identities{" "}
-                  <span className="count-pill">
-                    {data.entities.length}
-                    {data.entities_truncated ? "+" : ""}
-                  </span>
-                </h3>
-                {data.entities_truncated && (
-                  <p>
-                    Showing the first 100 identities. Export the report for the
-                    complete set.
-                  </p>
-                )}
-                {data.entities.map((e: Entity) => (
-                  <button
-                    className="detail-entity"
-                    key={e.id}
-                    onClick={() => go(`identities/${e.id}`)}
-                  >
-                    <EntityIcon kind={e.kind} />
-                    <span className="detail-entity-label">
-                      <strong>{e.name || e.native_id}</strong>
-                      <small>
-                        {human(e.kind)} · {e.source_id}
-                      </small>
-                    </span>
-                    <ArrowRight size={15} />
-                  </button>
-                ))}
-              </section>
+            {data.entities_truncated && (
+              <p>
+                Showing the first 100 affected objects. Export the report for
+                the complete set.
+              </p>
             )}
+            {[true, false].map((principals) => {
+              const entities = (data.entities || []).filter(
+                (e: Entity) => isPrincipal(e) === principals,
+              );
+              return (
+                entities.length > 0 && (
+                  <section key={String(principals)}>
+                    <h3>
+                      {principals
+                        ? "Affected identities"
+                        : "Related configuration objects"}{" "}
+                      <span className="count-pill">
+                        {entities.length}
+                        {data.entities_truncated ? "+" : ""}
+                      </span>
+                    </h3>
+                    {entities.map((e: Entity) => (
+                      <button
+                        className="detail-entity"
+                        key={e.id}
+                        onClick={() => go(`identities/${e.id}`)}
+                      >
+                        <EntityIcon kind={e.kind} />
+                        <span className="detail-entity-label">
+                          <strong>{e.name || e.native_id}</strong>
+                          <small>
+                            {human(e.kind)} · {e.source_id}
+                          </small>
+                        </span>
+                        <ArrowRight size={15} />
+                      </button>
+                    ))}
+                  </section>
+                )
+              );
+            })}
             {category === "identities" && (
               <>
                 <button

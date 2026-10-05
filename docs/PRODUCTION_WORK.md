@@ -1,12 +1,39 @@
 # Grantline v0.1.0 implementation and acceptance
 
-Updated: 2026-10-05. Target: Apache-2.0, `github.com/grantlinehq/grantline`.
+Updated: 2026-10-06. Target: Apache-2.0, `github.com/grantlinehq/grantline`.
 The local candidate is implemented and testable. **It is not yet approved as
 production ready.** The release process produces versioned Docker and Helm
 distribution packages. The historical prelaunch record below separates measured
 acceptance from remaining product and publication checks.
 
 ## Current publication status
+
+The rc.4 publication is verified: all 16 public assets, checksums and signatures,
+anonymous image/chart pulls, clean Compose Owner/TOTP/restart and Helm
+install/upgrade persistence passed on 6 October. The published package remains
+v0.1.0-rc.4; subsequent source changes below are not a retag of that release.
+
+## Investigation clarity
+
+Finding APIs now project named subjects, known observed fields and the recorded
+collection policy without changing report IDs, evidence or exported reports.
+Counts separate native principals from configuration objects. Source/rule selectors
+and affected-subject search support review, including credential parent names and
+SPIFFE identifiers. Imported reports do not borrow today's policy thresholds.
+
+Ten findings from real controlled lab systems were reviewed against saved evidence:
+eight action-needed configurations, one expected HPA controller configuration
+candidate and one declared environment-reuse finding needing further evidence
+before claiming runtime crossing. All remain In review with reasons. This is a
+selected lab sample, not customer validation or a false-positive-rate estimate.
+The public docs contain sanitized cases; private report IDs and raw snapshots stay
+outside the source package. The local workspace is named Grantline; deployment
+documentation presents technical scope rather than a launch-stage UI badge.
+
+Full provider failure/expiry coverage, customer IdP/SMTP and full accessibility
+acceptance remain open. Removing a stage label does not close those gates.
+
+## Earlier publication record
 
 The repository, rc.3 multiarchitecture GHCR image, OCI chart and signed installation
 packages are public. Public Checks and CodeQL run on main; secret scanning, push

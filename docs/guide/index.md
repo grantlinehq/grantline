@@ -9,10 +9,10 @@ The first version supports **one organization and one active application instanc
 PostgreSQL stores accounts, connections, reports, review decisions and the durable
 collection queue. Redis is not required. Kubernetes does not add application HA.
 
-::: warning Preview release
-v0.1.0-rc.4 is an early-access release candidate with ready Docker and Helm installation packages.
-Full live-provider/IdP/SMTP and accessibility acceptance remains open; this version
-is not labeled production ready. See [compatibility](./reference/compatibility).
+::: info Deployment scope
+Docker Compose and Helm use the same application package. Run one active instance
+per organization. Review the tested environments and remaining provider, IdP,
+SMTP and accessibility verification in [compatibility](./reference/compatibility).
 :::
 
 Start with [Docker Compose](./install/docker), or use the official
@@ -20,6 +20,9 @@ Start with [Docker Compose](./install/docker), or use the official
 documentation. Go and Node.js are only needed when building from source.
 
 ## A typical investigation
+
+Learn the engine, policy choices and evidence boundaries through
+[three practical investigations](./policies/three-investigations.md).
 
 1. Connect an observer identity with an explicit source scope.
 2. Test access, review coverage, then enable the connection and collect.

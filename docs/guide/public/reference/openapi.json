@@ -952,7 +952,7 @@
         "tags": [
           "objects"
         ],
-        "description": "Minimum role: viewer.",
+        "description": "Minimum role: viewer. Findings also return a top-level context (FindingContext); other categories omit it. Rule outcome/limitations cover the whole selected snapshot, not just this finding.",
         "responses": {
           "200": {
             "description": "Success"
@@ -2119,7 +2119,14 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "context": {
+                  "$ref": "#/components/schemas/FindingContext"
+                }
+              },
+              "additionalProperties": true,
+              "description": "Findings include API-only context. Counts distinguish native principals from configuration objects. Facts use known fields and the collection's recorded policy, never current workspace policy. Imported reports may have no original policy. The immutable exported report is unchanged."
             }
           },
           "total": {
@@ -2130,6 +2137,77 @@
           },
           "page_size": {
             "const": 50
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "FindingContext": {
+        "type": "object",
+        "properties": {
+          "subject": {
+            "type": "string"
+          },
+          "source_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "scope": {
+            "type": "string"
+          },
+          "identity_count": {
+            "type": "integer"
+          },
+          "configuration_count": {
+            "type": "integer"
+          },
+          "unresolved_count": {
+            "type": "integer"
+          },
+          "facts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "observed": {
+                  "type": "string"
+                },
+                "expected": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "label",
+                "observed"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "rule_outcome": {
+            "type": "string"
+          },
+          "rule_limitations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "policy_available": {
+            "type": "boolean"
+          },
+          "policy_revision": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "observed_at": {
+            "type": "string"
           }
         },
         "required": [],

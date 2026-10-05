@@ -75,7 +75,7 @@ func (s *Server) objects(w http.ResponseWriter, r *http.Request) {
 		fail(w, 400, "query_too_long")
 		return
 	}
-	where := ` FROM objects o LEFT JOIN triage t ON o.category='findings' AND t.finding_id=o.id WHERE o.run_id=$1 AND o.category=$2 AND ($3='' OR o.name ILIKE '%'||$3||'%' OR o.body->>'native_id' ILIKE '%'||$3||'%') AND ($4='' OR o.source_id=$4 OR (o.category='findings' AND EXISTS(SELECT 1 FROM objects affected WHERE affected.run_id=o.run_id AND affected.category='identities' AND affected.source_id=$4 AND o.body->'affected_entity_ids' ? affected.id))) AND ($5='' OR o.kind=$5) AND ($6=false OR o.kind IN ('service_account','service_principal','spiffe_identity')) AND ($7='' OR COALESCE(t.state,'open')=$7 OR ($7='active' AND COALESCE(t.state,'open') IN ('open','in_review')))`
+	where := ` FROM objects o LEFT JOIN triage t ON o.category='findings' AND t.finding_id=o.id WHERE o.run_id=$1 AND o.category=$2 AND ($3='' OR o.name ILIKE '%'||$3||'%' OR o.body->>'native_id' ILIKE '%'||$3||'%' OR (o.category='findings' AND EXISTS(SELECT 1 FROM objects affected WHERE affected.run_id=o.run_id AND affected.category='identities' AND affected.id=ANY(ARRAY(SELECT jsonb_array_elements_text(o.body->'affected_entity_ids'))) AND (affected.name ILIKE '%'||$3||'%' OR affected.body->>'native_id' ILIKE '%'||$3||'%' OR (affected.body->'field_status'->>'spiffe_id'='known' AND affected.body->'attributes'->>'spiffe_id' ILIKE '%'||$3||'%') OR (affected.kind='credential_metadata' AND affected.body->'field_status'->>'parent_object_id'='known' AND affected.body->'field_status'->>'parent_kind'='known' AND EXISTS(SELECT 1 FROM objects parent WHERE parent.run_id=affected.run_id AND parent.category='identities' AND parent.source_id=affected.source_id AND parent.kind=affected.body->'attributes'->>'parent_kind' AND parent.body->'field_status'->>'object_id'='known' AND parent.body->'attributes'->>'object_id'=affected.body->'attributes'->>'parent_object_id' AND (parent.name ILIKE '%'||$3||'%' OR parent.body->>'native_id' ILIKE '%'||$3||'%'))))))) AND ($4='' OR o.source_id=$4 OR (o.category='findings' AND EXISTS(SELECT 1 FROM objects affected WHERE affected.run_id=o.run_id AND affected.category='identities' AND affected.source_id=$4 AND o.body->'affected_entity_ids' ? affected.id))) AND ($5='' OR o.kind=$5) AND ($6=false OR o.kind IN ('service_account','service_principal','spiffe_identity')) AND ($7='' OR COALESCE(t.state,'open')=$7 OR ($7='active' AND COALESCE(t.state,'open') IN ('open','in_review')))`
 	args := []any{run, category, search, q.Get("source"), q.Get("kind"), q.Get("native") == "true", q.Get("state")}
 	var total int
 	if e := s.db.QueryRowContext(r.Context(), "SELECT count(*)"+where, args...).Scan(&total); e != nil {
@@ -86,6 +86,26 @@ func (s *Server) objects(w http.ResponseWriter, r *http.Request) {
 	if e != nil {
 		fail(w, 503, "database_unavailable")
 		return
+	}
+	if category == "findings" && len(items) > 0 {
+		findings := make([]model.Finding, len(items))
+		for i, raw := range items {
+			if json.Unmarshal(raw, &findings[i]) != nil {
+				fail(w, 500, "finding_unavailable")
+				return
+			}
+		}
+		contexts, err := s.findingContexts(r.Context(), run, findings)
+		if err != nil {
+			fail(w, 500, "finding_context_unavailable")
+			return
+		}
+		for i, raw := range items {
+			var item map[string]any
+			json.Unmarshal(raw, &item)
+			item["context"] = contexts[findings[i].ID]
+			items[i], _ = json.Marshal(item)
+		}
 	}
 	send(w, 200, map[string]any{"run_id": run, "items": items, "total": total, "page": page, "page_size": 50})
 }
@@ -132,7 +152,18 @@ func (s *Server) object(w http.ResponseWriter, r *http.Request) {
 		fail(w, 500, "comments_unavailable")
 		return
 	}
-	send(w, 200, map[string]any{"item": json.RawMessage(b), "evidence": evidence[:min(len(evidence), 100)], "entities": entities[:min(len(entities), 100)], "triage": triage, "comments": comments[:min(len(comments), 100)], "evidence_truncated": len(evidence) > 100, "entities_truncated": len(entities) > 100, "comments_truncated": len(comments) > 100})
+	out := map[string]any{"item": json.RawMessage(b), "evidence": evidence[:min(len(evidence), 100)], "entities": entities[:min(len(entities), 100)], "triage": triage, "comments": comments[:min(len(comments), 100)], "evidence_truncated": len(evidence) > 100, "entities_truncated": len(entities) > 100, "comments_truncated": len(comments) > 100}
+	if category == "findings" {
+		var finding model.Finding
+		json.Unmarshal(b, &finding)
+		contexts, err := s.findingContexts(r.Context(), run, []model.Finding{finding})
+		if err != nil {
+			fail(w, 500, "finding_context_unavailable")
+			return
+		}
+		out["context"] = contexts[finding.ID]
+	}
+	send(w, 200, out)
 }
 func (s *Server) report(w http.ResponseWriter, r *http.Request) {
 	var b []byte

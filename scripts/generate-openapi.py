@@ -19,6 +19,14 @@ schemas = {
     "Page": obj({"run_id": S, "items": {"type": "array", "items": {"type": "object"}}, "total": I, "page": I, "page_size": {"const": 50}}),
 }
 paths = {}
+schemas["FindingContext"] = obj({
+    "subject": S, "source_ids": {"type":"array","items":S}, "scope": S,
+    "identity_count": I, "configuration_count": I, "unresolved_count": I,
+    "facts": {"type":"array","items":obj({"label":S,"observed":S,"expected":S},["label","observed"])},
+    "rule_outcome": S, "rule_limitations": {"type":"array","items":S},
+    "policy_available": B, "policy_revision": {"type":["integer","null"]}, "observed_at": S
+})
+schemas["Page"]["properties"]["items"]["items"] = {"type":"object","properties":{"context":{"$ref":"#/components/schemas/FindingContext"}},"additionalProperties":True,"description":"Findings include API-only context. Counts distinguish native principals from configuration objects. Facts use known fields and the collection's recorded policy, never current workspace policy. Imported reports may have no original policy. The immutable exported report is unchanged."}
 def array(items, nullable=False):
     return {"type":["array","null"] if nullable else "array","items":items}
 rule = obj({
@@ -66,6 +74,7 @@ for path in ["invitations","recovery"]: route("/"+path,"post","Create single-use
 route("/overview","get","Selected report coverage and counts",params=["run"])
 route("/objects/{category}","get","Search and page immutable report objects",response="Page",params=["run","q","source","kind","native","state","page"])
 route("/objects/{category}/{id}","get","Object, bounded evidence, triage and comments",params=["run"])
+paths["/objects/{category}/{id}"]["get"]["description"] += " Findings also return a top-level context (FindingContext); other categories omit it. Rule outcome/limitations cover the whole selected snapshot, not just this finding."
 report={"$ref":"/docs/reference/report.schema.json"}
 route("/report","get","Export immutable report",response=report,params=["run"])
 route("/reports/import","post","Import historical report without creating connections","admin",report,201)

@@ -1,5 +1,11 @@
 # Investigations and policy
 
+Start with [three investigations](./three-investigations.md) and the
+[ten-finding evidence review](./review-example.md). Details show the named subject,
+identity/configuration-object counts, known fields and recorded policy. Imported
+reports without original policy omit unavailable thresholds. The exported report
+stays unchanged.
+
 The built-in policy checks IL001–IL008. Default duration limits are seven days for
 Entra client secrets, 24 hours for X.509 SVIDs, and one hour for JWT SVIDs. IL008
 separates the exact environment names `production`/`development` and

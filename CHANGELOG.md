@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- Show named subjects, known values and recorded policy thresholds in findings;
+  distinguish native identities from related configuration objects.
+- Search findings by affected subject, credential parent application or SPIFFE ID,
+  and select source, rule and review status without entering internal identifiers.
+- Keep historical policy context separate from current settings and explain rule
+  coverage, UNKNOWN and policy-assigned severity alongside supporting evidence.
+- Add three investigation walkthroughs and a sanitized ten-finding lab review.
+- Clarify that six supported provider types are distinct from saved connections.
+
 ## v0.1.0-rc.4 — Announcement candidate
 
 - Make security support follow the latest published preview instead of naming an

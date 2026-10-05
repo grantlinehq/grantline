@@ -118,7 +118,7 @@ export function Integrations({
       </Heading>
       <div className="integration-summary">
         <span>{items.filter((i) => i.enabled).length} active connections</span>
-        <span>{items.length} / 20 configured</span>
+        <span>{providers.length} supported providers</span>
         <a href="/docs/integrations/">Permissions &amp; setup guides ↗</a>
       </div>
       {loading ? (

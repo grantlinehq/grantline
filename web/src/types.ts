@@ -52,6 +52,22 @@ export type Finding = {
   affected_relationship_ids: string[];
   evidence_ids: string[];
   limitations: string[];
+  context?: FindingContext;
+};
+// API presentation context; the original exported report stays unchanged.
+export type FindingContext = {
+  subject: string;
+  source_ids: string[];
+  scope: string;
+  identity_count: number;
+  configuration_count: number;
+  unresolved_count: number;
+  facts: { label: string; observed: string; expected?: string }[];
+  rule_outcome: string;
+  rule_limitations: string[];
+  policy_available: boolean;
+  policy_revision?: number | null;
+  observed_at: string;
 };
 export type Context = {
   entity_id: string;
