@@ -5,7 +5,7 @@
 Open-source, evidence-first security for discovering and analyzing non-human
 identities across software delivery and workload environments.
 
-**Early access: v0.1.0-rc.3.**
+**Early access: v0.1.0-rc.4.**
 See the [implementation and acceptance ledger](docs/PRODUCTION_WORK.md) for verified
 capabilities and remaining gates. Development builds are not labeled production ready.
 
@@ -28,8 +28,8 @@ This is not OWASP certification or full NHI coverage.
 
 ## Start with Docker
 
-Download the [installation ZIP](https://github.com/grantlinehq/grantline/releases/download/v0.1.0-rc.3/grantline-install-0.1.0-rc.3.zip)
-or [TAR package](https://github.com/grantlinehq/grantline/releases/download/v0.1.0-rc.3/grantline-install-0.1.0-rc.3.tar.gz),
+Download the [installation ZIP](https://github.com/grantlinehq/grantline/releases/download/v0.1.0-rc.4/grantline-install-0.1.0-rc.4.zip)
+or [TAR package](https://github.com/grantlinehq/grantline/releases/download/v0.1.0-rc.4/grantline-install-0.1.0-rc.4.tar.gz),
 extract it into a new directory, then run:
 
 ```sh
@@ -54,9 +54,9 @@ Keep generated secret volumes private; do not use `down -v` to stop a real works
 [Kubernetes and Helm guide](docs/guide/install/kubernetes.md) ·
 [Product documentation](docs/guide/index.md)
 
-Container: `ghcr.io/grantlinehq/grantline:0.1.0-rc.3` (`linux/amd64`, `linux/arm64`).
-Helm chart: `oci://ghcr.io/grantlinehq/charts/grantline --version 0.1.0-rc.3`.
-The [release page](https://github.com/grantlinehq/grantline/releases/tag/v0.1.0-rc.3)
+Container: `ghcr.io/grantlinehq/grantline:0.1.0-rc.4` (`linux/amd64`, `linux/arm64`).
+Helm chart: `oci://ghcr.io/grantlinehq/charts/grantline --version 0.1.0-rc.4`.
+The [release page](https://github.com/grantlinehq/grantline/releases/tag/v0.1.0-rc.4)
 includes checksums, signatures and the source archive.
 
 To build from a checkout instead:
@@ -67,6 +67,16 @@ cd grantline
 docker compose -f compose.yaml -f compose.build.yaml build app
 docker compose -f compose.yaml -f compose.build.yaml up -d --wait
 ```
+
+## A look inside the workspace
+
+These are captures of the running product with **synthetic imported evidence**.
+The sample workspace has no live connections; it illustrates the review workflow.
+Fixture severities are chosen for demonstration and are not universal risk scores.
+
+![Grantline overview with an explicitly labeled synthetic imported report](web/public/screenshots/grantline-overview.png)
+
+![Grantline finding details with a Kubernetes permission condition and affected identities](web/public/screenshots/grantline-finding.png)
 
 ## What you can investigate
 

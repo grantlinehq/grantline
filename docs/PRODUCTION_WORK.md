@@ -1,6 +1,6 @@
 # Grantline v0.1.0 implementation and acceptance
 
-Updated: 2026-10-03. Target: Apache-2.0, `github.com/grantlinehq/grantline`.
+Updated: 2026-10-05. Target: Apache-2.0, `github.com/grantlinehq/grantline`.
 The local candidate is implemented and testable. **It is not yet approved as
 production ready.** The release process produces versioned Docker and Helm
 distribution packages. The historical prelaunch record below separates measured
@@ -8,7 +8,7 @@ acceptance from remaining product and publication checks.
 
 ## Current publication status
 
-The repository, rc.1 multiarchitecture GHCR image, OCI chart and signed installation
+The repository, rc.3 multiarchitecture GHCR image, OCI chart and signed installation
 packages are public. Public Checks and CodeQL run on main; secret scanning, push
 protection and private vulnerability reporting are enabled. The private-preparation
 and publication-on-hold statements below are historical, not current blockers.
@@ -18,6 +18,15 @@ collection reporting, and verifies the exact release tag before publishing asset
 It adds no generated-data mode to the server. Optional analyzer fixtures remain
 offline and are always labeled synthetic. Provider collection uses the configured
 APIs, with SPIRE explicitly recorded as a provider export.
+
+The rc.3 candidate adds the guided effective-policy editor, saved-evidence preview,
+coverage-reduction acknowledgement and guided integration scope forms. Its public
+Checks, CodeQL and release workflows passed. Anonymous asset downloads, checksum
+and image/chart signature verification, clean Compose setup with Owner/TOTP and
+persistence, and public-chart Kubernetes installation/upgrade/restart passed on
+4 October. The rc.4 announcement candidate refreshes the security-support policy,
+compatibility record and actual-product screenshots; its publication must pass
+the same release gates before it is described as available.
 
 The three initial CodeQL findings were reviewed: one inventory-ID false positive
 and two loopback HTTP viewer exceptions. The rationale is recorded in
@@ -51,8 +60,9 @@ before any production-ready claim. macOS and real ARM64 hardware are unverified.
   assignments, comments and expiring reasoned risk acceptance independently of
   PASS/FAIL/UNKNOWN. Missing coverage does not automatically resolve a finding.
 - Owner SSO/organization settings, account/session controls, policy and explicit
-  relationship configuration with revision history. Advanced policy/binding
-  editing currently uses validated YAML rather than a visual mapping editor.
+  relationship configuration with revision history. The guided policy editor
+  includes validation and a saved-evidence preview; advanced policy and business
+  context/relationship declarations also accept validated YAML.
 - Non-root, read-only application image, embedded frontend/docs, Compose init /
   PostgreSQL / migration / app and HTTPS profile; external database file secrets.
 - Helm production/evaluation profiles, existing Secrets, optional database PVC,

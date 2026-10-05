@@ -1,9 +1,10 @@
 # Security policy
 
-Grantline is an open-source project in preview. The current candidate
-is `v0.1.0-rc.1`; it is not approved as production ready. No stable release has a
-security-support commitment yet. Fixes currently target the latest development
-candidate; older milestone builds do not receive separate maintained branches.
+Grantline is an open-source project in early access. Security fixes target the
+latest published preview candidate listed in [GitHub Releases](https://github.com/grantlinehq/grantline/releases).
+Older candidates and milestone builds do not receive separate maintained branches.
+No stable release has a security-support commitment yet, and preview releases
+are not approved as production ready.
 
 ## Private vulnerability reports
 

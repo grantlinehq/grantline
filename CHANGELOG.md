@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.1.0-rc.4 — Announcement candidate
+
+- Make security support follow the latest published preview instead of naming an
+  obsolete candidate.
+- Refresh the compatibility and implementation records with independently
+  verified public-package results and the guided policy editor.
+- Add actual-product investigation screenshots using explicitly labeled
+  synthetic imported evidence; no private workspace data is published.
+- Refresh versioned Docker, Helm and download references for the announcement.
+
 ## v0.1.0-rc.3 — Early access
 
 - Add an effective-policy editor for all eight rules, required sources, lifetime

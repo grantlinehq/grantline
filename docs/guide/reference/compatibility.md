@@ -1,14 +1,16 @@
 # Compatibility and acceptance
 
-Verified on 29 September 2026. This records measured results, not a general
-production-readiness certification. Release artifact digests and verification
-instructions accompany the versioned GitHub release.
+Reviewed on 5 October 2026. The baseline measurements below were made on
+29 September; the public rc.3 packages were independently verified on 4 October.
+This records measured results, not a general production-readiness certification.
+Release artifact digests, scan reports and verification instructions accompany
+each versioned GitHub release.
 
 | Area | Status |
 | --- | --- |
 | Docker Desktop / Windows, Linux amd64 containers | Compose clean installation, persistent secrets, schema 1 → 3 upgrade, restart and restore passed |
 | Ubuntu 24.04.5 / WSL2, independent Linux Docker Engine 29.7.2 / Compose 5.5.0 | Clean ext4 source package, init/migration, first Owner/TOTP, saved connection, container recreation, persistent keys/accounts/sessions, logout and database privilege checks passed |
-| GitHub-hosted Ubuntu Linux | Public Checks passed for rc.1, including build/race/dependency tests and clean Compose installation with account/data persistence; every new candidate must pass again |
+| GitHub-hosted Ubuntu Linux | Public Checks and the rc.3 release workflow passed, including build/race/dependency tests and clean Compose installation with account/data persistence; every new candidate must pass again |
 | Standalone production Linux server | Not deployed separately; local runtime acceptance used the WSL2 kernel, with additional GitHub-hosted Ubuntu CI |
 | macOS Docker Desktop | Deferred by maintainer; unverified |
 | Kubernetes 1.37.0 | kind 0.33.0 / Helm 4.3.0: installation, Recreate upgrade, retained independent Secrets, readiness and restore passed |
@@ -62,3 +64,19 @@ requires its outstanding gates to close, including live provider and SSO checks,
 accessibility review, and CI/signature validation for each new candidate. The
 [static analysis review](security-review.md) explains bounded CodeQL exceptions.
 Standalone Linux and macOS coverage remain explicitly unverified.
+
+## Public-package acceptance
+
+On 4 October, the published rc.3 installation assets were downloaded without
+GitHub authentication. The signed checksum bundle was verified before extraction;
+all payload hashes matched. Independent image and chart signature verification
+passed, and both artifacts were pulled with empty registry credentials.
+
+The downloaded Compose package passed clean initialization, Owner/TOTP setup,
+saved-connection persistence, container recreation, fresh login and session
+revocation. The public OCI chart passed installation, migrations, upgrade and
+restart on Kubernetes 1.37.0, retaining database data and independent Secrets.
+Both architecture scan reports contained zero high/critical vulnerabilities at
+scan time. These checks used disposable data and do not establish live-provider
+coverage. Version-specific results are recorded on the
+[release page](https://github.com/grantlinehq/grantline/releases).
