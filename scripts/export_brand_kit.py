@@ -93,4 +93,20 @@ svg(
     'letter-spacing="5">NON-HUMAN IDENTITY SECURITY</text>',
 )
 
+svg(
+    "github-social-preview-1280x640.svg", 1280, 640,
+    background(1280, 640) + arcs(1280, 640, ".16") +
+    wordmark(250, 125, 4.7, IVORY) +
+    f'<text x="640" y="365" text-anchor="middle" fill="{MINT}" '
+    'font-family="Arial, sans-serif" font-size="32" font-weight="600">'
+    'Evidence-first non-human identity security</text>' +
+    f'<text x="640" y="422" text-anchor="middle" fill="{IVORY}" '
+    'font-family="Arial, sans-serif" font-size="24">'
+    'Open source. Self-hosted.</text>' +
+    f'<path d="M520 495H760" stroke="{MINT}" stroke-width="1" opacity=".45"/>' +
+    f'<text x="640" y="553" text-anchor="middle" fill="{MINT}" '
+    'font-family="Arial, sans-serif" font-size="20" letter-spacing="1">'
+    'github.com/grantlinehq/grantline</text>',
+)
+
 print(f"Wrote SVG brand kit to {OUT}")
