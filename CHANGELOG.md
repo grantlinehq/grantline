@@ -4,6 +4,8 @@
 
 ## v0.1.0-rc.5 — Pipeline evidence and investigation guidance
 
+- Pin transitive `source-map-js` to patched 1.2.2 for GHSA-68fv-2mgg-jv7q;
+  retain dependency auditing in build and publication gates.
 - Synchronize embedded documentation with all nine rules, pipeline investigations,
   related-source finding responses and schema-4 upgrade boundaries. Separate current
   source from the published rc.4 packages and clarify provider/connection counts.
