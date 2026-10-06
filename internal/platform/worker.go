@@ -403,12 +403,13 @@ func (s *Server) run(parent context.Context, id string) {
 }
 func defaultPolicy(sources []config.Source) policy.Policy {
 	p := policy.Policy{SchemaVersion: 1, Rules: map[string]policy.Rule{}, MaxClientSecretValidity: 168 * time.Hour, MaxX509SVIDTTL: 24 * time.Hour, MaxJWTSVIDTTL: time.Hour}
-	for _, id := range []string{"IL001", "IL002", "IL003", "IL004", "IL005", "IL006", "IL007", "IL008"} {
+	for _, id := range []string{"IL001", "IL002", "IL003", "IL004", "IL005", "IL006", "IL007", "IL008", "IL009"} {
 		p.Rules[id] = policy.Rule{Severity: model.SeverityMedium}
 	}
 	yes := true
 	p.Rules["IL006"] = policy.Rule{Severity: model.SeverityHigh, ForbidNamespaceOnly: &yes}
 	p.Rules["IL008"] = policy.Rule{Severity: model.SeverityMedium, SeparatedEnvironments: []policy.EnvironmentPair{{First: "production", Second: "development"}, {First: "production", Second: "staging"}}}
+	p.Rules["IL009"] = policy.Rule{Severity: model.SeverityMedium, SeparatedEnvironments: append([]policy.EnvironmentPair{}, p.Rules["IL008"].SeparatedEnvironments...)}
 	owners := p.Rules["IL004"]
 	for _, source := range sources {
 		p.RequiredSources = append(p.RequiredSources, source.ID)

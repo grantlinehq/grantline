@@ -56,8 +56,11 @@ func TestDatabasePolicyPreviewAcknowledgementAndImmutability(t *testing.T) {
 	}
 	var editor struct{ Effective policyForm }
 	json.Unmarshal(owner.request("GET", "/settings/policy", nil, 200).Body.Bytes(), &editor)
-	if len(editor.Effective.Rules) != 8 || len(editor.Effective.RequiredSources) != 1 {
+	if len(editor.Effective.Rules) != 9 || len(editor.Effective.RequiredSources) != 1 {
 		t.Fatal("effective defaults missing")
+	}
+	if _, ok := editor.Effective.Rules["IL009"]; !ok {
+		t.Fatal("Jenkins shared Vault role default missing")
 	}
 	data, err := os.ReadFile("../../testdata/synthetic/wildcard-rbac.snapshot.json")
 	if err != nil {

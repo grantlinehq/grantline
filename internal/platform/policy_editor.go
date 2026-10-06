@@ -45,8 +45,8 @@ func policyIssue(err error) fieldIssue {
 			break
 		}
 	}
-	if strings.Contains(text, "M7 supports") {
-		v.Message = "Enable at least one of IL001–IL008."
+	if strings.Contains(text, "policy supports") {
+		v.Message = "Enable at least one of IL001–IL009."
 		return v
 	}
 	if m := diagnosticLine.FindStringSubmatch(text); len(m) == 2 {
@@ -181,7 +181,7 @@ type policyCandidate struct {
 
 func coverageReduction(before, after policy.Policy) []string {
 	warnings := []string{}
-	for _, id := range []string{"IL001", "IL002", "IL003", "IL004", "IL005", "IL006", "IL007", "IL008"} {
+	for _, id := range []string{"IL001", "IL002", "IL003", "IL004", "IL005", "IL006", "IL007", "IL008", "IL009"} {
 		if _, was := before.Rules[id]; was {
 			if _, now := after.Rules[id]; !now {
 				warnings = append(warnings, id+" will be disabled.")
@@ -273,7 +273,7 @@ func (s *Server) validatePolicy(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	disabled := []string{}
-	for _, id := range []string{"IL001", "IL002", "IL003", "IL004", "IL005", "IL006", "IL007", "IL008"} {
+	for _, id := range []string{"IL001", "IL002", "IL003", "IL004", "IL005", "IL006", "IL007", "IL008", "IL009"} {
 		if _, ok := p.Rules[id]; !ok {
 			disabled = append(disabled, id)
 		}
@@ -379,7 +379,7 @@ func (s *Server) previewPolicy(ctx context.Context, p policy.Policy, bindingText
 		newOutcomes[v.RuleID] = v.Outcome
 	}
 	rules := []map[string]any{}
-	for _, rule := range []string{"IL001", "IL002", "IL003", "IL004", "IL005", "IL006", "IL007", "IL008"} {
+	for _, rule := range []string{"IL001", "IL002", "IL003", "IL004", "IL005", "IL006", "IL007", "IL008", "IL009"} {
 		rules = append(rules, map[string]any{"id": rule, "before": oldCounts[rule], "after": newCounts[rule], "before_outcome": oldOutcomes[rule], "after_outcome": newOutcomes[rule]})
 	}
 	old, newIDs := map[string]bool{}, map[string]bool{}

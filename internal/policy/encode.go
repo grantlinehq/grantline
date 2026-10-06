@@ -58,7 +58,7 @@ func Encode(p Policy) (string, error) {
 		}
 		return nil
 	}
-	for _, id := range []string{"IL001", "IL002", "IL003", "IL004", "IL005", "IL006", "IL007", "IL008"} {
+	for _, id := range []string{"IL001", "IL002", "IL003", "IL004", "IL005", "IL006", "IL007", "IL008", "IL009"} {
 		r, ok := p.Rules[id]
 		if !ok {
 			continue
@@ -107,6 +107,13 @@ func Encode(p Policy) (string, error) {
 			rows = append(rows, []string{v.First, v.Second, v.SourceID, v.Kind, v.NativeID, v.Reason})
 		}
 		if err := entries("allowed_shared_identities", []string{"first", "second", "source_id", "kind", "native_id", "reason"}, rows); err != nil {
+			return "", err
+		}
+		rows = nil
+		for _, v := range r.AllowedSharedVaultRoles {
+			rows = append(rows, []string{v.First, v.Second, v.VaultSourceID, v.RoleNativeID, v.Reason})
+		}
+		if err := entries("allowed_shared_vault_roles", []string{"first", "second", "vault_source_id", "role_native_id", "reason"}, rows); err != nil {
 			return "", err
 		}
 	}

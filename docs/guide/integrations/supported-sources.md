@@ -7,9 +7,9 @@ and UI flows, not validation of every provider version, tenant policy or failure
 | --- | --- | --- |
 | Kubernetes | Service accounts, namespaces, Pods/Deployments, Roles/ClusterRoles and bindings; restricted kubeconfig | No secret values, command execution or comprehensive runtime/effective-access analysis |
 | Vault | Selected AppRole/Kubernetes auth roles and ACL policies; explicit Kubernetes association | No KV values, SecretIDs or discovery of every mount |
-| Jenkins | Selected job/build metadata and immutable Jenkinsfile relationships | Server uses a scoped GitHub connection at a full commit SHA; CLI also supports pinned local files. Pipelines are not executed. |
+| Jenkins | Selected job/build metadata, immutable Jenkinsfile references and IL009 shared Vault AppRole review | Server uses a scoped GitHub connection at a full commit SHA; CLI also supports pinned local files. Requires exact job environments and credential-to-AppRole declarations. Pipelines are not executed. |
 | Entra | Selected apps/SPs, credential validity, owners, federation and application-role assignments | Object scope is explicit. Metadata is not proof of actual credential use; product SSO is separate. |
-| GitHub | Selected repos, refs, workflows and explicit cross-provider identity declarations | App/PAT read scope; no secret contents, workflow dispatch or runtime OIDC-token validation |
+| GitHub | Selected repos, refs, workflows and explicit cross-provider identity declarations; related Entra application findings through evidenced federation | Related findings retain their Entra root cause. No standalone GitHub vulnerability rule, secret contents, workflow dispatch or runtime OIDC-token validation. |
 | SPIRE | Validated registration/workload metadata export with provenance | Import is not a live admin API integration; no admin socket exposed to the web product |
 
 All six appear in the wizard. Access tests use collection paths and can produce

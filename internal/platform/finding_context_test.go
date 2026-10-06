@@ -68,6 +68,23 @@ func TestFindingContextEnvironmentOrderingAndTTL(t *testing.T) {
 		t.Fatalf("Wrong TTL projection: %#v", c)
 	}
 }
+func TestJenkinsFindingContextDistinguishesDeclarationsFromObservation(t *testing.T) {
+	role := contextEntity("role", "vault_auth_role", nil)
+	role.SourceID, role.NativeID = "vault", "approle/payments"
+	job := contextEntity("job", "job", map[string]any{"jenkinsfile_commit": strings.Repeat("a", 40)})
+	job.SourceID = "jenkins"
+	f := model.Finding{ID: model.FindingID("IL009", "1", role.ID, "development", "production"), RuleID: "IL009", RuleVersion: "1", AffectedEntityIDs: []string{role.ID, job.ID}}
+	p := policy.Policy{Rules: map[string]policy.Rule{"IL009": {SeparatedEnvironments: []policy.EnvironmentPair{{First: "production", Second: "development"}}}}}
+	c := describeFinding(f, map[string]model.Entity{role.ID: role, job.ID: job}, findingRunContext{HasPolicy: true, Policy: p})
+	if c.Subject != role.Name || c.IdentityCount != 0 || c.ConfigurationCount != 2 || len(c.Facts) != 3 {
+		t.Fatalf("role was misrepresented as a principal: %+v", c)
+	}
+	for _, fact := range c.Facts {
+		if strings.HasPrefix(fact.Label, "Pinned Jenkinsfile") && fact.AssertionKind != model.AssertionConfigured || fact.Label == "Declared job environments" && fact.AssertionKind != model.AssertionDeclared {
+			t.Fatal("declared context was presented as an observation")
+		}
+	}
+}
 func TestDatabaseFindingContextSearchAndHistory(t *testing.T) {
 	db := testDatabase(t)
 	s, err := New(db, Config{PublicURL: "http://127.0.0.1:8080", SetupToken: randomID(), EncryptionKey: randomBytes(32)})

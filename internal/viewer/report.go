@@ -1,8 +1,8 @@
 package viewer
 
 import (
-	"github.com/grantlinehq/grantline/internal/model"
 	"fmt"
+	"github.com/grantlinehq/grantline/internal/model"
 	"io"
 	"os"
 	"reflect"
@@ -143,7 +143,7 @@ func Validate(r model.Report) error {
 		}
 	}
 	for _, e := range r.PolicyExceptions {
-		if !entities[e.EntityID] || e.RuleID != "IL008" || len(e.Environments) != 2 || e.Reason == "" {
+		if !entities[e.EntityID] || (e.RuleID != "IL008" && e.RuleID != "IL009") || len(e.Environments) != 2 || e.Reason == "" {
 			return fmt.Errorf("invalid policy exception")
 		}
 	}

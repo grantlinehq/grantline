@@ -6,7 +6,7 @@ identity/configuration-object counts, known fields and recorded policy. Imported
 reports without original policy omit unavailable thresholds. The exported report
 stays unchanged.
 
-The built-in policy checks IL001–IL008. Default duration limits are seven days for
+The built-in policy checks IL001–IL009. Default duration limits are seven days for
 Entra client secrets, 24 hours for X.509 SVIDs, and one hour for JWT SVIDs. IL008
 separates the exact environment names `production`/`development` and
 `production`/`staging`. These are policy defaults, not inferred environment labels:
@@ -47,9 +47,10 @@ secrets, 24 hours for X.509-SVIDs and one hour for JWT-SVIDs.
 | IL006 | Broad workload selectors |
 | IL007 | Long-lived workload identities |
 | IL008 | Identity shared across environments |
+| IL009 | Jenkins jobs in separated environments mapped to the same Vault AppRole |
 
 Open **Settings → Policies** as an Owner or Admin. The guided editor shows the
-effective configuration, including defaults: all eight rules, severity, duration
+effective configuration, including defaults: all nine rules, severity, duration
 limits, required connections and exact exception lists. Use the connection picker
 and copy native IDs from an identity's evidence details. Display names do not
 replace native IDs. IL004's owner requirement applies only to its listed targets;
@@ -82,7 +83,7 @@ The CLI and server use the same strict parser: block lists, two-space indentatio
 plain single-line scalars and duration units such as `168h`, `24h` or `15m` (not
 `7d`). Do not use flow arrays, anchors, multiline values or inline comments.
 
-This example keeps all eight rules enabled. Replace `production-cluster` with an
+This example keeps the original eight checks enabled; add IL009 using the pipeline example below. Replace `production-cluster` with an
 actual connection ID and add your other required connection IDs:
 
 ```yaml
@@ -154,3 +155,79 @@ their provenance.
 Use exact connection and native object IDs in context declarations. Names alone
 never establish cross-system identity. Evidence remains marked as provider
 observation, controlled export, explicit operator declaration or synthetic fixture.
+
+## Jenkins pipeline role sharing — IL009
+
+Available in the current `main` source; not included in the published
+`v0.1.0-rc.4` package.
+
+Add a Jenkinsfile mapping for each reviewed job in **Integrations → Jenkins**:
+select an enabled GitHub connection, its exact repository name/numeric ID, a full
+commit SHA and regular file path. Reading the selected file is an operator
+declaration of that job's source, not proof that the running job uses that revision.
+The parser records literal credential reference IDs and line evidence, never values.
+
+IL009 follows only `job → references_credential → bound_to → Vault AppRole`.
+It needs collected Jenkins job metadata, configured reference evidence from the
+pinned file, an explicit credential-to-role declaration and observed Vault role
+metadata. The same credential label in two jobs does **not** establish identity.
+
+Add IL009 to your custom policy (existing custom policies are not extended
+automatically):
+
+```yaml
+  IL009:
+    severity: medium
+    separated_environments:
+      - first: production
+        second: development
+```
+
+For example, add these entries to your context document, preserving its other
+applications and bindings. Replace every source/job/role ID with reviewed scope:
+
+```yaml
+schema_version: 1
+jenkins_vault:
+  - jenkins_source_id: jenkins-team
+    credential_native_id: deploy-dev/credentials/vault-role
+    vault_source_id: vault-team
+    role_native_id: approle/deploy
+  - jenkins_source_id: jenkins-team
+    credential_native_id: deploy-prod/credentials/vault-role
+    vault_source_id: vault-team
+    role_native_id: approle/deploy
+applications:
+  - id: delivery
+    name: Delivery
+    members:
+      - source_id: jenkins-team
+        kind: job
+        native_id: deploy-dev
+        environment: development
+      - source_id: jenkins-team
+        kind: job
+        native_id: deploy-prod
+        environment: production
+```
+
+One finding is emitted per exact Vault role and separated environment pair,
+including both jobs/references and the supporting edges. Missing pinning,
+unsupported parsing or missing role mappings remain UNKNOWN; known conflicts
+survive partial coverage. An intentionally shared role can use
+`allowed_shared_vault_roles` with `first`, `second`, `vault_source_id`,
+`role_native_id` and `reason`; the report records the exact exception. This rule
+does not establish identical secret values, authentication success or effective
+access. Jobs without environment declarations and non-Vault credentials are
+outside its scope.
+
+## GitHub-related findings
+
+The GitHub source filter includes Entra application findings connected to a
+collected workflow by an evidenced configured or declared federation relationship.
+Explicit tenant/client mappings remain operator declarations. The row
+is labeled **Related via** its Entra source; detail shows the workflow and a link
+to the exact relationship. The original finding's source, ID, evidence and triage
+remain unchanged, and the total across all sources is not duplicated. A linked
+Entra owner finding is not a separate GitHub vulnerability or proof of runtime
+access. No standalone GitHub vulnerability rule is currently provided.

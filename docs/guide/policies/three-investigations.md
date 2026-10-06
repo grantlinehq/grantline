@@ -8,7 +8,7 @@ Start in **Overview → Your review queue**. Open a finding to see its named sub
 
 1. Collect selected source API metadata, or consume a validated SPIRE export.
 2. Preserve identities, configuration objects, relationships and evidence. Configured, observed and operator-declared relationships remain distinct. Native identifiers determine identity; names aid investigation.
-3. Evaluate IL001–IL008 against the collection's policy and context declarations. Severity, limits, targets and exact exceptions are organization choices, rather than a universal compliance standard or exploitability score.
+3. Evaluate the enabled checks IL001–IL009 against the collection's policy and context declarations. Severity, limits, targets and exact exceptions are organization choices, rather than a universal compliance standard or exploitability score.
 4. Preserve an immutable report. Review state, assignee, comments and risk acceptance are separate records.
 
 **PASS** means no violating condition was found within the evidence and scope needed by that rule. **FAIL** means a violating condition was found. **UNKNOWN** means evidence is insufficient for a complete rule conclusion; known findings can still be present. **Not applicable** means the rule does not apply to the selected configuration. PASS and source completeness do not prove that an entire organization is secure. See the [rule reference](./index.md).

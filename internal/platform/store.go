@@ -16,7 +16,7 @@ import (
 //go:embed migrations/*.sql
 var migrations embed.FS
 
-const databaseVersion = 3
+const databaseVersion = 4
 
 func Open(ctx context.Context, url string) (*sql.DB, error) {
 	db, err := sql.Open("pgx", url)

@@ -937,6 +937,17 @@ function Records({
                           <>
                             {ruleNames[item.rule_id]} ·{" "}
                             {affectedSummary(item.context)}
+                            {source &&
+                              !item.context?.source_ids.includes(source) &&
+                              item.context?.related_sources?.some(
+                                (r: any) => r.source_id === source,
+                              ) && (
+                                <>
+                                  {" "}
+                                  · Related via{" "}
+                                  {item.context.source_ids.join(" / ")}
+                                </>
+                              )}
                           </>
                         ) : (
                           item.native_id || item.description || item.scope
@@ -1018,13 +1029,37 @@ function FindingExplanation({
           {c.source_ids.join(" · ")} · {affectedSummary(c)}
         </p>
         {c.scope && <p className="finding-scope">{c.scope}</p>}
+        {(c.related_sources?.length || 0) > 0 && (
+          <div className="product-notice">
+            <div>
+              <strong>Related GitHub workflows</strong>
+              <p>
+                This finding concerns {c.source_ids.join(" / ")}. These
+                workflows are linked through collected federation configuration
+                and explicit identity mappings. The workflow itself is not a
+                separate finding, and this does not prove runtime access.
+              </p>
+              {c.related_sources?.map((r) => (
+                <p key={r.entity_id}>
+                  <a
+                    href={`#relationships/${r.relationship_ids[0]}?run=${encodeURIComponent(selectedRun())}`}
+                  >
+                    {r.source_id} · {r.name}
+                  </a>
+                </p>
+              ))}
+            </div>
+          </div>
+        )}
         {c.facts.length > 0 ? (
           <dl className="finding-facts">
             {c.facts.map((fact, i) => (
               <div key={i}>
                 <dt>{fact.label}</dt>
                 <dd>
-                  <span className="fact-label">Observed</span>
+                  <span className="fact-label">
+                    {human(fact.assertion_kind || "observed")}
+                  </span>
                   {fact.observed}
                 </dd>
                 {fact.expected && (

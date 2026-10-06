@@ -17,23 +17,31 @@ import (
 // Investigation context is a presentation projection, never a changed finding,
 // inferred authorization or a replacement for the original report evidence.
 type findingContext struct {
-	Subject            string        `json:"subject"`
-	SourceIDs          []string      `json:"source_ids"`
-	Scope              string        `json:"scope"`
-	IdentityCount      int           `json:"identity_count"`
-	ConfigurationCount int           `json:"configuration_count"`
-	UnresolvedCount    int           `json:"unresolved_count"`
-	Facts              []findingFact `json:"facts"`
-	RuleOutcome        string        `json:"rule_outcome"`
-	RuleLimitations    []string      `json:"rule_limitations"`
-	PolicyAvailable    bool          `json:"policy_available"`
-	PolicyRevision     *int          `json:"policy_revision"`
-	ObservedAt         string        `json:"observed_at"`
+	Subject            string                 `json:"subject"`
+	SourceIDs          []string               `json:"source_ids"`
+	RelatedSources     []findingRelatedSource `json:"related_sources"`
+	Scope              string                 `json:"scope"`
+	IdentityCount      int                    `json:"identity_count"`
+	ConfigurationCount int                    `json:"configuration_count"`
+	UnresolvedCount    int                    `json:"unresolved_count"`
+	Facts              []findingFact          `json:"facts"`
+	RuleOutcome        string                 `json:"rule_outcome"`
+	RuleLimitations    []string               `json:"rule_limitations"`
+	PolicyAvailable    bool                   `json:"policy_available"`
+	PolicyRevision     *int                   `json:"policy_revision"`
+	ObservedAt         string                 `json:"observed_at"`
+}
+type findingRelatedSource struct {
+	SourceID        string   `json:"source_id"`
+	Name            string   `json:"name"`
+	EntityID        string   `json:"entity_id"`
+	RelationshipIDs []string `json:"relationship_ids"`
 }
 type findingFact struct {
-	Label    string `json:"label"`
-	Observed string `json:"observed"`
-	Expected string `json:"expected,omitempty"`
+	Label         string              `json:"label"`
+	Observed      string              `json:"observed"`
+	Expected      string              `json:"expected,omitempty"`
+	AssertionKind model.AssertionKind `json:"assertion_kind,omitempty"`
 }
 type findingRunContext struct {
 	Rules      []model.RuleResult
@@ -119,6 +127,47 @@ func (s *Server) findingContexts(ctx context.Context, run string, findings []mod
 	for _, f := range findings {
 		result[f.ID] = describeFinding(f, entities, meta)
 	}
+	// Related workflows are a separate presentation projection. The underlying
+	// Entra finding, affected objects and immutable report are not rewritten.
+	linked, err := jsonRows(ctx, s.db, `SELECT jsonb_build_object('affected_id',app.id,'source_id',workflow.source_id,'name',workflow.name,'entity_id',workflow.id,'relationship_ids',jsonb_build_array(edge.id))
+	 FROM objects app JOIN objects fic ON fic.run_id=app.run_id AND fic.category='identities' AND fic.kind='federated_credential' AND fic.source_id=app.source_id
+	 AND app.body->'field_status'->>'object_id'='known' AND fic.body->'field_status'->>'parent_object_id'='known'
+	 AND fic.body->'attributes'->>'parent_object_id'=app.body->'attributes'->>'object_id'
+	 JOIN objects edge ON edge.run_id=app.run_id AND edge.category='relationships' AND edge.kind='trusts_subject' AND edge.body->>'from'=fic.id AND edge.body->>'assertion_kind' IN ('configured','declared') AND jsonb_array_length(edge.body->'evidence_ids')>0
+	 JOIN objects workflow ON workflow.run_id=app.run_id AND workflow.category='identities' AND workflow.kind='workflow' AND workflow.id=edge.body->>'to'
+	 WHERE app.run_id=$1 AND app.category='identities' AND app.kind='application_registration' AND app.id=ANY($2) ORDER BY workflow.id,edge.id`, run, ids)
+	if err != nil {
+		return nil, err
+	}
+	for _, raw := range linked {
+		var link struct {
+			AffectedID string `json:"affected_id"`
+			findingRelatedSource
+		}
+		if err = json.Unmarshal(raw, &link); err != nil {
+			return nil, err
+		}
+		for _, f := range findings {
+			for _, id := range f.AffectedEntityIDs {
+				if id != link.AffectedID {
+					continue
+				}
+				c := result[f.ID]
+				found := false
+				for i, previous := range c.RelatedSources {
+					if previous.EntityID == link.EntityID {
+						c.RelatedSources[i].RelationshipIDs = append(c.RelatedSources[i].RelationshipIDs, link.RelationshipIDs...)
+						found = true
+						break
+					}
+				}
+				if !found {
+					c.RelatedSources = append(c.RelatedSources, link.findingRelatedSource)
+				}
+				result[f.ID] = c
+			}
+		}
+	}
 	return result, nil
 }
 
@@ -154,7 +203,7 @@ func readableDuration(d time.Duration) string {
 }
 
 func describeFinding(f model.Finding, entities map[string]model.Entity, meta findingRunContext) findingContext {
-	c := findingContext{SourceIDs: []string{}, Facts: []findingFact{}, RuleLimitations: []string{}, PolicyAvailable: meta.HasPolicy, PolicyRevision: meta.Revision, ObservedAt: meta.ObservedAt}
+	c := findingContext{SourceIDs: []string{}, RelatedSources: []findingRelatedSource{}, Facts: []findingFact{}, RuleLimitations: []string{}, PolicyAvailable: meta.HasPolicy, PolicyRevision: meta.Revision, ObservedAt: meta.ObservedAt}
 	for _, r := range meta.Rules {
 		if r.RuleID == f.RuleID {
 			c.RuleOutcome = string(r.Outcome)
@@ -190,8 +239,12 @@ func describeFinding(f model.Finding, entities map[string]model.Entity, meta fin
 	if len(affected) > 0 {
 		c.Subject, c.Scope = entityDisplay(affected[0]), affected[0].Scope
 	}
-	add := func(label, observed, expected string) {
-		c.Facts = append(c.Facts, findingFact{label, observed, expected})
+	add := func(label, observed, expected string, assertions ...model.AssertionKind) {
+		fact := findingFact{Label: label, Observed: observed, Expected: expected}
+		if len(assertions) > 0 {
+			fact.AssertionKind = assertions[0]
+		}
+		c.Facts = append(c.Facts, fact)
 	}
 	for _, e := range affected {
 		switch f.RuleID {
@@ -283,8 +336,25 @@ func describeFinding(f model.Finding, entities map[string]model.Entity, meta fin
 				environments := []string{pair.First, pair.Second}
 				sort.Strings(environments)
 				if model.FindingID(f.RuleID, f.RuleVersion, e.ID, environments[0], environments[1]) == f.ID {
-					add("Declared environment membership", pair.First+" + "+pair.Second, "Separate native principals or an exact documented shared-service exception.")
+					add("Declared environment membership", pair.First+" + "+pair.Second, "Separate native principals or an exact documented shared-service exception.", model.AssertionDeclared)
 				}
+			}
+		case "IL009":
+			if e.Kind == "vault_auth_role" {
+				c.Subject = entityDisplay(e)
+				add("Shared Vault AppRole", e.SourceID+" / "+e.NativeID, "Separate roles for the policy-separated environments, or an exact reasoned exception.")
+				if meta.HasPolicy {
+					for _, pair := range meta.Policy.Rules[f.RuleID].SeparatedEnvironments {
+						envs := []string{pair.First, pair.Second}
+						sort.Strings(envs)
+						if model.FindingID("IL009", f.RuleVersion, e.ID, envs[0], envs[1]) == f.ID {
+							add("Declared job environments", pair.First+" + "+pair.Second, "Environment names and credential-to-role bindings are explicit operator declarations.", model.AssertionDeclared)
+						}
+					}
+				}
+			}
+			if e.Kind == "job" && knownString(e, "jenkinsfile_commit") != "" {
+				add("Pinned Jenkinsfile · "+entityDisplay(e), knownString(e, "jenkinsfile_commit"), "A selected immutable file; this does not establish the running job's revision.", model.AssertionConfigured)
 			}
 		}
 	}

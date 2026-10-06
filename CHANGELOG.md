@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Add IL009: review Jenkins jobs mapped to the same collected Vault AppRole across
+  explicitly separated environments, with pinned-file evidence and exact reasoned
+  exceptions. Missing metadata remains UNKNOWN; credential names are not identities.
+- Show related Entra application findings under GitHub source filters using an
+  evidenced federation relationship, labeled separately from the root cause.
 - Show named subjects, known values and recorded policy thresholds in findings;
   distinguish native identities from related configuration objects.
 - Search findings by affected subject, credential parent application or SPIFFE ID,

@@ -58,11 +58,22 @@ export type Finding = {
 export type FindingContext = {
   subject: string;
   source_ids: string[];
+  related_sources?: {
+    source_id: string;
+    name: string;
+    entity_id: string;
+    relationship_ids: string[];
+  }[];
   scope: string;
   identity_count: number;
   configuration_count: number;
   unresolved_count: number;
-  facts: { label: string; observed: string; expected?: string }[];
+  facts: {
+    label: string;
+    observed: string;
+    expected?: string;
+    assertion_kind?: string;
+  }[];
   rule_outcome: string;
   rule_limitations: string[];
   policy_available: boolean;
@@ -126,6 +137,7 @@ export const ruleNames: Record<string, string> = {
   IL006: "Broad workload selectors",
   IL007: "Long-lived workload identities",
   IL008: "Identity shared across environments",
+  IL009: "Jenkins Vault role shared across environments",
 };
 const labels: Record<string, string> = {
   live_api: "Live API",

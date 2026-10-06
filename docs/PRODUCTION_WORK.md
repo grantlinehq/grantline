@@ -15,6 +15,30 @@ v0.1.0-rc.4; subsequent source changes below are not a retag of that release.
 
 ## Investigation clarity
 
+Jenkins source mappings now read credential references from selected immutable
+GitHub files. IL009 reviews exact collected Vault AppRoles shared by jobs in
+explicitly separated environments; unknown metadata, unassigned jobs and runtime
+use are not promoted to observed identity sharing. Exact reasoned exceptions are
+recorded. A fresh six-source lab collection established one such Jenkins/Vault
+configuration finding while preserving the earlier findings. All source scopes
+completed; no pipelines were executed to produce this finding.
+
+GitHub source filters also include Entra application findings connected through
+evidenced federation relationships. Related-source labels and relationship links
+keep the Entra root cause separate; no standalone GitHub vulnerability is invented
+or duplicated in report totals. The three selected Jenkinsfiles were added to the
+maintainer-authorized demo repository without secret values or workflow changes.
+
+Go race, PostgreSQL, policy serialization and negative evidence tests passed;
+frontend/docs compilation and public documentation link checks passed. These
+source additions are not included in the immutable rc.4 distribution.
+Source-filtered findings evaluate matching application sets once and return their
+total/page together. Schema migration 4 adds federation-key indexes. On the shared
+Windows Docker Desktop host with aggregate 4 CPU / 8 GiB container caps, the
+10,000-identity/10-user acceptance measured p95 about 290 ms; a separate stored
+projection fixture with 1,000 related findings and 10 concurrent requests measured
+p95 about 383 ms. These fixture measurements are not customer deployment results.
+
 Finding APIs now project named subjects, known observed fields and the recorded
 collection policy without changing report IDs, evidence or exported reports.
 Counts separate native principals from configuration objects. Source/rule selectors

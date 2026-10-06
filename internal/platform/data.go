@@ -75,17 +75,41 @@ func (s *Server) objects(w http.ResponseWriter, r *http.Request) {
 		fail(w, 400, "query_too_long")
 		return
 	}
-	where := ` FROM objects o LEFT JOIN triage t ON o.category='findings' AND t.finding_id=o.id WHERE o.run_id=$1 AND o.category=$2 AND ($3='' OR o.name ILIKE '%'||$3||'%' OR o.body->>'native_id' ILIKE '%'||$3||'%' OR (o.category='findings' AND EXISTS(SELECT 1 FROM objects affected WHERE affected.run_id=o.run_id AND affected.category='identities' AND affected.id=ANY(ARRAY(SELECT jsonb_array_elements_text(o.body->'affected_entity_ids'))) AND (affected.name ILIKE '%'||$3||'%' OR affected.body->>'native_id' ILIKE '%'||$3||'%' OR (affected.body->'field_status'->>'spiffe_id'='known' AND affected.body->'attributes'->>'spiffe_id' ILIKE '%'||$3||'%') OR (affected.kind='credential_metadata' AND affected.body->'field_status'->>'parent_object_id'='known' AND affected.body->'field_status'->>'parent_kind'='known' AND EXISTS(SELECT 1 FROM objects parent WHERE parent.run_id=affected.run_id AND parent.category='identities' AND parent.source_id=affected.source_id AND parent.kind=affected.body->'attributes'->>'parent_kind' AND parent.body->'field_status'->>'object_id'='known' AND parent.body->'attributes'->>'object_id'=affected.body->'attributes'->>'parent_object_id' AND (parent.name ILIKE '%'||$3||'%' OR parent.body->>'native_id' ILIKE '%'||$3||'%'))))))) AND ($4='' OR o.source_id=$4 OR (o.category='findings' AND EXISTS(SELECT 1 FROM objects affected WHERE affected.run_id=o.run_id AND affected.category='identities' AND affected.source_id=$4 AND o.body->'affected_entity_ids' ? affected.id))) AND ($5='' OR o.kind=$5) AND ($6=false OR o.kind IN ('service_account','service_principal','spiffe_identity')) AND ($7='' OR COALESCE(t.state,'open')=$7 OR ($7='active' AND COALESCE(t.state,'open') IN ('open','in_review')))`
+	where := objectListWhere(category, q.Get("source"), search)
 	args := []any{run, category, search, q.Get("source"), q.Get("kind"), q.Get("native") == "true", q.Get("state")}
 	var total int
-	if e := s.db.QueryRowContext(r.Context(), "SELECT count(*)"+where, args...).Scan(&total); e != nil {
+	projection := "o.body || CASE WHEN o.category='findings' THEN jsonb_build_object('triage_state',COALESCE(t.state,'open'),'assignee_id',t.assignee_id) ELSE '{}'::jsonb END"
+	selectSQL := "SELECT " + projection
+	if category == "findings" {
+		// Evaluate the federation set once and keep triage pagination consistent.
+		selectSQL = "SELECT jsonb_build_object('total',count(*) OVER(),'item'," + projection + ")"
+	} else if e := s.db.QueryRowContext(r.Context(), "SELECT count(*)"+where, args...).Scan(&total); e != nil {
 		fail(w, 503, "database_unavailable")
 		return
 	}
-	items, e := jsonRows(r.Context(), s.db, "SELECT o.body || CASE WHEN o.category='findings' THEN jsonb_build_object('triage_state',COALESCE(t.state,'open'),'assignee_id',t.assignee_id) ELSE '{}'::jsonb END"+where+" ORDER BY o.severity DESC,o.name,o.id LIMIT 50 OFFSET $8", append(args, page*50)...)
+	items, e := jsonRows(r.Context(), s.db, selectSQL+where+" ORDER BY o.severity DESC,o.name,o.id LIMIT 50 OFFSET $8", append(args, page*50)...)
 	if e != nil {
 		fail(w, 503, "database_unavailable")
 		return
+	}
+	if category == "findings" {
+		for i, raw := range items {
+			var row struct {
+				Total int             `json:"total"`
+				Item  json.RawMessage `json:"item"`
+			}
+			if json.Unmarshal(raw, &row) != nil {
+				fail(w, 500, "finding_unavailable")
+				return
+			}
+			total, items[i] = row.Total, row.Item
+		}
+		if len(items) == 0 && page > 0 {
+			if e := s.db.QueryRowContext(r.Context(), "SELECT count(*)"+where, args...).Scan(&total); e != nil {
+				fail(w, 503, "database_unavailable")
+				return
+			}
+		}
 	}
 	if category == "findings" && len(items) > 0 {
 		findings := make([]model.Finding, len(items))
@@ -391,3 +415,30 @@ func (s *Server) comment(w http.ResponseWriter, r *http.Request) {
 }
 
 var _ = sql.ErrNoRows
+
+func objectListWhere(category, source, search string) string {
+	sourceFilter := ` AND ($4='' OR o.source_id=$4 OR (o.category='findings' AND EXISTS(SELECT 1 FROM objects affected WHERE affected.run_id=o.run_id AND affected.category='identities' AND affected.source_id=$4 AND o.body->'affected_entity_ids' ? affected.id))`
+	// Keep federation joins out of identity lists and unfiltered finding lists.
+	if category == "findings" {
+		sourceFilter = ` AND ($4='' OR o.source_id=$4 OR o.body->'affected_entity_ids' ?| ARRAY(SELECT affected.id FROM objects affected WHERE affected.run_id=$1 AND affected.category='identities' AND affected.source_id=$4)`
+	}
+	if category == "findings" && source != "" {
+		// Build the matching application set once per request, not once per finding.
+		sourceFilter += ` OR (o.body->'affected_entity_ids' ?| ARRAY(
+ SELECT DISTINCT app.id FROM objects app
+ JOIN objects fic ON fic.run_id=app.run_id AND fic.category='identities' AND fic.kind='federated_credential' AND fic.source_id=app.source_id
+ AND app.body->'field_status'->>'object_id'='known' AND fic.body->'field_status'->>'parent_object_id'='known'
+ AND fic.body->'attributes'->>'parent_object_id'=app.body->'attributes'->>'object_id'
+ JOIN objects edge ON edge.run_id=app.run_id AND edge.category='relationships' AND edge.kind='trusts_subject'
+ AND edge.body->>'from'=fic.id AND edge.body->>'assertion_kind' IN ('configured','declared') AND jsonb_array_length(edge.body->'evidence_ids')>0
+ JOIN objects workflow ON workflow.run_id=app.run_id AND workflow.category='identities' AND workflow.kind='workflow'
+ AND workflow.source_id=$4 AND workflow.id=edge.body->>'to'
+ WHERE app.run_id=$1 AND app.category='identities' AND app.kind='application_registration'))`
+	}
+	searchFilter := ` AND ($3='' OR o.name ILIKE '%'||$3||'%' OR o.body->>'native_id' ILIKE '%'||$3||'%'`
+	if category == "findings" && search != "" {
+		searchFilter += ` OR (o.category='findings' AND EXISTS(SELECT 1 FROM objects affected WHERE affected.run_id=o.run_id AND affected.category='identities' AND affected.id=ANY(ARRAY(SELECT jsonb_array_elements_text(o.body->'affected_entity_ids'))) AND (affected.name ILIKE '%'||$3||'%' OR affected.body->>'native_id' ILIKE '%'||$3||'%' OR (affected.body->'field_status'->>'spiffe_id'='known' AND affected.body->'attributes'->>'spiffe_id' ILIKE '%'||$3||'%') OR (affected.kind='credential_metadata' AND affected.body->'field_status'->>'parent_object_id'='known' AND affected.body->'field_status'->>'parent_kind'='known' AND EXISTS(SELECT 1 FROM objects parent WHERE parent.run_id=affected.run_id AND parent.category='identities' AND parent.source_id=affected.source_id AND parent.kind=affected.body->'attributes'->>'parent_kind' AND parent.body->'field_status'->>'object_id'='known' AND parent.body->'attributes'->>'object_id'=affected.body->'attributes'->>'parent_object_id' AND (parent.name ILIKE '%'||$3||'%' OR parent.body->>'native_id' ILIKE '%'||$3||'%'))))))`
+	}
+	where := ` FROM objects o LEFT JOIN triage t ON o.category='findings' AND t.finding_id=o.id WHERE o.run_id=$1 AND o.category=$2` + searchFilter + `)` + sourceFilter + `) AND ($5='' OR o.kind=$5) AND ($6=false OR o.kind IN ('service_account','service_principal','spiffe_identity')) AND ($7='' OR COALESCE(t.state,'open')=$7 OR ($7='active' AND COALESCE(t.state,'open') IN ('open','in_review')))`
+	return where
+}

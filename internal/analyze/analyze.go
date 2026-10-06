@@ -87,6 +87,12 @@ func (analyzer Analyzer) Analyze(snapshot model.Snapshot, configuredPolicy polic
 		report.Findings = append(report.Findings, findings...)
 		report.PolicyExceptions = exceptions
 	}
+	if rule, ok := configuredPolicy.Rules["IL009"]; ok {
+		result, findings, exceptions := evaluateIL009(graph, snapshot, contexts, rule, report.Completeness)
+		report.RuleResults = append(report.RuleResults, result)
+		report.Findings = append(report.Findings, findings...)
+		report.PolicyExceptions = append(report.PolicyExceptions, exceptions...)
+	}
 	sort.Slice(report.RuleResults, func(i, j int) bool { return report.RuleResults[i].RuleID < report.RuleResults[j].RuleID })
 	sort.Slice(report.Findings, func(i, j int) bool { return report.Findings[i].ID < report.Findings[j].ID })
 	normalizeReportLists(&report)

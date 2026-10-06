@@ -21,8 +21,9 @@ schemas = {
 paths = {}
 schemas["FindingContext"] = obj({
     "subject": S, "source_ids": {"type":"array","items":S}, "scope": S,
+    "related_sources": {"type":"array","items":obj({"source_id":S,"name":S,"entity_id":S,"relationship_ids":{"type":"array","items":S}})},
     "identity_count": I, "configuration_count": I, "unresolved_count": I,
-    "facts": {"type":"array","items":obj({"label":S,"observed":S,"expected":S},["label","observed"])},
+    "facts": {"type":"array","items":obj({"label":S,"observed":S,"expected":S,"assertion_kind":{"enum":["observed","configured","declared","inferred"]}},["label","observed"])},
     "rule_outcome": S, "rule_limitations": {"type":"array","items":S},
     "policy_available": B, "policy_revision": {"type":["integer","null"]}, "observed_at": S
 })
@@ -38,9 +39,10 @@ rule = obj({
     "AllowedAppRoles":array(fields("SourceID PrincipalObjectID ResourceObjectID AppRoleID"),True),
     "SeparatedEnvironments":array(fields("First Second"),True),
     "AllowedSharedIdentities":array(fields("First Second SourceID Kind NativeID Reason"),True),
+    "AllowedSharedVaultRoles":array(fields("First Second VaultSourceID RoleNativeID Reason"),True),
 },["Severity"])
 schemas["PolicyRule"] = rule
-schemas["PolicyForm"] = obj({"required_sources":array(S,True),"limits":obj({name:S for name in ["max_client_secret_validity","max_x509_svid_ttl","max_jwt_svid_ttl"]}),"rules":obj({f"IL{i:03d}":{"$ref":"#/components/schemas/PolicyRule"} for i in range(1,9)})},["required_sources","rules","limits"])
+schemas["PolicyForm"] = obj({"required_sources":array(S,True),"limits":obj({name:S for name in ["max_client_secret_validity","max_x509_svid_ttl","max_jwt_svid_ttl"]}),"rules":obj({f"IL{i:03d}":{"$ref":"#/components/schemas/PolicyRule"} for i in range(1,10)})},["required_sources","rules","limits"])
 formref={"$ref":"#/components/schemas/PolicyForm"}
 schemas["PolicyCandidate"]={"oneOf":[obj({"policy":S,"bindings":S,"revision":I,"preview":B},["policy","revision"]),obj({"form":formref,"bindings":S,"revision":I,"preview":B},["form","revision"])]}
 schemas["PolicyEditor"] = obj({"revision":I,"mode":{"enum":["defaults","custom"]},"effective":formref,"defaults":formref,"yaml":S})

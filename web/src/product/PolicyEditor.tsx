@@ -59,6 +59,12 @@ const rules = [
     "Explicit business context",
     "Compare native identities across the environment pairs and context declarations you define.",
   ],
+  [
+    "IL009",
+    "Jenkins Vault role shared across environments",
+    "Jenkins + Vault",
+    "Review exact Vault AppRoles shared by declared jobs in separated environments, using pinned Jenkinsfile references and explicit role mappings.",
+  ],
 ] as const;
 const severityOptions = ["low", "medium", "high", "critical"];
 const field = (
@@ -237,8 +243,8 @@ export function PolicyEditor({
       <div className="policy-toolbar">
         <span>
           <Badge value={defaults ? "defaults" : "custom"} /> Revision{" "}
-          {editor.revision} · {Object.keys(draft.rules).length} of 8 rules
-          enabled
+          {editor.revision} · {Object.keys(draft.rules).length} of{" "}
+          {rules.length} rules enabled
         </span>
         <div>
           <button
@@ -283,7 +289,7 @@ export function PolicyEditor({
           <div className="policy-defaults">
             <p>
               {defaults
-                ? "Using all eight built-in rules and all enabled connections. These defaults are starting points, not a universal risk standard."
+                ? "Using all built-in rules and all enabled connections. These defaults are starting points, not a universal risk standard."
                 : "This custom policy replaces the defaults. Rules switched off or omitted from YAML will not run."}
             </p>
             <button
@@ -516,7 +522,7 @@ export function PolicyEditor({
                           <summary>
                             {id === "IL004"
                               ? `${rule.RequireOwnersFor?.length || 0} owner targets — select exact objects`
-                              : id === "IL008"
+                              : id === "IL008" || id === "IL009"
                                 ? "Environment separation & approved exceptions"
                                 : "Exact exceptions and scope"}
                           </summary>
@@ -608,7 +614,7 @@ export function PolicyEditor({
                                 field("AppRoleID", "App role ID"),
                               ],
                             )}
-                          {id === "IL008" && (
+                          {(id === "IL008" || id === "IL009") && (
                             <>
                               {renderRows(
                                 id,
@@ -620,21 +626,43 @@ export function PolicyEditor({
                                 ],
                                 "Exact names must match your context declarations below.",
                               )}
-                              {renderRows(
-                                id,
-                                "AllowedSharedIdentities",
-                                "Approved shared identities",
-                                [
-                                  field("First", "First environment"),
-                                  field("Second", "Second environment"),
-                                  sourceField("SourceID", "Connection"),
-                                  field("Kind", "Identity kind", {
-                                    options: kinds,
-                                  }),
-                                  field("NativeID", "Native identity ID"),
-                                  field("Reason", "Approval reason"),
-                                ],
-                              )}
+                              {id === "IL008" &&
+                                renderRows(
+                                  id,
+                                  "AllowedSharedIdentities",
+                                  "Approved shared identities",
+                                  [
+                                    field("First", "First environment"),
+                                    field("Second", "Second environment"),
+                                    sourceField("SourceID", "Connection"),
+                                    field("Kind", "Identity kind", {
+                                      options: kinds,
+                                    }),
+                                    field("NativeID", "Native identity ID"),
+                                    field("Reason", "Approval reason"),
+                                  ],
+                                )}
+                              {id === "IL009" &&
+                                renderRows(
+                                  id,
+                                  "AllowedSharedVaultRoles",
+                                  "Approved shared Vault roles",
+                                  [
+                                    field("First", "First environment"),
+                                    field("Second", "Second environment"),
+                                    sourceField(
+                                      "VaultSourceID",
+                                      "Vault connection",
+                                      "vault",
+                                    ),
+                                    field(
+                                      "RoleNativeID",
+                                      "Vault role native ID",
+                                    ),
+                                    field("Reason", "Approval reason"),
+                                  ],
+                                  "Approve only an exact collected AppRole and environment pair. Same-named credential references are never merged.",
+                                )}
                             </>
                           )}
                           {["IL003", "IL006", "IL007"].includes(id) && (

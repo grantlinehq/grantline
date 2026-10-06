@@ -25,6 +25,7 @@ type Policy struct {
 type Rule struct {
 	SeparatedEnvironments          []EnvironmentPair
 	AllowedSharedIdentities        []SharedIdentity
+	AllowedSharedVaultRoles        []SharedVaultRole
 	ForbidNamespaceOnly            *bool
 	Severity                       model.Severity
 	AllowedGrants                  []AllowedGrant
@@ -190,11 +191,11 @@ func (policy Policy) Validate() error {
 	if hasDuplicate(policy.RequiredSources) {
 		return fmt.Errorf("required_sources contains a duplicate")
 	}
-	if len(policy.Rules) == 0 || len(policy.Rules) > 8 {
-		return fmt.Errorf("M7 supports IL001 through IL008")
+	if len(policy.Rules) == 0 || len(policy.Rules) > 9 {
+		return fmt.Errorf("policy supports IL001 through IL009")
 	}
 	for ruleID, rule := range policy.Rules {
-		if ruleID != "IL001" && ruleID != "IL002" && ruleID != "IL003" && ruleID != "IL004" && ruleID != "IL005" && ruleID != "IL006" && ruleID != "IL007" && ruleID != "IL008" {
+		if ruleID != "IL001" && ruleID != "IL002" && ruleID != "IL003" && ruleID != "IL004" && ruleID != "IL005" && ruleID != "IL006" && ruleID != "IL007" && ruleID != "IL008" && ruleID != "IL009" {
 			return fmt.Errorf("unsupported rule %q", ruleID)
 		}
 		if model.SeverityRank(rule.Severity) == 0 {
@@ -355,12 +356,12 @@ func parseRule(lines []yamlLine, position int, ruleID string) (Rule, int, error)
 			return Rule{}, 0, lineError(line, "duplicate rule key")
 		}
 		seen[key] = struct{}{}
-		if key != "severity" && !((ruleID == "IL001" && key == "allowed_grants") || (ruleID == "IL002" && key == "allowed_kubernetes_bindings") || (ruleID == "IL004" && key == "require_owners_for") || (ruleID == "IL005" && key == "allowed_app_roles") || (ruleID == "IL006" && key == "forbid_namespace_only") || (ruleID == "IL008" && (key == "separated_environments" || key == "allowed_shared_identities"))) {
+		if key != "severity" && !((ruleID == "IL001" && key == "allowed_grants") || (ruleID == "IL002" && key == "allowed_kubernetes_bindings") || (ruleID == "IL004" && key == "require_owners_for") || (ruleID == "IL005" && key == "allowed_app_roles") || (ruleID == "IL006" && key == "forbid_namespace_only") || (ruleID == "IL008" && (key == "separated_environments" || key == "allowed_shared_identities")) || (ruleID == "IL009" && (key == "separated_environments" || key == "allowed_shared_vault_roles"))) {
 			return Rule{}, 0, lineError(line, "unsupported key for this rule")
 		}
 
 		switch key {
-		case "separated_environments", "allowed_shared_identities":
+		case "separated_environments", "allowed_shared_identities", "allowed_shared_vault_roles":
 			if value != "" {
 				return Rule{}, 0, lineError(line, "environment settings must be block lists")
 			}
@@ -373,8 +374,10 @@ func parseRule(lines []yamlLine, position int, ruleID string) (Rule, int, error)
 				pair := EnvironmentPair{entry["first"], entry["second"]}
 				if key == "separated_environments" {
 					result.SeparatedEnvironments = append(result.SeparatedEnvironments, pair)
-				} else {
+				} else if key == "allowed_shared_identities" {
 					result.AllowedSharedIdentities = append(result.AllowedSharedIdentities, SharedIdentity{EnvironmentPair: pair, SourceID: entry["source_id"], Kind: entry["kind"], NativeID: entry["native_id"], Reason: entry["reason"]})
+				} else {
+					result.AllowedSharedVaultRoles = append(result.AllowedSharedVaultRoles, SharedVaultRole{EnvironmentPair: pair, VaultSourceID: entry["vault_source_id"], RoleNativeID: entry["role_native_id"], Reason: entry["reason"]})
 				}
 			}
 		case "forbid_namespace_only":

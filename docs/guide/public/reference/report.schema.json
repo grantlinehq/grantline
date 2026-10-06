@@ -127,7 +127,10 @@
         ],
         "properties": {
           "rule_id": {
-            "const": "IL008"
+            "enum": [
+              "IL008",
+              "IL009"
+            ]
           },
           "entity_id": {
             "type": "string",
@@ -272,7 +275,8 @@
             "IL005",
             "IL006",
             "IL007",
-            "IL008"
+            "IL008",
+            "IL009"
           ]
         },
         "rule_version": {
