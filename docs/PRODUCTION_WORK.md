@@ -8,11 +8,36 @@ acceptance from remaining product and publication checks.
 
 ## Current publication status
 
-rc.5 is prepared to package all source changes below, including IL009, investigation
-context, related GitHub findings, schema 4 and synchronized guides. Fresh CI,
-registry publication and exact public-package acceptance are pending for this
-candidate; results will be recorded with its immutable source/digests on the
-release. The rc.4 acceptance below is a historical baseline, not an rc.5 result.
+rc.5 is published and independently verified on 6 October 2026. Its immutable
+source is `9aea171b664ced472cd123fb780f131b38160c3a`, including IL009,
+investigation context, related GitHub findings, schema 4 and synchronized guides.
+All 16 public assets downloaded anonymously; the checksum bundle, 14 payload hashes
+and independent image/chart signatures passed. The source archive's 499 files
+matched exact Git blobs. The OCI chart matched the signed download byte-for-byte.
+
+Published Compose acceptance passed Owner/TOTP/setup closure, nine default rules,
+schema 4, embedded pipeline docs/API, redacted saved connections, key/account/data
+persistence and session revocation after recreation. The public OCI chart passed
+fresh Kubernetes 1.37.0 installation, migration, restricted database roles, hardened
+pod, Helm upgrade and restart, preserving data and independently managed Secrets.
+Only randomly named disposable test projects/namespaces were removed.
+
+Both architecture scan reports contain zero HIGH/CRITICAL findings. The first
+publication attempt stopped on GHSA-68fv-2mgg-jv7q; source-map-js was patched to
+1.2.2, its license inventory refreshed and the successful release reran all gates.
+GitHub now records that dependency alert as fixed. Final API review found no open
+CodeQL, secret-scanning or Dependabot alerts; private reporting is enabled and
+main is the only remote branch. This is measured candidate acceptance, not closure
+of the remaining provider/IdP/SMTP/accessibility gates.
+
+- [Release and verification](https://github.com/grantlinehq/grantline/releases/tag/v0.1.0-rc.5)
+- [Release workflow](https://github.com/grantlinehq/grantline/actions/runs/37524347487): success
+- [Checks](https://github.com/grantlinehq/grantline/actions/runs/37524344078): success
+- [CodeQL](https://github.com/grantlinehq/grantline/actions/runs/37524344364): success
+
+Image: `ghcr.io/grantlinehq/grantline@sha256:c65e723d9423182ba95f47edf886a3329c7fed5f01992d2b50de6959ae1b0383`.
+Chart: `ghcr.io/grantlinehq/charts/grantline@sha256:1007f27d9d49cf780920b0934d4096e63e0be536c6e41629c567b0bee52cce0f`.
+The rc.4 acceptance below is a historical baseline, not an rc.5 result.
 
 The rc.4 publication is verified: all 16 public assets, checksums and signatures,
 anonymous image/chart pulls, clean Compose Owner/TOTP/restart and Helm
