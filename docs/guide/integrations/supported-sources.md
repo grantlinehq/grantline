@@ -1,7 +1,10 @@
 # Supported sources and boundaries
 
-The v0.1.0 candidate implements six source adapters. “Implemented” describes code
-and UI flows, not validation of every provider version, tenant policy or failure.
+The rc.5 package implements six source adapters. The table includes additions
+since rc.4: IL009 and related GitHub findings. See
+[release versions](../operations/releases.md) for the installed-version boundary.
+“Implemented” describes code and UI flows, not validation of every provider
+version, tenant policy or failure.
 
 | Source | Available now | Boundary |
 | --- | --- | --- |
@@ -15,6 +18,8 @@ and UI flows, not validation of every provider version, tenant policy or failure
 All six appear in the wizard. Access tests use collection paths and can produce
 partial/error coverage. Historical imports do not create active connections.
 Environment/business mappings are explicit declarations, not name-based inference.
+The 20-connection limit counts saved instances, including paused connections;
+multiple instances can use the same provider. There are six provider types.
 
 Invitations, passwords/TOTP, OIDC linking, API roles, manual/scheduled jobs,
 historical reports, evidence review, assignment, comments and expiring risk

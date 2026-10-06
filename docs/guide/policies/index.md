@@ -6,6 +6,12 @@ identity/configuration-object counts, known fields and recorded policy. Imported
 reports without original policy omit unavailable thresholds. The exported report
 stays unchanged.
 
+::: info Version scope
+This page describes rc.5, including IL001–IL009 and expanded finding explanations.
+Earlier rc.4 packages have IL001–IL008 and do not include IL009.
+See [release versions](../operations/releases.md).
+:::
+
 The built-in policy checks IL001–IL009. Default duration limits are seven days for
 Entra client secrets, 24 hours for X.509 SVIDs, and one hour for JWT SVIDs. IL008
 separates the exact environment names `production`/`development` and
@@ -83,8 +89,10 @@ The CLI and server use the same strict parser: block lists, two-space indentatio
 plain single-line scalars and duration units such as `168h`, `24h` or `15m` (not
 `7d`). Do not use flow arrays, anchors, multiline values or inline comments.
 
-This example keeps the original eight checks enabled; add IL009 using the pipeline example below. Replace `production-cluster` with an
-actual connection ID and add your other required connection IDs:
+This complete example enables all nine checks. Replace `production-cluster` with
+an actual connection ID and add your other required connection IDs, including the
+Jenkins and Vault connections for IL009. Declare job environments and exact role
+bindings as described below; enabling the rule does not create those mappings:
 
 ```yaml
 schema_version: 1
@@ -115,6 +123,11 @@ rules:
     separated_environments:
       - first: production
         second: staging
+  IL009:
+    severity: medium
+    separated_environments:
+      - first: production
+        second: development
 ```
 
 ## Context declarations
@@ -156,10 +169,9 @@ Use exact connection and native object IDs in context declarations. Names alone
 never establish cross-system identity. Evidence remains marked as provider
 observation, controlled export, explicit operator declaration or synthetic fixture.
 
-## Jenkins pipeline role sharing — IL009
+## Jenkins pipeline role sharing — IL009 {#jenkins-pipeline-role-sharing-il009}
 
-Available in the current `main` source; not included in the published
-`v0.1.0-rc.4` package.
+Available in `v0.1.0-rc.5`; not included in the earlier rc.4 package.
 
 Add a Jenkinsfile mapping for each reviewed job in **Integrations → Jenkins**:
 select an enabled GitHub connection, its exact repository name/numeric ID, a full
@@ -231,3 +243,8 @@ to the exact relationship. The original finding's source, ID, evidence and triag
 remain unchanged, and the total across all sources is not duplicated. A linked
 Entra owner finding is not a separate GitHub vulnerability or proof of runtime
 access. No standalone GitHub vulnerability rule is currently provided.
+
+Follow the [cross-provider investigation](./pipeline-investigation.md) for the
+setup order, evidence to inspect and decisions to record. A connection can collect
+successfully without producing findings: its scope may not meet an enabled rule,
+and related-source results require the exact evidenced relationship.

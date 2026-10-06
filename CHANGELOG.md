@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## v0.1.0-rc.5 — Pipeline evidence and investigation guidance
+
+- Synchronize embedded documentation with all nine rules, pipeline investigations,
+  related-source finding responses and schema-4 upgrade boundaries. Separate current
+  source from the published rc.4 packages and clarify provider/connection counts.
 - Add IL009: review Jenkins jobs mapped to the same collected Vault AppRole across
   explicitly separated environments, with pinned-file evidence and exact reasoned
   exceptions. Missing metadata remains UNKNOWN; credential names are not identities.

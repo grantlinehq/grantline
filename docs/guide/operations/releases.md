@@ -1,13 +1,34 @@
 # Release operations
 
-The current release is **v0.1.0-rc.4**, an early-access preview. The release provides a multiarch
+The rc.5 release provides a multiarch
 image, OCI Helm chart, Docker installation ZIP/TAR, source ZIP and signed checksums.
 The maintainer controls source visibility and registry publication. Release
 automation never changes repository visibility or declares production readiness.
 
+## Version boundaries
+
+Prepared on 6 October 2026. rc.5 packages the pipeline and investigation changes
+tested on source `0cf8c4f`, together with the synchronized documentation. Exact
+source commits and digests are recorded in each release's `release.json`. A push
+to `main` does not update an existing image, chart or installation download.
+
+| Capability | rc.4 | rc.5 |
+| --- | --- | --- |
+| Six provider types, guided integration and policy forms, accounts and review workflow | Included | Included |
+| Policy checks | IL001–IL008 | IL001–IL009 |
+| Expanded named subjects, recorded-policy facts and affected-subject search | Earlier finding view | Included |
+| GitHub filters showing related Entra application findings | Not included | Included, with original root cause and triage preserved |
+| Database schema | 3 | 4, including federation lookup indexes |
+
+An installed package serves its own embedded docs and API contract. Follow the
+[upgrade and rollback guidance](./upgrades.md) when moving from rc.4 to rc.5.
+Each new immutable candidate requires verification of its exact Docker/Helm
+artifacts. Versioned acceptance results are attached to its release; do not reuse
+an earlier candidate's result as proof that a newer package passed.
+
 ## Verify a release
 
-Download the assets from the versioned [release page](https://github.com/grantlinehq/grantline/releases/tag/v0.1.0-rc.4).
+Download the assets from the versioned [release page](https://github.com/grantlinehq/grantline/releases/tag/v0.1.0-rc.5).
 `release.json` records the exact source commit, image digest, chart digest and
 architectures. Installation packages pin the application digest in `.env`.
 
@@ -82,11 +103,16 @@ production-ready label.
 
 ## Public launch and registry publication
 
-Public launch requires an explicit maintainer decision after the final history,
-sanitization, CI, fresh-clone and documentation review. Enable GitHub private
-vulnerability reporting and confirm its link works. Configure available branch,
-Dependabot and scanning protections; private Free-plan limitations must be recorded,
-not presented as enabled controls.
+The repository and rc.4 image, chart and installation downloads are already public.
+Public Checks and CodeQL run on `main`; secret scanning, push protection and private
+vulnerability reporting are enabled. Publication and verification records are in
+the [acceptance ledger](https://github.com/grantlinehq/grantline/blob/main/docs/PRODUCTION_WORK.md). Historical private-preparation
+notes do not describe the current repository visibility.
+
+For future publications, retain the maintainer decision, history/sanitization
+review, successful CI, fresh installation and documentation review. Verify the
+private reporting link and available protection settings instead of assuming
+publication alone enabled them.
 
 Registry publication is another explicit action. The workflow checks the configured
 `ALLOW_REGISTRY_PUBLISH` repository variable before allowing `publish=true` and uses

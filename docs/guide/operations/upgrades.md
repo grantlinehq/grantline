@@ -1,6 +1,6 @@
 # Upgrades and troubleshooting
 
-Current `main` source after `v0.1.0-rc.4` uses database schema 4, adding indexes
+The `v0.1.0-rc.5` package uses database schema 4, adding indexes
 for federation lookups. Back up the database and encryption key before upgrading.
 A schema-3 binary rejects the upgraded schema; use a compatible database backup
 when returning to rc.4. Application or Helm rollback does not undo migrations.

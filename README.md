@@ -5,7 +5,7 @@
 Open-source, evidence-first security for discovering and analyzing non-human
 identities across software delivery and workload environments.
 
-**Early access: v0.1.0-rc.4.**
+**Early access: v0.1.0-rc.5.**
 See the [implementation and acceptance ledger](docs/PRODUCTION_WORK.md) for verified
 capabilities and remaining gates. Development builds are not labeled production ready.
 
@@ -28,8 +28,8 @@ This is not OWASP certification or full NHI coverage.
 
 ## Start with Docker
 
-Download the [installation ZIP](https://github.com/grantlinehq/grantline/releases/download/v0.1.0-rc.4/grantline-install-0.1.0-rc.4.zip)
-or [TAR package](https://github.com/grantlinehq/grantline/releases/download/v0.1.0-rc.4/grantline-install-0.1.0-rc.4.tar.gz),
+Download the [installation ZIP](https://github.com/grantlinehq/grantline/releases/download/v0.1.0-rc.5/grantline-install-0.1.0-rc.5.zip)
+or [TAR package](https://github.com/grantlinehq/grantline/releases/download/v0.1.0-rc.5/grantline-install-0.1.0-rc.5.tar.gz),
 extract it into a new directory, then run:
 
 ```sh
@@ -54,9 +54,9 @@ Keep generated secret volumes private; do not use `down -v` to stop a real works
 [Kubernetes and Helm guide](docs/guide/install/kubernetes.md) ·
 [Product documentation](docs/guide/index.md)
 
-Container: `ghcr.io/grantlinehq/grantline:0.1.0-rc.4` (`linux/amd64`, `linux/arm64`).
-Helm chart: `oci://ghcr.io/grantlinehq/charts/grantline --version 0.1.0-rc.4`.
-The [release page](https://github.com/grantlinehq/grantline/releases/tag/v0.1.0-rc.4)
+Container: `ghcr.io/grantlinehq/grantline:0.1.0-rc.5` (`linux/amd64`, `linux/arm64`).
+Helm chart: `oci://ghcr.io/grantlinehq/charts/grantline --version 0.1.0-rc.5`.
+The [release page](https://github.com/grantlinehq/grantline/releases/tag/v0.1.0-rc.5)
 includes checksums, signatures and the source archive.
 
 To build from a checkout instead:

@@ -2,6 +2,10 @@
 
 Grantline answers: **which non-human identity configurations violate our policy, what evidence supports that conclusion, and who will review them?** It collects selected metadata, applies deterministic rules and records decisions. It does not simulate attacks or automatically change source permissions.
 
+The examples describe rc.5, including expanded finding explanations,
+affected-subject search and IL009. The three underlying rules below are also
+available in earlier rc.4 packages. See [release versions](../operations/releases.md).
+
 Start in **Overview → Your review queue**. Open a finding to see its named subject, observed values, recorded policy revision, evidence and limitations. **Findings** supports subject search and source, rule and review-status selectors. Addresses retain filters and the selected historical collection.
 
 ## What the engine does
@@ -62,3 +66,6 @@ For each finding: check time, scope and provenance; identify the native subject 
 ## Check your understanding
 
 Explain each example without a script: *which native subject, observed fields, policy condition, limitation and next decision?* Explain why a controller wildcard needs context; validity does not establish rotation; UNKNOWN can contain findings; and an exception is a policy decision rather than a source fix. Continue with the [ten-finding review](./review-example.md).
+
+For the additional IL009 configuration review and GitHub's related-source view,
+continue with the [pipeline investigation](./pipeline-investigation.md).

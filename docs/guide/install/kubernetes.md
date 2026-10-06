@@ -29,11 +29,11 @@ Copy it to `my-values.yaml` and set your public URL, Ingress host/class and exis
 TLS Secret. Select a version or the image digest in the release's `release.json`.
 
 ```sh
-helm template grantline oci://ghcr.io/grantlinehq/charts/grantline --version 0.1.0-rc.4 -n grantline -f my-values.yaml
-helm upgrade --install grantline oci://ghcr.io/grantlinehq/charts/grantline --version 0.1.0-rc.4 -n grantline -f my-values.yaml --wait --timeout 5m
+helm template grantline oci://ghcr.io/grantlinehq/charts/grantline --version 0.1.0-rc.5 -n grantline -f my-values.yaml
+helm upgrade --install grantline oci://ghcr.io/grantlinehq/charts/grantline --version 0.1.0-rc.5 -n grantline -f my-values.yaml --wait --timeout 5m
 ```
 
-The release also contains `grantline-0.1.0-rc.4.tgz`; use that file in place of the
+The release also contains `grantline-0.1.0-rc.5.tgz`; use that file in place of the
 OCI reference for an independently downloaded chart. Verify its checksum and
 signature using the [release guide](../operations/releases#verify-a-release).
 Source developers can use the local `charts/grantline` directory.
@@ -60,7 +60,7 @@ An evaluation PVC is retained on uninstall. A migration init container waits for
 the database and must succeed before the app starts.
 
 ```sh
-helm upgrade --install grantline oci://ghcr.io/grantlinehq/charts/grantline --version 0.1.0-rc.4 -n grantline \
+helm upgrade --install grantline oci://ghcr.io/grantlinehq/charts/grantline --version 0.1.0-rc.5 -n grantline \
   -f charts/grantline/examples/evaluation.yaml --wait --timeout 5m
 kubectl -n grantline port-forward svc/grantline-grantline 8082:8080
 ```

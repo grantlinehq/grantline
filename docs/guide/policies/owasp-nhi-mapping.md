@@ -9,7 +9,13 @@ compliance assessment or complete category coverage.
 | --- | --- | --- | --- | --- |
 | NHI5:2025 — Overprivileged NHI | IL001: Kubernetes; IL005: Entra | Wildcard RBAC rule bound to a service account outside the exact allowlist; resolved SP app-role assignment outside its allowlist | Policy deviation is not proof of unnecessary effective access. Legitimate service grants need exact reviewed exceptions. | Non-wildcard excess permissions, custom authorization, delegated grants and unselected SPs are outside these checks. Incomplete lists or resolution yield limitations/UNKNOWN. |
 | NHI7:2025 — Long-Lived Secrets | IL003: Entra; IL007: SPIRE export | Client-secret record validity and explicit configured X.509/JWT SVID TTL versus policy thresholds | Configured duration does not establish current use, rotation success or exposure. Justified durations or unsuitable thresholds may require review. SPIRE maps the lifetime aspect of workload credentials. | Other credential types/sources, absent dates and inherited effective TTL are not inferred. Missing/inconsistent evidence can remain UNKNOWN. |
-| NHI8:2025 — Environment Isolation | IL008: explicit environment bindings plus collected identity relationships | The same stable native principal associated with a policy-separated environment pair | Declared membership is not runtime traffic or proof of boundary crossing. Incorrect mappings and intended shared services require exact exceptions. | Undeclared environments, unobserved links and out-of-scope principals can hide reuse. Similar names do not establish identity. |
+| NHI8:2025 — Environment Isolation | IL008: explicit environment bindings plus collected identity relationships; IL009 (rc.5): Jenkins and Vault | IL008: the same stable native principal associated with a separated environment pair. IL009: jobs in declared separated environments mapped through pinned Jenkinsfile references and exact bindings to the same observed Vault AppRole. | Declared membership and selected file configuration do not prove runtime traffic, credential use or boundary crossing. A Vault AppRole is a configuration object, not a native principal. Intended sharing requires an exact reasoned exception. | Undeclared environments, unobserved links and missing role mappings can hide reuse. Similar names or credential labels do not establish identity. |
+
+IL009 extends the environment-isolation review in rc.5; it does not add
+a fourth mapped OWASP category. Earlier rc.4 packages include IL001–IL008.
+See [release versions](../operations/releases.md) and the
+[pipeline investigation](./pipeline-investigation.md).
+Category reference: [OWASP NHI8 environment isolation](https://owasp.github.io/www-project-non-human-identities-top-10/2025/8-environment-isolation/).
 
 IL002 reviews Vault subject bindings, IL004 reviews directory ownership and IL006
 reviews broad SPIRE selectors. Those useful controls are not stretched into claims

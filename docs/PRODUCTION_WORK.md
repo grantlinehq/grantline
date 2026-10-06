@@ -8,6 +8,12 @@ acceptance from remaining product and publication checks.
 
 ## Current publication status
 
+rc.5 is prepared to package all source changes below, including IL009, investigation
+context, related GitHub findings, schema 4 and synchronized guides. Fresh CI,
+registry publication and exact public-package acceptance are pending for this
+candidate; results will be recorded with its immutable source/digests on the
+release. The rc.4 acceptance below is a historical baseline, not an rc.5 result.
+
 The rc.4 publication is verified: all 16 public assets, checksums and signatures,
 anonymous image/chart pulls, clean Compose Owner/TOTP/restart and Helm
 install/upgrade persistence passed on 6 October. The published package remains
@@ -31,7 +37,8 @@ maintainer-authorized demo repository without secret values or workflow changes.
 
 Go race, PostgreSQL, policy serialization and negative evidence tests passed;
 frontend/docs compilation and public documentation link checks passed. These
-source additions are not included in the immutable rc.4 distribution.
+source additions are not included in the immutable rc.4 distribution; rc.5 packages
+them together with the updated public documentation.
 Source-filtered findings evaluate matching application sets once and return their
 total/page together. Schema migration 4 adds federation-key indexes. On the shared
 Windows Docker Desktop host with aggregate 4 CPU / 8 GiB container caps, the
@@ -56,6 +63,26 @@ documentation presents technical scope rather than a launch-stage UI badge.
 
 Full provider failure/expiry coverage, customer IdP/SMTP and full accessibility
 acceptance remain open. Removing a stage label does not close those gates.
+
+## Documentation synchronization (6 October 2026)
+
+Public guide pages were compared with the current integration forms, findings
+projection, policy parser, API filters and schema-4 migration. The policy example
+now enables all nine rules. The pipeline walkthrough explains pinned Jenkinsfile
+references, observed AppRole metadata, declared environment/binding evidence,
+exact exceptions and GitHub's related Entra findings. API guidance includes
+affected-subject search, rule/source filters, context and related-source fields.
+
+Compatibility and release guidance now separates the verified rc.4 distribution
+from newer source changes, preserves historical review counts and states six
+provider types versus the 20 saved-connection limit. Release versions and the
+pipeline investigation are accessible from the embedded docs navigation.
+
+VitePress build passed; 87 relative source links and 676 rendered links/anchors
+across 22 HTML pages resolved. Three complete policy/context YAML examples passed
+the actual policy and bindings parsers; generated OpenAPI still matched all 44
+operations. The running 8080 proxy served the updated introduction, policy,
+pipeline, integration, release, API and compatibility pages with the new navigation.
 
 ## Earlier publication record
 
@@ -166,9 +193,10 @@ kubeconfig, real historical reports and local outputs stay outside public artifa
 - [x] Private repository CI and fresh clone: Checks run `36506984328` passed on
   commit `b8712a5`, including Ubuntu Compose acceptance. A separate clean HTTPS
   clone passed README build/up, UI/docs/readiness and initial setup-token access.
-- [ ] Enable protections unavailable on the private Free plan at public launch
-  (or after a separately chosen plan change), run public CodeQL, enable private
-  vulnerability reporting, and validate published image/chart signatures.
+- [x] Public CodeQL, secret scanning, push protection and private vulnerability
+  reporting are enabled. Published rc.4 image/chart/checksum signatures and
+  anonymous downloads were verified. Future candidates require fresh exact-artifact
+  verification; this completed publication gate does not close product acceptance.
 
 ## Release material and local context
 

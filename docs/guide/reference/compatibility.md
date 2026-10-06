@@ -1,7 +1,10 @@
 # Compatibility and acceptance
 
-Reviewed on 5 October 2026. The baseline measurements below were made on
-29 September; the public rc.3 packages were independently verified on 4 October.
+Reviewed on 6 October 2026. The baseline measurements below were made on
+29 September; public rc.3 packages were independently verified on 4 October and
+rc.4 packages on 6 October. Current-source results below are separate from the
+immutable rc.4 package. rc.5 includes those source additions; exact published-package
+acceptance is recorded separately on its release page after verification.
 This records measured results, not a general production-readiness certification.
 Release artifact digests, scan reports and verification instructions accompany
 each versioned GitHub release.
@@ -10,7 +13,7 @@ each versioned GitHub release.
 | --- | --- |
 | Docker Desktop / Windows, Linux amd64 containers | Compose clean installation, persistent secrets, schema 1 → 3 upgrade, restart and restore passed |
 | Ubuntu 24.04.5 / WSL2, independent Linux Docker Engine 29.7.2 / Compose 5.5.0 | Clean ext4 source package, init/migration, first Owner/TOTP, saved connection, container recreation, persistent keys/accounts/sessions, logout and database privilege checks passed |
-| GitHub-hosted Ubuntu Linux | Public Checks and the rc.3 release workflow passed, including build/race/dependency tests and clean Compose installation with account/data persistence; every new candidate must pass again |
+| GitHub-hosted Ubuntu Linux | Public Checks and the rc.4 release workflow passed. Latest-source Checks and CodeQL also passed on `0cf8c4f`, including build/race/dependency tests and clean Compose installation with account/data persistence; every new candidate must pass again |
 | Standalone production Linux server | Not deployed separately; local runtime acceptance used the WSL2 kernel, with additional GitHub-hosted Ubuntu CI |
 | macOS Docker Desktop | Deferred by maintainer; unverified |
 | Kubernetes 1.37.0 | kind 0.33.0 / Helm 4.3.0: installation, Recreate upgrade, retained independent Secrets, readiness and restore passed |
@@ -44,6 +47,16 @@ Windows Docker Desktop; this is not a dedicated production-server benchmark.
 - This measures list/search and report persistence; provider collection latency,
   WAN behavior, larger reports and sustained soak traffic require separate tests.
 
+On 6 October, current source with schema-4 federation indexes passed the same
+10,000-identity/10-user capacity target with p95 about **290 ms**. A separate
+stored projection fixture with 1,000 GitHub-related findings and ten concurrent
+requests measured p95 about **383 ms**. Both used the aggregate 4 CPU / 8 GiB
+container budget on the shared Windows Docker Desktop host. These are fixture
+measurements, not customer results or collection-throughput guarantees.
+
+There are six supported provider types. The 20-connection server limit counts
+saved instances, including paused connections, rather than provider adapters.
+
 ## Security and regression checks
 
 `go test -race ./...` passed with PostgreSQL acceptance enabled. `go vet`, frontend
@@ -67,7 +80,7 @@ Standalone Linux and macOS coverage remain explicitly unverified.
 
 ## Public-package acceptance
 
-On 4 October, the published rc.3 installation assets were downloaded without
+On 6 October, the published rc.4 installation assets were downloaded without
 GitHub authentication. The signed checksum bundle was verified before extraction;
 all payload hashes matched. Independent image and chart signature verification
 passed, and both artifacts were pulled with empty registry credentials.
@@ -76,7 +89,12 @@ The downloaded Compose package passed clean initialization, Owner/TOTP setup,
 saved-connection persistence, container recreation, fresh login and session
 revocation. The public OCI chart passed installation, migrations, upgrade and
 restart on Kubernetes 1.37.0, retaining database data and independent Secrets.
-Both architecture scan reports contained zero high/critical vulnerabilities at
+All 16 public release assets were available; checksum and signature verification
+passed. Both architecture scan reports contained zero high/critical vulnerabilities at
 scan time. These checks used disposable data and do not establish live-provider
 coverage. Version-specific results are recorded on the
 [release page](https://github.com/grantlinehq/grantline/releases).
+
+The rc.4 installation uses schema 3. rc.5 adds IL009, investigation
+context, related-source results and schema 4. The schema boundary and safe downgrade
+requirements are documented in [upgrades](../operations/upgrades.md).

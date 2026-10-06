@@ -19,7 +19,14 @@ The result is **eight action-needed reviews, one expected-configuration candidat
 
 These are analyst assessments. IL008's declared-policy condition remains valid although runtime use is unproven. The HPA wildcard is still a detected condition pending an exact decision. IL007 and IL008 were UNKNOWN overall because other evaluations lacked evidence; their known findings remain. An owner-count check establishes directory metadata, not absence of every organizational owner.
 
-The snapshot contains 95 findings across 116 native identities. The ten items are selected for varied conditions, not randomly sampled or a false-positive-rate measurement. All six sources reported complete collection in their selected scope. Rule-level correlation and inherited-default gaps still exist.
+This historical sample's snapshot contains 95 findings across 116 native identities.
+Those counts describe that saved report, not today's workspace. A later lab
+collection added the IL009 Jenkins/Vault case described in the
+[pipeline investigation](./pipeline-investigation.md); it does not alter this
+ten-item review. The ten items are selected for varied conditions, not randomly
+sampled or a false-positive-rate measurement. All six sources reported complete
+collection in their selected scope. Rule-level correlation and inherited-default
+gaps still exist.
 
 Grantline joins source configuration, stable identity, policy and evidence in one review. It helps explain a configuration question, track responsibility and reach a defensible decision. This demonstrates a workflow, not prevented incidents or measured time savings. Customer pilots should measure actionable reviews, expected exceptions, unresolved evidence and time to a decision.
 

@@ -8,6 +8,11 @@ provider's setup steps, collected metadata and access boundaries. Kubernetes and
 Vault include copyable permission examples to adapt in your own change process.
 Grantline does not apply those permissions or widen provider access automatically.
 
+The catalog contains **six provider types**. A saved connection is one scoped
+instance of a provider, with its own ID, credentials and collection history. The
+server supports up to 20 saved connections, including paused ones; this does not
+mean 20 provider adapters. Choose a distinct connection ID for each instance.
+
 Use **Add repository**, **Add auth role**, or **Add Jenkinsfile mapping** to enter
 scope as structured rows; no JSON is needed for these forms. GitHub's optional
 identity declarations and existing-run checks are nested under each repository
@@ -56,6 +61,14 @@ linked source's explicit scope. Grantline verifies the repository ID, commit,
 tree and regular file blob before reading the bounded Jenkinsfile; symlinks and
 submodules are rejected. Build scripts are never executed. The legacy CLI retains
 its commit-pinned local repository method.
+
+In rc.5, IL009 also reviews these references against exact collected
+Vault AppRoles and declared job environments. Enable the rule in a custom policy,
+declare credential-to-role bindings and include both sources in collection.
+Matching credential labels alone is insufficient. See the
+[pipeline investigation](../policies/pipeline-investigation.md) and
+[policy reference](../policies/index.md#jenkins-pipeline-role-sharing-il009).
+This rule is not included in the earlier rc.4 package.
 
 ## Entra
 
@@ -115,6 +128,13 @@ full refs such as `refs/heads/main`. IDs protect against mistaken renames.
 Identity declarations may map workflow references to tenant/client IDs, pinned to
 workflow path, ref, commit SHA, job and step. They are declarations, not observations
 of secret values. Grantline never reads GitHub secret contents.
+
+In rc.5, **Findings → Source** can also show Entra application findings
+related to collected GitHub workflows through evidenced federation. The row is
+labeled **Related via** the Entra source. It is the same original finding, with
+the same triage record, rather than a standalone GitHub vulnerability. No matching
+relationship or Entra finding means there is no related finding to show. See the
+[pipeline investigation](../policies/pipeline-investigation.md#github-related-findings).
 
 ## SPIRE
 

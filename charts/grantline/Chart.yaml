@@ -2,8 +2,8 @@ apiVersion: v2
 name: grantline
 description: Single-organization identity security workspace
 type: application
-version: 0.1.0-rc.4
-appVersion: 0.1.0-rc.4
+version: 0.1.0-rc.5
+appVersion: 0.1.0-rc.5
 kubeVersion: '>=1.31.0-0'
 home: https://github.com/grantlinehq/grantline
 sources: [https://github.com/grantlinehq/grantline]
