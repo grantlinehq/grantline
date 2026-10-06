@@ -70,13 +70,13 @@ docker compose -f compose.yaml -f compose.build.yaml up -d --wait
 
 ## A look inside the workspace
 
-These are captures of the running product with **synthetic imported evidence**.
+These are viewport captures of the running product with **synthetic imported evidence**.
 The sample workspace has no live connections; it illustrates the review workflow.
 Fixture severities are chosen for demonstration and are not universal risk scores.
 
-![Grantline overview with an explicitly labeled synthetic imported report](web/public/screenshots/grantline-overview.png)
+![Grantline overview with an explicitly labeled synthetic imported report](web/public/screenshots/grantline-overview.jpg)
 
-![Grantline finding details with a Kubernetes permission condition and affected identities](web/public/screenshots/grantline-finding.png)
+![Grantline Kubernetes finding with observed wildcard permissions and policy context](web/public/screenshots/grantline-finding.jpg)
 
 ## What you can investigate
 
